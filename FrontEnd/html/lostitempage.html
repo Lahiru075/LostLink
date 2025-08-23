@@ -1,0 +1,142 @@
+<!-- my-lost-items.html file එකට මේ code එක සම්පූර්ණයෙන්ම paste කරන්න -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Lost Items - LostLink</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../css/lostitempage.css">
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header"><a href="#" class="logo-link"><i class="fas fa-link logo-icon"></i>
+                    <h1 class="logo-text">LostLink</h1>
+                </a></div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="userdashboard.html"><i class="fas fa-house"></i><span>Home</span></a></li>
+                    <li><a href="#" class="active"><i class="fas fa-magnifying-glass-minus"></i><span>Lost
+                                Items</span></a></li>
+                    <li><a href="my-found-items.html"><i class="fas fa-magnifying-glass-plus"></i><span>Found
+                                Items</span></a></li>
+                    <li><a href="matches.html"><i class="fas fa-arrows-down-to-line"></i><span>Matches</span></a></li>
+                    <li><a href="profile.html"><i class="fas fa-user"></i><span>Profile</span></a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer"><a href="#" class="logout-btn"><i
+                        class="fas fa-right-from-bracket"></i><span>Logout</span></a></div>
+        </aside>
+        <main class="main-content">
+            <header class="page-header">
+                <div class="header-title">
+                    <h1>My Reported Lost Items</h1>
+                    <p>Manage and track all the items you've reported as lost.</p>
+                </div><button class="btn-primary add-item-btn"><i class="fas fa-plus"></i> Report New Lost Item</button>
+            </header>
+            <div class="control-panel">
+                <div class="search-bar"><i class="fas fa-search"></i><input type="text"
+                        placeholder="Search by item name or keyword..."></div>
+                <div class="filters"><select name="category" id="category-filter">
+                        <option value="all">All Categories</option>
+                        <option value="electronics">Electronics</option>
+                        <option value="bags">Bags & Luggage</option>
+                    </select><select name="status" id="status-filter">
+                        <option value="all">All Statuses</option>
+                        <option value="active">Active</option>
+                        <option value="recovered">Recovered</option>
+                    </select></div>
+            </div>
+            <div class="items-grid">
+                <div class="item-card">
+                    <div class="card-image"><img
+                            src="https://images.unsplash.com/photo-1594223274512-ad4803739b7c?w=600"
+                            alt="Lost Wallet"><span class="status-badge status-active">Active</span></div>
+                    <div class="card-content">
+                        <h3>Black Leather Wallet</h3>
+                        <p class="item-detail"><i class="fas fa-calendar-alt"></i> Reported on: 2024-08-15</p>
+                        <p class="item-detail"><i class="fas fa-map-marker-alt"></i> Lost near: Liberty Plaza</p>
+                    </div>
+                    <div class="card-actions"><button class="action-btn btn-edit"><i class="fas fa-pencil-alt"></i>
+                            Edit</button><button class="action-btn btn-delete"><i class="fas fa-trash-alt"></i>
+                            Delete</button></div>
+                </div>
+                <div class="item-card">
+                    <div class="card-image"><img
+                            src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600"
+                            alt="Headphones"><span class="status-badge status-recovered">Recovered</span></div>
+                    <div class="card-content">
+                        <h3>Sony WH-1000XM4</h3>
+                        <p class="item-detail"><i class="fas fa-calendar-alt"></i> Reported on: 2024-07-20</p>
+                        <p class="item-detail"><i class="fas fa-map-marker-alt"></i> Lost in: Wellawatte</p>
+                    </div>
+                    <div class="card-actions"><button class="action-btn btn-view-details"><i class="fas fa-eye"></i>
+                            View Details</button></div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <div class="modal-overlay" id="reportItemModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Report a New Lost Item</h2><button class="close-modal-btn" id="closeModalBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="reportItemForm">
+                    <div class="form-row">
+                        <div class="form-group"><label for="itemTitle">Item Title <span
+                                    class="required">*</span></label><input type="text" id="itemTitle"
+                                placeholder="e.g., Black Leather Wallet" required></div>
+                        <div class="form-group"><label for="itemCategory">Category <span
+                                    class="required">*</span></label><select id="itemCategory" required>
+                                <option value="" disabled selected>Select a category</option>
+                                <option value="electronics">Electronics</option>
+                                <option value="bags">Bags & Luggage</option>
+                            </select></div>
+                    </div>
+                    <div class="form-group"><label for="itemDescription">Description <span
+                                class="required">*</span></label><textarea id="itemDescription" rows="3"
+                            placeholder="Provide key details..." required></textarea></div>
+                    <div class="form-group"><label for="lostDate">Date Lost <span
+                                class="required">*</span></label><input type="date" id="lostDate" required></div>
+                    <div class="form-group"><label for="itemImage">Upload Image <span class="required">*</span></label>
+                        <div class="image-upload-wrapper"><input type="file" id="itemImage" accept="image/*" required>
+                            <div class="image-preview" id="imagePreview"><img src="" alt="Image Preview"
+                                    class="image-preview-image"><span class="image-preview-text">Image Preview</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="locationSearch">Location <span class="required">*</span></label>
+                        <p class="label-subtitle">Search for a place or click/drag the pin on the map.</p>
+
+                        <input type="text" id="locationSearch" name="locationText"
+                            placeholder="Search for an address or place name...">
+
+
+                        <div class="suggestions-panel" id="suggestionsPanel"></div>
+
+                        <div id="map-container"></div> <!-- This can be removed if you are not using a map -->
+
+                        <!-- Hidden fields to store coordinates -->
+                        <input type="hidden" id="latitude" name="latitude">
+                        <input type="hidden" id="longitude" name="longitude">
+                    </div>
+                    <div class="modal-footer"><button type="button" class="btn-secondary"
+                            id="cancelBtn">Cancel</button><button type="submit" class="btn-primary">Submit
+                            Report</button></div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="../js/lostitempage.js"></script>
+
+</body>
+
+</html>

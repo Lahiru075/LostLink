@@ -1,0 +1,666 @@
+<!-- my-lost-items.html file එකට මේ code එක සම්පූර්ණයෙන්ම paste කරන්න -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Lost Items - LostLink</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --primary-light: #eef2ff;
+            --grey-light: #f3f4f6;
+            --text-color: #1f2937;
+            --text-light: #6b7280;
+            --white-color: #fff;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fc;
+            color: var(--text-color);
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        .dashboard-container {
+            display: flex;
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            flex: 0 0 260px;
+            background-color: var(--white-color);
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #e5e7eb;
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .logo-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            color: var(--text-color);
+            font-weight: 700;
+        }
+
+        .sidebar-nav {
+            flex-grow: 1;
+            padding: 1.5rem 0;
+        }
+
+        .sidebar-nav ul li a {
+            display: flex;
+            align-items: center;
+            padding: 0.9rem 1.5rem;
+            margin: 0.2rem 1rem;
+            border-radius: 8px;
+            color: #4b5563;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-nav ul li a:hover {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+        }
+
+        .sidebar-nav ul li a.active {
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2);
+        }
+
+        .sidebar-nav ul li a i {
+            font-size: 1.1rem;
+            width: 25px;
+            margin-right: 1rem;
+        }
+
+        .sidebar-footer {
+            padding: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .logout-btn {
+            color: var(--danger-color) !important;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 2rem 2.5rem;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 1.5rem;
+        }
+
+        .header-title h1 {
+            font-size: 1.8rem;
+            color: #111827;
+        }
+
+        .header-title p {
+            color: var(--text-light);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            border: none;
+            padding: 0.8rem 1.2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background-color 0.3s;
+        }
+
+        .btn-primary:hover {
+            background-color: #4338ca;
+        }
+
+        .control-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .search-bar {
+            position: relative;
+            width: 400px;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 0.8rem 1rem 0.8rem 2.5rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .search-bar i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+        }
+
+        .filters {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .filters select {
+            padding: 0.8rem 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            background-color: var(--white-color);
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .item-card {
+            background-color: var(--white-color);
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: box-shadow 0.3s, transform 0.3s;
+        }
+
+        .item-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.07);
+        }
+
+        .card-image {
+            position: relative;
+        }
+
+        .card-image img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .status-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--white-color);
+        }
+
+        .status-active {
+            background-color: #2563eb;
+        }
+
+        .status-recovered {
+            background-color: var(--success-color);
+        }
+
+        .card-content {
+            padding: 1.5rem;
+            flex-grow: 1;
+        }
+
+        .card-content h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .item-detail {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-actions {
+            display: flex;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .action-btn {
+            flex: 1;
+            background: none;
+            border: none;
+            padding: 1rem;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .action-btn:first-child {
+            border-right: 1px solid #e5e7eb;
+        }
+
+        .action-btn:hover {
+            background-color: var(--grey-light);
+        }
+
+        .btn-edit {
+            color: #6366f1;
+        }
+
+        .btn-delete {
+            color: var(--danger-color);
+        }
+
+        .btn-view-details {
+            color: var(--text-color);
+            flex: auto;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 2.5rem;
+        }
+
+        .pagination ul {
+            display: flex;
+            list-style: none;
+        }
+
+        .page-link {
+            display: inline-block;
+            padding: 0.6rem 1rem;
+            margin: 0 0.25rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            color: var(--text-light);
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .page-link:hover {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .page-link.active {
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            border-color: var(--primary-color);
+        }
+
+        .page-link.disabled {
+            color: #d1d5db;
+            pointer-events: none;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background-color: var(--white-color);
+            border-radius: 12px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+        }
+
+        .close-modal-btn {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group label .required {
+            color: var(--danger-color);
+        }
+
+        .form-group .label-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin: -0.25rem 0 0.5rem 0;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="date"],
+        .form-group input[type="tel"],
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .image-upload-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .image-upload-wrapper input[type="file"] {
+            flex-grow: 1;
+        }
+
+        .image-preview {
+            width: 100px;
+            height: 100px;
+            border: 1px dashed #d1d5db;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .image-preview-image {
+            display: none;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-preview-text {
+            color: var(--text-light);
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        .btn-secondary {
+            background-color: var(--grey-light);
+            color: var(--text-color);
+            border: none;
+            padding: 0.8rem 1.2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .suggestions-panel {
+            display: none;
+            position: absolute;
+            background-color: var(--white-color);
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            width: 100%;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1001;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            margin-top: 5px;
+        }
+
+        .suggestion-item {
+            padding: 1rem;
+            cursor: pointer;
+            border-bottom: 1px solid #f3f4f6;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #374151;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-item:hover {
+            background-color: #eef2ff;
+        }
+
+        .suggestion-item i {
+            color: #9ca3af;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header"><a href="#" class="logo-link"><i class="fas fa-link logo-icon"></i>
+                    <h1 class="logo-text">LostLink</h1>
+                </a></div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-house"></i><span>Home</span></a></li>
+                    <li class="active"><a href="#"><i class="fas fa-magnifying-glass-minus"></i><span>Lost
+                                Items</span></a></li>
+                    <li><a href="my-found-items.html"><i class="fas fa-magnifying-glass-plus"></i><span>Found
+                                Items</span></a></li>
+                    <li><a href="matches.html"><i class="fas fa-arrows-down-to-line"></i><span>Matches</span></a></li>
+                    <li><a href="profile.html"><i class="fas fa-user"></i><span>Profile</span></a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer"><a href="#" class="logout-btn"><i
+                        class="fas fa-right-from-bracket"></i><span>Logout</span></a></div>
+        </aside>
+        <main class="main-content">
+            <header class="page-header">
+                <div class="header-title">
+                    <h1>My Reported Lost Items</h1>
+                    <p>Manage and track all the items you've reported as lost.</p>
+                </div><button class="btn-primary add-item-btn"><i class="fas fa-plus"></i> Report New Lost Item</button>
+            </header>
+            <div class="control-panel">
+                <div class="search-bar"><i class="fas fa-search"></i><input type="text"
+                        placeholder="Search by item name or keyword..."></div>
+                <div class="filters"><select name="category" id="category-filter">
+                        <option value="all">All Categories</option>
+                        <option value="electronics">Electronics</option>
+                        <option value="bags">Bags & Luggage</option>
+                    </select><select name="status" id="status-filter">
+                        <option value="all">All Statuses</option>
+                        <option value="active">Active</option>
+                        <option value="recovered">Recovered</option>
+                    </select></div>
+            </div>
+            <div class="items-grid">
+                <div class="item-card">
+                    <div class="card-image"><img
+                            src="https://images.unsplash.com/photo-1594223274512-ad4803739b7c?w=600"
+                            alt="Lost Wallet"><span class="status-badge status-active">Active</span></div>
+                    <div class="card-content">
+                        <h3>Black Leather Wallet</h3>
+                        <p class="item-detail"><i class="fas fa-calendar-alt"></i> Reported on: 2024-08-15</p>
+                        <p class="item-detail"><i class="fas fa-map-marker-alt"></i> Lost near: Liberty Plaza</p>
+                    </div>
+                    <div class="card-actions"><button class="action-btn btn-edit"><i class="fas fa-pencil-alt"></i>
+                            Edit</button><button class="action-btn btn-delete"><i class="fas fa-trash-alt"></i>
+                            Delete</button></div>
+                </div>
+                <div class="item-card">
+                    <div class="card-image"><img
+                            src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600"
+                            alt="Headphones"><span class="status-badge status-recovered">Recovered</span></div>
+                    <div class="card-content">
+                        <h3>Sony WH-1000XM4</h3>
+                        <p class="item-detail"><i class="fas fa-calendar-alt"></i> Reported on: 2024-07-20</p>
+                        <p class="item-detail"><i class="fas fa-map-marker-alt"></i> Lost in: Wellawatte</p>
+                    </div>
+                    <div class="card-actions"><button class="action-btn btn-view-details"><i class="fas fa-eye"></i>
+                            View Details</button></div>
+                </div>
+            </div>
+            <nav class="pagination">
+                <ul>
+                    <li><a href="#" class="page-link disabled">Previous</a></li>
+                    <li><a href="#" class="page-link active">1</a></li>
+                    <li><a href="#" class="page-link">2</a></li>
+                    <li><a href="#" class="page-link">Next</a></li>
+                </ul>
+            </nav>
+        </main>
+    </div>
+    <div class="modal-overlay" id="reportItemModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Report a New Lost Item</h2><button class="close-modal-btn" id="closeModalBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="reportItemForm">
+                    <div class="form-row">
+                        <div class="form-group"><label for="itemTitle">Item Title <span
+                                    class="required">*</span></label><input type="text" id="itemTitle"
+                                placeholder="e.g., Black Leather Wallet" required></div>
+                        <div class="form-group"><label for="itemCategory">Category <span
+                                    class="required">*</span></label><select id="itemCategory" required>
+                                <option value="" disabled selected>Select a category</option>
+                                <option value="electronics">Electronics</option>
+                                <option value="bags">Bags & Luggage</option>
+                            </select></div>
+                    </div>
+                    <div class="form-group"><label for="itemDescription">Description <span
+                                class="required">*</span></label><textarea id="itemDescription" rows="3"
+                            placeholder="Provide key details..." required></textarea></div>
+                    <div class="form-group"><label for="lostDate">Date Lost <span
+                                class="required">*</span></label><input type="date" id="lostDate" required></div>
+                    <div class="form-group"><label for="itemImage">Upload Image <span class="required">*</span></label>
+                        <div class="image-upload-wrapper"><input type="file" id="itemImage" accept="image/*" required>
+                            <div class="image-preview" id="imagePreview"><img src="" alt="Image Preview"
+                                    class="image-preview-image"><span class="image-preview-text">Image Preview</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group"><label for="locationSearch">Location <span class="required">*</span></label>
+                        <p class="label-subtitle">Search for a place to get the precise location.</p>
+                        <div id="geocoder-container"></div><input type="hidden" id="latitude" name="latitude"><input
+                            type="hidden" id="longitude" name="longitude">
+                    </div>
+                    <div class="modal-footer"><button type="button" class="btn-secondary"
+                            id="cancelBtn">Cancel</button><button type="submit" class="btn-primary">Submit
+                            Report</button></div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    
+</body>
+
+</html>

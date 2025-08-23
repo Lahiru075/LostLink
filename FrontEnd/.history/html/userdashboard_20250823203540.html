@@ -1,0 +1,514 @@
+<!-- dashboard.html file එකට මේ code එක සම්පූර්ණයෙන්ම paste කරන්න -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - LostLink</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --primary-light: #eef2ff;
+            --grey-light: #f3f4f6;
+            --text-color: #1f2937;
+            --text-light: #6b7280;
+            --white-color: #fff;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fc;
+            color: var(--text-color);
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        .dashboard-container {
+            display: flex;
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            flex: 0 0 260px;
+            background-color: var(--white-color);
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #e5e7eb;
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .logo-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            color: var(--text-color);
+            font-weight: 700;
+        }
+
+        .sidebar-nav {
+            flex-grow: 1;
+            padding: 1.5rem 0;
+        }
+
+        .sidebar-nav ul li a {
+            display: flex;
+            align-items: center;
+            padding: 0.9rem 1.5rem;
+            margin: 0.2rem 1rem;
+            border-radius: 8px;
+            color: #4b5563;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-nav ul li a:hover {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+        }
+
+        .sidebar-nav ul li a.active {
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2);
+        }
+
+        .sidebar-nav ul li a i {
+            font-size: 1.1rem;
+            width: 25px;
+            margin-right: 1rem;
+        }
+
+        .sidebar-footer {
+            padding: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .sidebar-footer a {
+            display: block;
+        }
+
+        .logout-btn {
+            color: var(--danger-color) !important;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 2rem 2.5rem;
+            overflow-y: auto;
+        }
+
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .header-search {
+            position: relative;
+            width: 450px;
+        }
+
+        .header-search input {
+            width: 100%;
+            padding: 0.9rem 1rem 0.9rem 2.7rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            background-color: var(--white-color);
+            transition: all 0.3s ease;
+        }
+
+        .header-search input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .header-search i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--grey-medium);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .action-icon {
+            font-size: 1.3rem;
+            color: #6b7280;
+            cursor: pointer;
+            position: relative;
+            transition: color 0.3s;
+        }
+
+        .action-icon:hover {
+            color: var(--text-color);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -7px;
+            background-color: var(--danger-color);
+            color: var(--white-color);
+            font-size: 0.7rem;
+            font-weight: 600;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid var(--white-color);
+        }
+
+        .profile-dropdown {
+            position: relative;
+        }
+
+        .profile-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+        }
+
+        .profile-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .profile-name {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 120%;
+            right: 0;
+            background-color: var(--white-color);
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+            width: 180px;
+            z-index: 100;
+        }
+
+        .profile-dropdown:hover .dropdown-menu {
+            display: block;
+        }
+
+        .dropdown-menu a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: #4b5563;
+        }
+
+        .dropdown-menu a:hover {
+            background-color: var(--grey-light);
+        }
+
+        .dropdown-menu a:last-child {
+            color: var(--danger-color);
+        }
+
+        .welcome-banner {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+        }
+
+        .welcome-banner h2 {
+            color: var(--primary-dark);
+        }
+
+        .welcome-banner p {
+            color: #6d6bbf;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .action-btn {
+            padding: 1.5rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .lost-btn {
+            background-color: #fff1f2;
+            color: #be123c;
+        }
+
+        .found-btn {
+            background-color: #f0fdf4;
+            color: #16a34a;
+        }
+
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background-color: var(--white-color);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .card-icon {
+            font-size: 1.5rem;
+            padding: 0.8rem;
+            border-radius: 50%;
+        }
+
+        .icon-reports {
+            background-color: #dbeafe;
+            color: #2563eb;
+        }
+
+        .icon-pending {
+            background-color: #fef9c3;
+            color: #ca8a04;
+        }
+
+        .icon-success {
+            background-color: #dcfce7;
+            color: #16a34a;
+        }
+
+        .card-info p {
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .card-info span {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .recent-activity {
+            background-color: var(--white-color);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .recent-activity h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--grey-light);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            font-size: 1.2rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 1rem;
+        }
+
+        .icon-match {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+        }
+
+        .icon-accepted {
+            background-color: var(--success-color);
+            color: var(--white-color);
+        }
+
+        .activity-details {
+            flex-grow: 1;
+        }
+
+        .activity-details small {
+            color: var(--grey-medium);
+        }
+
+        .btn-view {
+            background-color: var(--grey-light);
+            color: var(--text-color);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: background-color 0.3s;
+            white-space: nowrap;
+        }
+
+        .btn-view:hover {
+            background-color: #e5e7eb;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header"><a href="#" class="logo-link"><i class="fas fa-link logo-icon"></i>
+                    <h1 class="logo-text">LostLink</h1>
+                </a></div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="#" class="active"><i class="fas fa-house"></i><span>Home</span></a></li>
+                    <li><a href="lostitempage.html"><i class="fas fa-magnifying-glass-minus"></i><span>Lost
+                                Items</span></a></li>
+                    <li><a href="#"><i class="fas fa-magnifying-glass-plus"></i><span>Found Items</span></a></li>
+                    <li><a href="#"><i class="fas fa-arrows-down-to-line"></i><span>Matches</span></a></li>
+                    <li><a href="#"><i class="fas fa-user"></i><span>Profile</span></a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="#" class="logout-btn"><i class="fas fa-right-from-bracket"></i><span>Logout</span></a></div>
+        </aside>
+        <main class="main-content">
+            <header class="main-header">
+                <div class="header-search"><i class="fas fa-search"></i><input type="search"
+                        placeholder="Search by keyword, category..."></div>
+                <div class="header-actions">
+                    <div class="action-icon notification-bell"><i class="fas fa-bell"></i><span
+                            class="notification-badge">3</span></div>
+                    <div class="profile-dropdown">
+                        <div class="profile-info"><img src="https://i.pravatar.cc/150?u=lahiru" alt="User Avatar"
+                                class="profile-avatar"><span class="profile-name">Lahiru S.</span><i
+                                class="fas fa-chevron-down"></i></div>
+                        <div class="dropdown-menu"><a href="#"><i class="fas fa-user-circle"></i> Profile</a><a
+                                href="#"><i class="fas fa-sign-out-alt"></i> Logout</a></div>
+                    </div>
+                </div>
+            </header>
+            <div class="welcome-banner">
+                <h2>Welcome back, Lahiru! 👋</h2>
+                <p>Ready to find what's lost? You can report a new item or check your existing matches.</p>
+            </div>
+            <section class="quick-actions"><button class="action-btn lost-btn"><i class="fas fa-plus-circle"></i> Report
+                    a Lost Item</button><button class="action-btn found-btn"><i class="fas fa-plus-circle"></i> Report a
+                    Found Item</button></section>
+            <section class="stats-overview">
+                <div class="stat-card">
+                    <div class="card-icon icon-reports"><i class="fas fa-file-alt"></i></div>
+                    <div class="card-info">
+                        <p>Active Reports</p><span>5</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="card-icon icon-pending"><i class="fas fa-hourglass-half"></i></div>
+                    <div class="card-info">
+                        <p>Pending Matches</p><span>2</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="card-icon icon-success"><i class="fas fa-check-circle"></i></div>
+                    <div class="card-info">
+                        <p>Successful Recoveries</p><span>3</span>
+                    </div>
+                </div>
+            </section>
+            <section class="recent-activity">
+                <h3>Recent Activity</h3>
+                <div class="activity-list">
+                    <div class="activity-item">
+                        <div class="activity-icon icon-match"><i class="fas fa-link"></i></div>
+                        <div class="activity-details">
+                            <p>New potential match for your <strong>'Black Leather Wallet'</strong></p><small>2 hours
+                                ago</small>
+                        </div><a href="#" class="btn-view">View</a>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon icon-accepted"><i class="fas fa-handshake"></i></div>
+                        <div class="activity-details">
+                            <p>Your contact request for <strong>'Sony Headphones'</strong> was accepted!</p><small>1 day
+                                ago</small>
+                        </div><a href="#" class="btn-view">View Contact</a>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+
+</html>

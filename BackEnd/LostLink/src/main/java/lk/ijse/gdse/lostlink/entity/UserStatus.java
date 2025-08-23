@@ -1,0 +1,6 @@
+package lk.ijse.gdse.lostlink.entity;
+
+public enum UserStatus {
+    ACTIVE,
+    SUSPENDED;
+}

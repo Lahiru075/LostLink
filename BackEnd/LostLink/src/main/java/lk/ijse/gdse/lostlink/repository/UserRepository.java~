@@ -1,0 +1,2 @@
+package lk.ijse.gdse.lostlink.repository;public interface UserRepository {
+}
