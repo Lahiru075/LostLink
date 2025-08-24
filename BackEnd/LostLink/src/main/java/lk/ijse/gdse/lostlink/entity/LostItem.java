@@ -82,12 +82,10 @@ public class LostItem {
             nullable = false
     )
     private String imageUrl;
-    @Column(
-            name = "image_hash",
-            nullable = false,
-            length = 64
-    )
+
+    @Column(name = "image_hash", nullable = false, length = 256) // Increased length to 256
     private String imageHash;
+
     @CreationTimestamp
     @Column(
             name = "created_at",

@@ -67,7 +67,7 @@ $(document).ready(function () {
             $suggestionsPanel.empty().hide();
             return;
         }
-        const apiKey = ''; // Replace with your key
+        const apiKey = 'pk.a95efca3c4d0ef92f09d20299a4bb659'; // Replace with your key
         const url = `https://api.locationiq.com/v1/autocomplete.php?key=${apiKey}&q=${encodeURIComponent(query)}&limit=5&countrycodes=LK`;
         $.ajax({
             url: url,

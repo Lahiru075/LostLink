@@ -6,6 +6,7 @@ import lk.ijse.gdse.lostlink.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -15,15 +16,15 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Data
 public class LostItemDto {
-    private User user;
-    private Category category;
+    private String username;
+    private String categoryName;
     private String title;
     private String description;
     private BigDecimal latitude;
     private BigDecimal longitude;
     private LocalDate lostDate;
     private LostItemStatus status;
-    private String imageUrl;
+    private MultipartFile image;
     private String imageHash;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

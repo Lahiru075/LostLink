@@ -12,10 +12,6 @@ spring.jpa.database-platform=org.hibernate.dialect.MySQLDialect
 spring.jpa.show-sql=true
 spring.jpa.generate-ddl=true
 
-# allow bigger uploads
-spring.servlet.multipart.max-file-size=10MB
-spring.servlet.multipart.max-request-size=20MB
-
 #JWT Data
 jwt.expiration=864000000
 jwt.secretKey=lkasjdfl59837ksjd;lkap5ekjriwlkj=kl423lkjdlw85lkjdflu83rkeweu983kjdldfkj339kjdfklaqwu3e9fsddfsfert4334tefedfert34thethy
