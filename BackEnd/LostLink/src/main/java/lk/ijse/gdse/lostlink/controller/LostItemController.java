@@ -2,6 +2,7 @@ package lk.ijse.gdse.lostlink.controller;
 
 import jakarta.validation.Valid;
 import lk.ijse.gdse.lostlink.dto.LostItemDto;
+import lk.ijse.gdse.lostlink.dto.SecondLostItemDto;
 import lk.ijse.gdse.lostlink.service.LostItemService;
 import lk.ijse.gdse.lostlink.dto.ApiResponse;
 import lk.ijse.gdse.lostlink.service.impl.FileStorageService;
@@ -18,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -54,6 +56,18 @@ public class LostItemController {
 
         return ResponseEntity.ok(new ApiResponse(200, "Lost Item Saved", responseData));
 
+    }
+
+    @GetMapping("/get")
+    public ResponseEntity<ApiResponse> getLostItems() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUsername = authentication.getName();
+
+        // 2. Call the service to get the list of DTOs
+        List<SecondLostItemDto> myItems = lostItemService.getLostItemsByUsername(currentUsername);
+
+        // 3. Return the list in a successful response
+        return ResponseEntity.ok(new ApiResponse(200, "User's lost items retrieved successfully", myItems));
     }
 
 }
