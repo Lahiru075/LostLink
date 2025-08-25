@@ -67,7 +67,7 @@ $(document).ready(function () {
             $suggestionsPanel.empty().hide();
             return;
         }
-        const apiKey = 'pk.a95efca3c4d0ef92f09d20299a4bb659'; // Replace with your key
+        const apiKey = ''; // Replace with your key
         const url = `https://api.locationiq.com/v1/autocomplete.php?key=${apiKey}&q=${encodeURIComponent(query)}&limit=5&countrycodes=LK`;
         $.ajax({
             url: url,
@@ -137,4 +137,77 @@ $(document).ready(function () {
         closeModal();
     });
 
-}); // End of document ready function
+
+
+    $('#submitReportBtn').on('click', function () {
+
+        const formData = new FormData();
+
+        formData.append('title', $('#itemTitle').val());
+        formData.append('categoryName', "Electronics");
+        formData.append('description', $('#itemDescription').val());
+        formData.append('lostDate', $('#lostDate').val());
+        formData.append('latitude', $('#latitude').val());
+        formData.append('longitude', $('#longitude').val());
+        formData.append('status', "ACTIVE");
+
+        const imageFile = $('#itemImage')[0].files[0];
+
+        if (imageFile) {
+            formData.append('image', imageFile);
+        } else {
+            alert('Please select an image to upload.');
+            return; 
+        }
+
+
+        console.log("Form Data to be sent to backend:");
+        for (let [key, value] of formData.entries()) {
+            console.log(key, value);
+        }
+
+        $.ajax({
+            url: 'http://localhost:8080/lost_item/save',
+            type: 'POST',
+            data: formData,
+
+             headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('authToken') 
+            },
+
+            processData: false, 
+            contentType: false, 
+
+
+            success: function (response) {
+                console.log('Success:', response);
+                alert(response.message || 'Lost item reported successfully!'); 
+
+                closeModal();
+                $('#reportItemForm')[0].reset();
+
+                const $imagePreview = $('#imagePreview').find('.image-preview-image');
+                const $imagePreviewText = $('#imagePreview').find('.image-preview-text');
+                $imagePreview.attr('src', '');
+                $imagePreview.hide();
+                $imagePreviewText.show();
+
+            },
+            error: function (jqXHR, textStatus, errorThrown, error) {
+                console.error('Error:', jqXHR.responseText);
+                
+                try {
+                    const errorResponse = JSON.parse(jqXHR.responseText);
+                    alert('Error: ' + (errorResponse.message || 'Something went wrong!'));
+                } catch (e) {
+                    alert('An unknown error occurred. Please check the console.');
+                }
+            }
+        });
+    });
+
+
+
+
+
+});

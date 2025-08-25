@@ -55,6 +55,9 @@ $(document).ready(function () {
 
                 if(response && response.data.accessToken) {
                     localStorage.setItem('authToken', response.data.accessToken);
+
+                    console.log('Token saved in localStorage:', localStorage.getItem('authToken'));
+
                     alert('Login successful! Redirecting to your dashboard...');
                 
                     if (response.data.role === 'ADMIN') {

@@ -55,6 +55,28 @@ public class SecurityConfig {
         return http.build();
     }
 
+//    @Bean
+//    public CorsConfigurationSource corsConfigurationSource() {
+//        CorsConfiguration configuration = new CorsConfiguration();
+//
+//        // ඔබේ frontend එක run වෙන URL එකට ඉඩ දෙනවා
+//        configuration.setAllowedOrigins(List.of("http://127.0.0.1:5500"));
+//
+//        // ඉඩ දෙන HTTP Methods
+//        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+//
+//        // Authorization header එකට ඉඩ දීම අත්‍යවශ්‍යයි
+//        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+//
+//        configuration.setAllowCredentials(true);
+//
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        // මේ rules ටික project එකේ සියලුම paths වලට apply කරනවා
+//        source.registerCorsConfiguration("/**", configuration);
+//
+//        return source;
+//    }
+
     private AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider=new DaoAuthenticationProvider();
         provider.setUserDetailsService(userDetailsService);
