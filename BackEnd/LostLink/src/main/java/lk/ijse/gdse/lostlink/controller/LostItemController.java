@@ -1,11 +1,9 @@
 package lk.ijse.gdse.lostlink.controller;
 
-import jakarta.validation.Valid;
 import lk.ijse.gdse.lostlink.dto.LostItemDto;
 import lk.ijse.gdse.lostlink.dto.SecondLostItemDto;
 import lk.ijse.gdse.lostlink.service.LostItemService;
 import lk.ijse.gdse.lostlink.dto.ApiResponse;
-import lk.ijse.gdse.lostlink.service.impl.FileStorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -16,7 +14,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;

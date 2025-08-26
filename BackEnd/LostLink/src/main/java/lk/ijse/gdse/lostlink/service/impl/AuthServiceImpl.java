@@ -1,7 +1,7 @@
 package lk.ijse.gdse.lostlink.service.impl;
 
 import lk.ijse.gdse.lostlink.dto.AuthDto;
-import lk.ijse.gdse.lostlink.dto.AuthResponseDTO;
+import lk.ijse.gdse.lostlink.dto.AuthResponseDto;
 import lk.ijse.gdse.lostlink.dto.RegisterDto;
 import lk.ijse.gdse.lostlink.entity.Role;
 import lk.ijse.gdse.lostlink.entity.User;
@@ -44,7 +44,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public AuthResponseDTO authenticate(AuthDto authDTO) {
+    public AuthResponseDto authenticate(AuthDto authDTO) {
         User user=userRepository.findByUsername(authDTO.getUsername())
                 .orElseThrow(()->new RuntimeException("User not found"));
         // check password
@@ -55,7 +55,7 @@ public class AuthServiceImpl implements AuthService {
         }
         // generate token
         String token=jwtUtil.generateToken(authDTO.getUsername(),user.getRole());
-        return new AuthResponseDTO(token,user.getRole().name());
+        return new AuthResponseDto(token,user.getRole().name());
     }
 
     @Override
