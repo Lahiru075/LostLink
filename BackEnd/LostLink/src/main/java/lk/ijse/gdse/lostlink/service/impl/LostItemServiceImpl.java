@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.lang.reflect.Type;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -79,6 +80,53 @@ public class LostItemServiceImpl implements LostItemService {
         List<SecondLostItemDto> dtoList = modelMapper.map(lostItems, listType);
 
         return dtoList;
+
+    }
+
+    @Override
+    public SecondLostItemDto updateLostItem(Integer itemId, LostItemDto lostItemDto, MultipartFile imageFile, String currentUsername) {
+        LostItem existingLostItem = lostItemRepository.findById(itemId)
+                .orElseThrow(() -> new RuntimeException("Lost Item not found"));
+
+        Category category = categoryRepository.findByCategoryName(lostItemDto.getCategoryName())
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+
+        User user = userRepository.findByUsername(currentUsername)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+
+        if (!existingLostItem.getUser().getUsername().equals(currentUsername)) {
+            throw new RuntimeException("You are not authorized to update this lost item");
+        }
+
+        if (imageFile != null && !imageFile.isEmpty()) {
+            String fileName = fileStorageService.storeFile(imageFile);
+            String pHash = imageHashingService.generatepHash(imageFile);
+            existingLostItem.setImageUrl(fileName);
+            existingLostItem.setImageHash(pHash);
+        }
+
+        existingLostItem.setTitle(lostItemDto.getTitle());
+        existingLostItem.setCategory(category);
+        existingLostItem.setUser(user);
+        existingLostItem.setDescription(lostItemDto.getDescription());
+        existingLostItem.setLatitude(lostItemDto.getLatitude());
+        existingLostItem.setLongitude(lostItemDto.getLongitude());
+        existingLostItem.setLostDate(lostItemDto.getLostDate());
+        existingLostItem.setStatus(lostItemDto.getStatus());
+
+        LostItem updatedLostItem = lostItemRepository.save(existingLostItem);
+
+        return modelMapper.map(updatedLostItem, SecondLostItemDto.class);
+
+    }
+
+    @Override
+    public SecondLostItemDto getLostItem(Integer itemId) {
+        LostItem lostItem = lostItemRepository.findById(itemId)
+                .orElseThrow(() -> new RuntimeException("Lost Item not found"));
+
+        return modelMapper.map(lostItem, SecondLostItemDto.class);
 
     }
 

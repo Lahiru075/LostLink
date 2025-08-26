@@ -245,10 +245,93 @@ $(document).ready(function () {
 
 
 
+    // $('#submitReportBtn').on('click', function () {
+
+    //     const formData = new FormData();
+
+    //     formData.append('title', $('#itemTitle').val());
+    //     formData.append('categoryName', "Electronics");
+    //     formData.append('description', $('#itemDescription').val());
+    //     formData.append('lostDate', $('#lostDate').val());
+    //     formData.append('latitude', $('#latitude').val());
+    //     formData.append('longitude', $('#longitude').val());
+    //     formData.append('status', "ACTIVE");
+
+    //     const imageFile = $('#itemImage')[0].files[0];
+
+    //     if (imageFile) {
+    //         formData.append('image', imageFile);
+    //     } else {
+    //         alert('Please select an image to upload.');
+    //         return; 
+    //     }
+
+
+    //     console.log("Form Data to be sent to backend:");
+    //     for (let [key, value] of formData.entries()) {
+    //         console.log(key, value);
+    //     }
+
+    //     $.ajax({
+    //         url: 'http://localhost:8080/lost_item/save',
+    //         type: 'POST',
+    //         data: formData,
+
+    //          headers: {
+    //             'Authorization': 'Bearer ' + localStorage.getItem('authToken') 
+    //         },
+
+    //         processData: false, 
+    //         contentType: false, 
+
+
+    //         success: function (response) {
+    //             console.log('Success:', response);
+    //             alert(response.message || 'Lost item reported successfully!'); 
+
+    //             closeModal();
+    //             $('#reportItemForm')[0].reset();
+
+    //             const $imagePreview = $('#imagePreview').find('.image-preview-image');
+    //             const $imagePreviewText = $('#imagePreview').find('.image-preview-text');
+    //             $imagePreview.attr('src', '');
+    //             $imagePreview.hide();
+    //             $imagePreviewText.show();
+
+    //             loadLostItems();
+
+    //         },
+    //         error: function (jqXHR, textStatus, errorThrown, error) {
+    //             console.error('Error:', jqXHR.responseText);
+                
+    //             try {
+    //                 const errorResponse = JSON.parse(jqXHR.responseText);
+    //                 alert('Error: ' + (errorResponse.message || 'Something went wrong!'));
+    //             } catch (e) {
+    //                 alert('An unknown error occurred. Please check the console.');
+    //             }
+    //         }
+    //     });
+    // });
+
+
+    // =================================================================
+    // === 4. THE ONE AND ONLY FORM SUBMISSION HANDLER (SAVE & UPDATE) ===
+    // =================================================================
     $('#submitReportBtn').on('click', function () {
 
-        const formData = new FormData();
+        const editItemId = $('#reportItemForm').data('edit-item-id');
+        const isEditMode = !!editItemId;
 
+        // --- 2. Determine the correct URL and HTTP Method ---
+        const ajaxUrl = isEditMode 
+            ? `http://localhost:8080/lost_item/update/${editItemId}` // URL for UPDATE
+            : 'http://localhost:8080/lost_item/save';                 // URL for SAVE
+            
+        const ajaxMethod = isEditMode ? 'PUT' : 'POST';
+
+        // --- 3. Prepare FormData ---
+        const formData = new FormData();
         formData.append('title', $('#itemTitle').val());
         formData.append('categoryName', "Electronics");
         formData.append('description', $('#itemDescription').val());
@@ -257,61 +340,122 @@ $(document).ready(function () {
         formData.append('longitude', $('#longitude').val());
         formData.append('status', "ACTIVE");
 
+        // --- 4. Handle Image (it's optional for updates) ---
         const imageFile = $('#itemImage')[0].files[0];
-
         if (imageFile) {
+            // Only append the image if the user has selected a new one
             formData.append('image', imageFile);
-        } else {
-            alert('Please select an image to upload.');
-            return; 
+        }
+        
+        // If it's a NEW item (not edit mode), the image is required
+        if (!isEditMode && !imageFile) {
+            alert('Please select an image to upload for a new report.');
+            return;
         }
 
+        // --- 5. User Feedback (Disable button, change text) ---
+        const $thisButton = $(this);
+        $thisButton.prop('disabled', true).text(isEditMode ? 'Updating...' : 'Saving...');
 
-        console.log("Form Data to be sent to backend:");
-        for (let [key, value] of formData.entries()) {
-            console.log(key, value);
-        }
-
+        // --- 6. The AJAX Call ---
         $.ajax({
-            url: 'http://localhost:8080/lost_item/save',
-            type: 'POST',
+            url: ajaxUrl,
+            method: ajaxMethod,
             data: formData,
-
-             headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('authToken') 
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('authToken')
             },
-
-            processData: false, 
-            contentType: false, 
-
-
+            processData: false,
+            contentType: false,
             success: function (response) {
-                console.log('Success:', response);
-                alert(response.message || 'Lost item reported successfully!'); 
-
-                closeModal();
-                $('#reportItemForm')[0].reset();
-
-                const $imagePreview = $('#imagePreview').find('.image-preview-image');
-                const $imagePreviewText = $('#imagePreview').find('.image-preview-text');
-                $imagePreview.attr('src', '');
-                $imagePreview.hide();
-                $imagePreviewText.show();
-
-                loadLostItems();
-
-            },
-            error: function (jqXHR, textStatus, errorThrown, error) {
-                console.error('Error:', jqXHR.responseText);
+                const successMessage = isEditMode ? 'Item updated successfully!' : 'Item reported successfully!';
+                alert(response.message || successMessage);
                 
-                try {
-                    const errorResponse = JSON.parse(jqXHR.responseText);
-                    alert('Error: ' + (errorResponse.message || 'Something went wrong!'));
-                } catch (e) {
-                    alert('An unknown error occurred. Please check the console.');
-                }
+                closeModal();
+                loadLostItems();
+            },
+            error: function (jqXHR) {
+                console.error('Error:', jqXHR.responseText);
+                const errorMessage = jqXHR.responseJSON ? jqXHR.responseJSON.message : "An unknown error occurred.";
+                alert(`Error: ${errorMessage}`);
+            },
+            complete: function() {
+
+                $thisButton.prop('disabled', false).text(isEditMode ? 'Update Report' : 'Submit Report');
             }
         });
     });
+
+
+
+
+    // We use event delegation since the buttons are created dynamically
+    $('.items-grid').on('click', '.btn-edit', function() {
+        const itemId = $(this).data('item-id');
+
+        console.log('Calling GET API for item ID', itemId);
+        
+        
+        // 1. Fetch the full details of the specific item from the backend
+        $.ajax({
+            url: `http://localhost:8080/lost_item/get2/${itemId}`, // A NEW endpoint to get a single item
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+            },
+            success: function(response) {
+                // 2. If successful, pre-fill the modal's form with the fetched data
+                if (response && response.data) {
+                    const item = response.data;
+                    $('#itemTitle').val(item.title);
+                    $('#itemCategory').val(item.categoryName); // Assuming your dropdown uses names
+                    $('#itemDescription').val(item.description);
+                    $('#lostDate').val(item.lostDate);
+                    // $('#locationSearch').val(item.locationText || ''); // locationText might not exist, handle it
+                    $('#latitude').val(item.latitude);
+                    $('#longitude').val(item.longitude);
+                
+
+                    console.log(item.categoryName);
+                    
+                    
+                    // Show the current image preview
+                    const imageUrl = `http://localhost:8080/uploads/${item.imageUrl}`;
+                    $('#imagePreview .image-preview-image').attr('src', imageUrl).show();
+                    $('#imagePreview .image-preview-text').hide();
+
+                    // 3. Store the item ID on the form itself, so we know we are in "edit mode"
+                    $('#reportItemForm').data('edit-item-id', itemId);
+                    
+                    // 4. Change modal title and button text to reflect "edit mode"
+                    $('#reportItemModal .modal-header h2').text('Edit Lost Item');
+                    $('#submitReportBtn').text('Update Report');
+
+                    // 5. Finally, open the modal
+                    openModal();
+                }
+            },
+            error: function() {
+                alert('Error: Could not retrieve item details.');
+            }
+        });
+    });
+
+
+
+    
+
+    // Helper function to close modal and reload the page
+    function closeModalAndRefresh() {
+        // Reset form data attribute to exit "edit mode"
+        $reportItemForm.data('edit-item-id', null); 
+        // Reset modal title and button text
+        $('#reportItemModal .modal-header h2').text('Report New Lost Item');
+        $('#submitReportBtn').text('Submit Report');
+        
+        closeModal();
+        location.reload();
+    }
+
 
 });

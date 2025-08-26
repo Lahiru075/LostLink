@@ -36,9 +36,7 @@ public class LostItemController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUsername = authentication.getName();
 
-        lostItemDto.setLostDate(LocalDate.now());
 
-        // Save image using FileStorageService
         MultipartFile imageFile = lostItemDto.getImage();
         if (imageFile != null && !imageFile.isEmpty()) {
             String contentType = imageFile.getContentType();
@@ -63,11 +61,36 @@ public class LostItemController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUsername = authentication.getName();
 
-        // 2. Call the service to get the list of DTOs
         List<SecondLostItemDto> myItems = lostItemService.getLostItemsByUsername(currentUsername);
 
-        // 3. Return the list in a successful response
         return ResponseEntity.ok(new ApiResponse(200, "User's lost items retrieved successfully", myItems));
+    }
+
+    @PutMapping(value = "/update/{itemId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse> updateLostItem(
+
+            @PathVariable Integer itemId,
+
+            @ModelAttribute LostItemDto lostItemDto,
+
+            // 3. The new image is optional, so it might be null
+            @RequestPart(value = "image", required = false) MultipartFile imageFile
+    ) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUsername = authentication.getName();
+
+        System.out.println(lostItemDto.getTitle());
+
+        SecondLostItemDto secondLostItemDto = lostItemService.updateLostItem(itemId, lostItemDto, imageFile, currentUsername);
+
+        return ResponseEntity.ok(new ApiResponse(200, "Lost Item Updated Successfully!", secondLostItemDto));
+    }
+
+    @GetMapping("/get2/{itemId}")
+    public ResponseEntity<ApiResponse> getLostItem(@PathVariable Integer itemId) {
+        SecondLostItemDto lostItem = lostItemService.getLostItem(itemId);
+        return ResponseEntity.ok(new ApiResponse(200, "Lost Item retrieved successfully", lostItem));
     }
 
 }
