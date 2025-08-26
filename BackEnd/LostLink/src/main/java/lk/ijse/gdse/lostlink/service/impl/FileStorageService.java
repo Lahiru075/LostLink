@@ -120,4 +120,24 @@ public class FileStorageService {
             throw new RuntimeException("Could not store file " + originalFileName + ". Please try again!", ex);
         }
     }
+
+    public void deleteFile(String fileName) {
+        try {
+            // Construct the full path to the file
+            Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
+
+            // Check if the file exists before trying to delete it
+            if (Files.exists(filePath)) {
+                Files.delete(filePath);
+                System.out.println("Successfully deleted file: " + fileName); // For logging
+            } else {
+                System.out.println("File to delete was not found: " + fileName); // For logging
+            }
+        } catch (IOException ex) {
+            // It's often better to just log this error and continue,
+            // rather than stopping the whole process if a file can't be deleted.
+            System.err.println("Could not delete file " + fileName + ". Reason: " + ex.getMessage());
+        }
+    }
+
 }

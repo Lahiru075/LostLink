@@ -130,4 +130,19 @@ public class LostItemServiceImpl implements LostItemService {
 
     }
 
+    @Override
+    public void deleteLostItem(Integer itemId, String currentUsername) {
+        LostItem lostItem = lostItemRepository.findById(itemId)
+                .orElseThrow(() -> new RuntimeException("Lost Item not found"));
+
+        if (!lostItem.getUser().getUsername().equals(currentUsername)) {
+            throw new RuntimeException("You are not authorized to delete this lost item");
+        }
+
+        fileStorageService.deleteFile(lostItem.getImageUrl());
+
+        lostItemRepository.delete(lostItem);
+
+    }
+
 }

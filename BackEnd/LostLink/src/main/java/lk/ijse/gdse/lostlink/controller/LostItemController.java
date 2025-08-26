@@ -93,4 +93,14 @@ public class LostItemController {
         return ResponseEntity.ok(new ApiResponse(200, "Lost Item retrieved successfully", lostItem));
     }
 
+    @DeleteMapping("/delete/{itemId}")
+    public ResponseEntity<ApiResponse> deleteLostItem(@PathVariable Integer itemId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUsername = authentication.getName();
+
+        lostItemService.deleteLostItem(itemId, currentUsername);
+        return ResponseEntity.ok(new ApiResponse(200, "Lost Item deleted successfully", null));
+
+    }
+
 }
