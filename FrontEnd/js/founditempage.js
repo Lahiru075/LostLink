@@ -108,6 +108,10 @@ $(document).ready(function () {
     });
 
 
+    const $itemsGrid = $('.items-grid');
+    const authToken = localStorage.getItem('authToken');
+
+
     // =================================================================
     // === 4. THE ONE AND ONLY FORM SUBMISSION HANDLER (SAVE & UPDATE) ===
     // =================================================================
@@ -165,7 +169,7 @@ $(document).ready(function () {
                 alert(response.message || successMessage);
                 
                 closeModal();
-                loadLostItems();
+                loadFoundItems();
             },
             error: function (jqXHR) {
                 console.error('Error:', jqXHR.responseText);
@@ -180,6 +184,113 @@ $(document).ready(function () {
     });
 
 
+   
+
+
+   
+
+    loadFoundItems();
+
+
+    function loadFoundItems() {
+        // First, check if the user is logged in (has a token)
+        if (!authToken) {
+            console.error("Authentication token not found. User might be logged out.");
+            $itemsGrid.html('<p class="error-message">You are not logged in. Please <a href="login.html">login</a> to see your items.</p>');
+            return;
+        }
+
+        // Show a user-friendly loading message
+        $itemsGrid.html('<p class="loading-message">Loading your reported items...</p>');
+
+        $.ajax({
+            
+            url: 'http://localhost:8080/found_item/get',
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + authToken
+            },
+            success: function (response) {
+        
+                $itemsGrid.empty();
+
+                if (response && response.data && Array.isArray(response.data) && response.data.length > 0) {
+                    
+                    $.each(response.data, function (index, item) {
+
+                        console.log(item);
+                        
+                        
+                        const imageUrl = `http://localhost:8080/uploads/${item.imageUrl}`;
+                        
+                        const statusClass = item.status === 'ACTIVE' ? 'status-active' : 'status-recovered';
+                        const statusText = item.status === 'ACTIVE' ? 'Active' : 'Recovered';
+                        
+                        let actionButtonsHtml = '';
+                        if (item.status === 'ACTIVE') {
+                            actionButtonsHtml = `
+                                <button class="action-btn btn-edit" data-item-id="${item.foundItemId}"><i class="fas fa-pencil-alt"></i> Edit</button>
+                                <button class="action-btn btn-delete" data-item-id="${item.foundItemId}"><i class="fas fa-trash-alt"></i> Delete</button>
+                            `;
+                        } else {
+                            actionButtonsHtml = `
+                                <button class="action-btn btn-view-details" data-item-id="${item.foundItemId}"><i class="fas fa-eye"></i> View Details</button>
+                            `;
+                        }
+                        
+                        const cardHtml = `
+                            <div class="item-card">
+                                <div class="card-image">
+                                    <img src="${imageUrl}" alt="${item.title}">
+                                    <span class="status-badge ${statusClass}">${statusText}</span>
+                                </div>
+                                <div class="card-content">
+                                    <h3>${item.title}</h3>
+                                    <p class="item-detail"><i class="fas fa-calendar-alt"></i> Reported on: ${item.foundDate}</p>
+                                    <p class="item-detail"><i class="fas fa-tags"></i> Category: ${item.categoryName}</p>
+                                </div>
+                                <div class="card-actions">
+                                    ${actionButtonsHtml}
+                                </div>
+                            </div>
+                        `;
+                        
+                        // Append the newly created card to the grid container
+                        $itemsGrid.append(cardHtml);
+                    });
+
+                } else {
+                    // If no items are found, display a user-friendly message
+                    $itemsGrid.html('<p class="no-items-message">You haven\'t reported any found items yet. Click "Report New Found Item" to get started!</p>');
+                }
+            },
+            error: function (jqXHR) {
+                console.error('Failed to fetch items:', jqXHR.responseText);
+                // Handle different error types, like 403 Forbidden (token expired)
+                if (jqXHR.status === 403) {
+                     $itemsGrid.html('<p class="error-message">Your session has expired. Please <a href="login.html">login</a> again.</p>');
+                } else {
+                     $itemsGrid.html('<p class="error-message">Could not found your items. Please try refreshing the page.</p>');
+                }
+            }
+        });
+    }
+
+     $itemsGrid.on('click', '.btn-delete', function() {
+        const itemId = $(this).data('item-id');
+        // if (confirm(`Are you sure you want to permanently delete this report?`)) {
+            
+        //     alert(`Calling DELETE API for item ID: ${itemId}`);
+            
+        // }
+    });
+
+    $itemsGrid.on('click', '.btn-edit', function() {
+        const itemId = $(this).data('item-id');
+        
+        // alert(`Calling GET API for item ID ${itemId} to pre-fill the edit form.`);
+    });
+
 
 
     // We use event delegation since the buttons are created dynamically
@@ -191,7 +302,7 @@ $(document).ready(function () {
         
         // 1. Fetch the full details of the specific item from the backend
         $.ajax({
-            url: `http://localhost:8080/lost_item/get2/${itemId}`, // A NEW endpoint to get a single item
+            url: `http://localhost:8080/found_item/get2/${itemId}`, // A NEW endpoint to get a single item
             method: 'GET',
             headers: {
                 'Authorization': 'Bearer ' + localStorage.getItem('authToken')
@@ -233,6 +344,8 @@ $(document).ready(function () {
             }
         });
     });
+    
+
 
 
 });

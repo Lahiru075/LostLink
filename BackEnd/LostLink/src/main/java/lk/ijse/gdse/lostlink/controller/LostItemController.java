@@ -68,18 +68,13 @@ public class LostItemController {
 
             @PathVariable Integer itemId,
 
-            @ModelAttribute LostItemDto lostItemDto,
-
-            // 3. The new image is optional, so it might be null
-            @RequestPart(value = "image", required = false) MultipartFile imageFile
+            @ModelAttribute LostItemDto lostItemDto
     ) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUsername = authentication.getName();
 
-        System.out.println(lostItemDto.getTitle());
-
-        SecondLostItemDto secondLostItemDto = lostItemService.updateLostItem(itemId, lostItemDto, imageFile, currentUsername);
+        SecondLostItemDto secondLostItemDto = lostItemService.updateLostItem(itemId, lostItemDto, currentUsername);
 
         return ResponseEntity.ok(new ApiResponse(200, "Lost Item Updated Successfully!", secondLostItemDto));
     }

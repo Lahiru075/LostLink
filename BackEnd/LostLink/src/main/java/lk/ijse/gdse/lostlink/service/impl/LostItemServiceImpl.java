@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.lang.reflect.Type;
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -84,7 +83,7 @@ public class LostItemServiceImpl implements LostItemService {
     }
 
     @Override
-    public SecondLostItemDto updateLostItem(Integer itemId, LostItemDto lostItemDto, MultipartFile imageFile, String currentUsername) {
+    public SecondLostItemDto updateLostItem(Integer itemId, LostItemDto lostItemDto, String currentUsername) {
         LostItem existingLostItem = lostItemRepository.findById(itemId)
                 .orElseThrow(() -> new RuntimeException("Lost Item not found"));
 
@@ -99,9 +98,9 @@ public class LostItemServiceImpl implements LostItemService {
             throw new RuntimeException("You are not authorized to update this lost item");
         }
 
-        if (imageFile != null && !imageFile.isEmpty()) {
-            String fileName = fileStorageService.storeFile(imageFile);
-            String pHash = imageHashingService.generatepHash(imageFile);
+        if (lostItemDto.getImage() != null && !lostItemDto.getImage().isEmpty()) {
+            String fileName = fileStorageService.storeFile(lostItemDto.getImage());
+            String pHash = imageHashingService.generatepHash(lostItemDto.getImage());
             existingLostItem.setImageUrl(fileName);
             existingLostItem.setImageHash(pHash);
         }

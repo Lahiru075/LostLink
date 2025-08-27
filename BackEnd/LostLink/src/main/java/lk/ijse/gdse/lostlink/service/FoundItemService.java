@@ -1,7 +1,18 @@
 package lk.ijse.gdse.lostlink.service;
 
 import lk.ijse.gdse.lostlink.dto.FoundItemDto;
+import lk.ijse.gdse.lostlink.dto.LostItemDto;
+import lk.ijse.gdse.lostlink.dto.SecondFoundItemDto;
+import lk.ijse.gdse.lostlink.dto.SecondLostItemDto;
+
+import java.util.List;
 
 public interface FoundItemService {
     void saveFoundItem(FoundItemDto foundItemDto, String currentUsername);
+
+    SecondFoundItemDto updateLostItem(Integer itemId, FoundItemDto foundItemDto, String currentUsername);
+
+    List<SecondFoundItemDto> getFoundItemsByUsername(String currentUsername);
+
+    SecondLostItemDto getFoundItem(Integer itemId);
 }

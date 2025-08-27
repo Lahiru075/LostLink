@@ -158,7 +158,6 @@ $(document).ready(function () {
             url: 'http://localhost:8080/lost_item/get',
             method: 'GET',
             headers: {
-                
                 'Authorization': 'Bearer ' + authToken
             },
             success: function (response) {

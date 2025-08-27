@@ -14,7 +14,7 @@ public interface LostItemService {
 
     List<SecondLostItemDto> getLostItemsByUsername(String currentUsername);
 
-    SecondLostItemDto updateLostItem(Integer itemId, LostItemDto lostItemDto, MultipartFile imageFile, String currentUsername);
+    SecondLostItemDto updateLostItem(Integer itemId, LostItemDto lostItemDto, String currentUsername);
 
     SecondLostItemDto getLostItem(Integer itemId);
 
