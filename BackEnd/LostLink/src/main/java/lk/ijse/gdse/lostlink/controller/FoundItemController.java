@@ -40,8 +40,6 @@ public class FoundItemController {
             }
         }
 
-//        foundItemDto.setFoundDate(LocalDate.now());
-
         foundItemService.saveFoundItem(foundItemDto, currentUsername);
 
         Map<String, Object> responseData = new HashMap<>();
@@ -83,6 +81,15 @@ public class FoundItemController {
     public ResponseEntity<ApiResponse> getLostItem(@PathVariable Integer itemId) {
         SecondLostItemDto lostItem = foundItemService.getFoundItem(itemId);
         return ResponseEntity.ok(new ApiResponse(200, "Found items retrieved successfully", lostItem));
+    }
+
+    @DeleteMapping("/delete/{itemId}")
+    public ResponseEntity<ApiResponse> deleteLostItem(@PathVariable Integer itemId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUsername = authentication.getName();
+
+        foundItemService.deleteFoundItem(itemId, currentUsername);
+        return ResponseEntity.ok(new ApiResponse(200, "Found Item deleted successfully", null));
     }
 
 }

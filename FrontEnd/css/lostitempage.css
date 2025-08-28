@@ -534,6 +534,29 @@ ul {
     cursor: pointer;
 }
 
+.loading-message,
+.no-items-message,
+.error-message {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 4rem 2rem;
+    font-size: 1.2rem;
+    color: var(--text-light);
+    font-weight: 500;
+    border: 1px dashed var(--border-color);
+    border-radius: 12px;
+}
+
+.error-message {
+    color: var(--danger-color);
+    background-color: #fef2f2;
+    border-color: #fecaca;
+}
+
+.no-items-message {
+    background-color: #f9fafb;
+}
+
 
 /* Replace the old .suggestions-panel style with this */
 .suggestions-panel {

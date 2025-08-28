@@ -13,6 +13,7 @@ $(document).ready(function () {
 
     function closeModal() {
         $reportItemModal.removeClass('active');
+        clearFormFields();
     }
 
     $addItemBtn.on('click', openModal);
@@ -60,7 +61,7 @@ $(document).ready(function () {
             $suggestionsPanel.empty().hide();
             return;
         }
-        const apiKey = ''; // Replace with your key
+        const apiKey =  ''; // Replace with your key
         const url = `https://api.locationiq.com/v1/autocomplete.php?key=${apiKey}&q=${encodeURIComponent(query)}&limit=5&countrycodes=LK`;
         $.ajax({
             url: url,
@@ -169,6 +170,7 @@ $(document).ready(function () {
                 alert(response.message || successMessage);
                 
                 closeModal();
+                clearFormFields();
                 loadFoundItems();
             },
             error: function (jqXHR) {
@@ -344,7 +346,60 @@ $(document).ready(function () {
             }
         });
     });
-    
+
+
+
+    $('.items-grid').on('click', '.btn-delete', function() {
+
+        const itemId = $(this).data('item-id');
+        const $cardToDelete = $(this).closest('.item-card'); 
+
+        if (confirm(`Are you sure you want to permanently delete this item report? This action cannot be undone.`)) {
+            
+            $.ajax({
+
+                url: `http://localhost:8080/found_item/delete/${itemId}`,
+                method: 'DELETE',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+                },
+                
+                success: function(response) {
+                    console.log('Success:', response);
+                    alert(response.message || 'Item deleted successfully!');
+                    
+                    $cardToDelete.fadeOut(400, function() {
+                        $(this).remove();
+                    });
+                },
+                
+                error: function(jqXHR) {
+                    console.error('Error:', jqXHR.responseText);
+                    const errorMessage = jqXHR.responseJSON ? jqXHR.responseJSON.message : "Could not delete the item.";
+                    alert(`Error: ${errorMessage}`);
+                }
+            });
+        }
+
+    });
+
+
+    function clearFormFields() {
+        $('#itemTitle').val(''); 
+        $('#itemCategory').val(''); 
+        $('#itemDescription').val(''); 
+        $('#lostDate').val(''); 
+        $('#locationSearch').val(''); 
+        $('#latitude').val(''); 
+        $('#longitude').val(''); 
+        $('#imagePreview').val(''); 
+        $("#itemImage").val(""); // file input clear
+        $("#imagePreview .image-preview-image").attr("src", "").hide(); // img tag clear
+        $("#imagePreview .image-preview-text").show(); // text show
+        $('#submitReportBtn').prop('disabled', false).text('Submit');
+
+
+    }
 
 
 

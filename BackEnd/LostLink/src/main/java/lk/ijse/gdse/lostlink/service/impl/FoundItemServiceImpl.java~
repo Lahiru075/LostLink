@@ -126,19 +126,4 @@ public class FoundItemServiceImpl implements FoundItemService {
 
         return modelMapper.map(foundItem, SecondLostItemDto.class);
     }
-
-    @Override
-    public void deleteFoundItem(Integer itemId, String currentUsername) {
-
-        FoundItem foundItem = foundItemRepository.findById(itemId)
-                .orElseThrow(() -> new RuntimeException("Found Item not found"));
-
-        if (!foundItem.getUser().getUsername().equals(currentUsername)) {
-            throw new RuntimeException("You are not authorized to delete this found item");
-        }
-
-        fileStorageService.deleteFile(foundItem.getImageUrl());
-
-        foundItemRepository.delete(foundItem);
-    }
 }

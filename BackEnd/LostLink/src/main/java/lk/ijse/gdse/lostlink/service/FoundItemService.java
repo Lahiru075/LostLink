@@ -15,4 +15,6 @@ public interface FoundItemService {
     List<SecondFoundItemDto> getFoundItemsByUsername(String currentUsername);
 
     SecondLostItemDto getFoundItem(Integer itemId);
+
+    void deleteFoundItem(Integer itemId, String currentUsername);
 }
