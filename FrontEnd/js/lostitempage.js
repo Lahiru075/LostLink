@@ -1,9 +1,6 @@
 
 $(document).ready(function () {
 
-    // =================================================================
-    // === 1. MODAL SCRIPTING (jQuery Version) ===
-    // =================================================================
     const $reportItemModal = $('#reportItemModal'); // Prefix with $ for jQuery objects
     const $addItemBtn = $('.add-item-btn');
     const $closeModalBtn = $('#closeModalBtn');
@@ -26,9 +23,9 @@ $(document).ready(function () {
         }
     });
 
-    // =================================================================
-    // === 2. IMAGE PREVIEW SCRIPTING (jQuery Version) ===
-    // =================================================================
+
+
+
     const $itemImageInput = $('#itemImage');
     const $imagePreviewContainer = $('#imagePreview');
     const $imagePreview = $imagePreviewContainer.find('.image-preview-image');
@@ -47,13 +44,10 @@ $(document).ready(function () {
         }
     });
 
-    // =================================================================
-    // === 3. LOCATIONIQ AUTOCOMPLETE SCRIPTING (jQuery Version) ===
-    // =================================================================
+
     const $searchInput = $('#locationSearch');
     const $suggestionsPanel = $('#suggestionsPanel');
 
-    // Debounce function remains the same (it's pure JavaScript)
     function debounce(func, delay) {
         let timeout;
         return function (...args) {
@@ -67,7 +61,7 @@ $(document).ready(function () {
             $suggestionsPanel.empty().hide();
             return;
         }
-        const apiKey = ''; // Replace with your key
+        const apiKey = ''; 
         const url = `https://api.locationiq.com/v1/autocomplete.php?key=${apiKey}&q=${encodeURIComponent(query)}&limit=5&countrycodes=LK`;
         $.ajax({
             url: url,
@@ -81,7 +75,7 @@ $(document).ready(function () {
         });
     }
 
-    // Function to display suggestions (no changes)
+
     function displaySuggestions(suggestions) {
         if (!suggestions || suggestions.length === 0) {
             $suggestionsPanel.hide();
@@ -104,53 +98,28 @@ $(document).ready(function () {
         $suggestionsPanel.show();
     }
 
-    // Event listener for the input field (no changes)
+
     $searchInput.on('input', debounce(() => getSuggestions($searchInput.val()), 300));
 
-    // Event listener to hide the panel (no changes)
+
     $(document).on('click', function (event) {
         if (!$(event.target).closest('#locationSearch, .suggestions-panel').length) {
             $suggestionsPanel.hide();
         }
     });
 
-
-    // =================================================================
-    // === 4. FORM SUBMISSION (jQuery Version) ===
-    // =================================================================
-    // $('#reportItemForm').on('submit', function (event) {
-    //     event.preventDefault();
-
-    //     // FormData is still the best way to handle files
-    //     const formData = new FormData(this);
-    //     // You can append other fields if needed, but the form automatically includes them if they have a 'name' attribute
-    //     formData.append('latitude', $('#latitude').val());
-    //     formData.append('longitude', $('#longitude').val());
-    //     formData.append('locationText', $('#locationSearch').val());
-
-    //     console.log("Form Data to be sent to backend:");
-    //     for (let [key, value] of formData.entries()) {
-    //         console.log(key, value);
-    //     }
-    //     alert('Form submitted! Check the browser console for the data.');
-
-    //     closeModal();
-    // });
-
     
     const $itemsGrid = $('.items-grid');
     const authToken = localStorage.getItem('authToken');
 
-    // Function to fetch and display lost items
     function loadLostItems() {
-        // First, check if the user is logged in (has a token)
+
         if (!authToken) {
             console.error("Authentication token not found. User might be logged out.");
             $itemsGrid.html('<p class="error-message">You are not logged in. Please <a href="login.html">login</a> to see your items.</p>');
             return;
         }
 
-        // Show a user-friendly loading message
         $itemsGrid.html('<p class="loading-message">Loading your reported items...</p>');
 
         $.ajax({
@@ -207,13 +176,12 @@ $(document).ready(function () {
                     });
 
                 } else {
-                    // If no items are found, display a user-friendly message
                     $itemsGrid.html('<p class="no-items-message">You haven\'t reported any lost items yet. Click "Report New Lost Item" to get started!</p>');
                 }
             },
             error: function (jqXHR) {
                 console.error('Failed to fetch items:', jqXHR.responseText);
-                // Handle different error types, like 403 Forbidden (token expired)
+                
                 if (jqXHR.status === 403) {
                      $itemsGrid.html('<p class="error-message">Your session has expired. Please <a href="login.html">login</a> again.</p>');
                 } else {
@@ -223,41 +191,30 @@ $(document).ready(function () {
         });
     }
 
+    loadLostItems();
+
 
     $itemsGrid.on('click', '.btn-delete', function() {
         const itemId = $(this).data('item-id');
-        // if (confirm(`Are you sure you want to permanently delete this report?`)) {
-            
-        //     alert(`Calling DELETE API for item ID: ${itemId}`);
-            
-        // }
     });
 
     $itemsGrid.on('click', '.btn-edit', function() {
         const itemId = $(this).data('item-id');
         
-        alert(`Calling GET API for item ID ${itemId} to pre-fill the edit form.`);
     });
 
 
-    loadLostItems();
-
-    // =================================================================
-    // === 4. THE ONE AND ONLY FORM SUBMISSION HANDLER (SAVE & UPDATE) ===
-    // =================================================================
     $('#submitReportBtn').on('click', function () {
 
         const editItemId = $('#reportItemForm').data('edit-item-id');
         const isEditMode = !!editItemId;
 
-        // --- 2. Determine the correct URL and HTTP Method ---
         const ajaxUrl = isEditMode 
-            ? `http://localhost:8080/lost_item/update/${editItemId}` // URL for UPDATE
-            : 'http://localhost:8080/lost_item/save';                 // URL for SAVE
+            ? `http://localhost:8080/lost_item/update/${editItemId}` 
+            : 'http://localhost:8080/lost_item/save';                
             
         const ajaxMethod = isEditMode ? 'PUT' : 'POST';
 
-        // --- 3. Prepare FormData ---
         const formData = new FormData();
         formData.append('title', $('#itemTitle').val());
         formData.append('categoryName', "Electronics");
@@ -267,24 +224,21 @@ $(document).ready(function () {
         formData.append('longitude', $('#longitude').val());
         formData.append('status', "ACTIVE");
 
-        // --- 4. Handle Image (it's optional for updates) ---
         const imageFile = $('#itemImage')[0].files[0];
         if (imageFile) {
-            // Only append the image if the user has selected a new one
             formData.append('image', imageFile);
         }
         
-        // If it's a NEW item (not edit mode), the image is required
+
         if (!isEditMode && !imageFile) {
             alert('Please select an image to upload for a new report.');
             return;
         }
 
-        // --- 5. User Feedback (Disable button, change text) ---
         const $thisButton = $(this);
         $thisButton.prop('disabled', true).text(isEditMode ? 'Updating...' : 'Saving...');
 
-        // --- 6. The AJAX Call ---
+
         $.ajax({
             url: ajaxUrl,
             method: ajaxMethod,
@@ -316,23 +270,19 @@ $(document).ready(function () {
 
 
 
-
-    // We use event delegation since the buttons are created dynamically
     $('.items-grid').on('click', '.btn-edit', function() {
         const itemId = $(this).data('item-id');
 
         console.log('Calling GET API for item ID', itemId);
         
         
-        // 1. Fetch the full details of the specific item from the backend
         $.ajax({
-            url: `http://localhost:8080/lost_item/get2/${itemId}`, // A NEW endpoint to get a single item
+            url: `http://localhost:8080/lost_item/get2/${itemId}`, 
             method: 'GET',
             headers: {
                 'Authorization': 'Bearer ' + localStorage.getItem('authToken')
             },
             success: function(response) {
-                // 2. If successful, pre-fill the modal's form with the fetched data
                 if (response && response.data) {
                     const item = response.data;
                     $('#itemTitle').val(item.title);
@@ -347,7 +297,6 @@ $(document).ready(function () {
                     console.log(item.categoryName);
                     
                     
-                    // Show the current image preview
                     const imageUrl = `http://localhost:8080/uploads/${item.imageUrl}`;
                     $('#imagePreview .image-preview-image').attr('src', imageUrl).show();
                     $('#imagePreview .image-preview-text').hide();
@@ -370,11 +319,10 @@ $(document).ready(function () {
     });
 
 
-    // Helper function to close modal and reload the page
     function closeModalAndRefresh() {
-        // Reset form data attribute to exit "edit mode"
+
         $reportItemForm.data('edit-item-id', null); 
-        // Reset modal title and button text
+
         $('#reportItemModal .modal-header h2').text('Report New Lost Item');
         $('#submitReportBtn').text('Submit Report');
         
@@ -433,8 +381,8 @@ $(document).ready(function () {
         $('#longitude').val(''); 
         $('#imagePreview').val(''); 
         $("#itemImage").val(""); // file input clear
-        $("#imagePreview .image-preview-image").attr("src", "").hide(); // img tag clear
-        $("#imagePreview .image-preview-text").show(); // text show
+        $("#imagePreview .image-preview-image").attr("src", "").hide(); 
+        $("#imagePreview .image-preview-text").show(); 
         $('#submitReportBtn').prop('disabled', false).text('Submit');
 
     }

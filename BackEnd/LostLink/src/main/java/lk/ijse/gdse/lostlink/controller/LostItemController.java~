@@ -43,8 +43,10 @@ public class LostItemController {
             }
         }
 
-        lostItemService.saveLostItem(lostItemDto, currentUsername);
+        System.out.println(lostItemDto.getCategoryName());
 
+        lostItemService.saveLostItem(lostItemDto, currentUsername);
+        lostItemDto.setCategoryName("");
 
         Map<String, Object> responseData = new HashMap<>();
         responseData.put("title", lostItemDto.getTitle());

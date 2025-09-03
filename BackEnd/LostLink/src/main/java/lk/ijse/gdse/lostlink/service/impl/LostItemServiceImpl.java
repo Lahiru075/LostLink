@@ -9,6 +9,7 @@ import lk.ijse.gdse.lostlink.repository.CategoryRepository;
 import lk.ijse.gdse.lostlink.repository.LostItemRepository;
 import lk.ijse.gdse.lostlink.repository.UserRepository;
 import lk.ijse.gdse.lostlink.service.LostItemService;
+import lk.ijse.gdse.lostlink.service.MatchingService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -35,6 +36,8 @@ public class LostItemServiceImpl implements LostItemService {
     private FileStorageService fileStorageService;
 
     private final ModelMapper modelMapper;
+
+    private final MatchingService matchingService;
 
     @Override
     public void saveLostItem(LostItemDto lostItemDto,  /*MultipartFile imageFile,*/ String username) {
@@ -63,6 +66,8 @@ public class LostItemServiceImpl implements LostItemService {
         newLostItem.setImageHash(pHash);
 
         lostItemRepository.save(newLostItem);
+
+        matchingService.findMatches(newLostItem);
     }
 
     @Override

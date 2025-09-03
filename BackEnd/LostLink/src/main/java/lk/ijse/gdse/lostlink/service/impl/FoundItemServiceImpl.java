@@ -13,6 +13,7 @@ import lk.ijse.gdse.lostlink.repository.FoundItemRepository;
 import lk.ijse.gdse.lostlink.repository.LostItemRepository;
 import lk.ijse.gdse.lostlink.repository.UserRepository;
 import lk.ijse.gdse.lostlink.service.FoundItemService;
+import lk.ijse.gdse.lostlink.service.MatchingService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -39,6 +40,8 @@ public class FoundItemServiceImpl implements FoundItemService {
 
     private final ModelMapper modelMapper;
 
+    private final MatchingService matchingService;
+
     @Override
     public void saveFoundItem(FoundItemDto foundItemDto, String username) {
         User user = userRepository.findByUsername(username)
@@ -64,6 +67,7 @@ public class FoundItemServiceImpl implements FoundItemService {
         foundItem.setImageHash(pHash);
 
         foundItemRepository.save(foundItem);
+        matchingService.findMatches(foundItem);
     }
 
     @Override
