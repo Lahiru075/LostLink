@@ -19,6 +19,8 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.lang.reflect.Type;
 
 import java.util.List;
@@ -71,6 +73,7 @@ public class FoundItemServiceImpl implements FoundItemService {
     }
 
     @Override
+    @Transactional
     public SecondFoundItemDto updateLostItem(Integer itemId, FoundItemDto foundItemDto, String currentUsername) {
         FoundItem foundItem = foundItemRepository.findById(itemId)
                 .orElseThrow(() -> new RuntimeException("Found Item not found"));
@@ -84,6 +87,8 @@ public class FoundItemServiceImpl implements FoundItemService {
         if (!foundItem.getUser().getUsername().equals(currentUsername)) {
             throw new RuntimeException("You are not authorized to update this found item");
         }
+
+        matchingService.deleteByFoundItem(foundItem);
 
         if (foundItemDto.getImage() != null && !foundItemDto.getImage().isEmpty()) {
             String fileName = fileStorageService.storeFile(foundItemDto.getImage());
@@ -102,6 +107,8 @@ public class FoundItemServiceImpl implements FoundItemService {
         foundItem.setStatus(foundItemDto.getStatus());
 
         foundItemRepository.save(foundItem);
+
+        matchingService.findMatches(foundItem);
 
         return modelMapper.map(foundItem, SecondFoundItemDto.class);
     }
@@ -123,15 +130,16 @@ public class FoundItemServiceImpl implements FoundItemService {
     }
 
     @Override
-    public SecondLostItemDto getFoundItem(Integer itemId) {
+    public SecondFoundItemDto getFoundItem(Integer itemId) {
 
         FoundItem foundItem = foundItemRepository.findById(itemId)
                 .orElseThrow(() -> new RuntimeException("Found Item not found"));
 
-        return modelMapper.map(foundItem, SecondLostItemDto.class);
+        return modelMapper.map(foundItem, SecondFoundItemDto.class);
     }
 
     @Override
+    @Transactional
     public void deleteFoundItem(Integer itemId, String currentUsername) {
 
         FoundItem foundItem = foundItemRepository.findById(itemId)
@@ -140,6 +148,8 @@ public class FoundItemServiceImpl implements FoundItemService {
         if (!foundItem.getUser().getUsername().equals(currentUsername)) {
             throw new RuntimeException("You are not authorized to delete this found item");
         }
+
+        matchingService.deleteByFoundItem(foundItem);
 
         fileStorageService.deleteFile(foundItem.getImageUrl());
 

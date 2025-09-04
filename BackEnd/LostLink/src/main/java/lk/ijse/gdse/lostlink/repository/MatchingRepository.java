@@ -1,5 +1,6 @@
 package lk.ijse.gdse.lostlink.repository;
 
+import lk.ijse.gdse.lostlink.entity.FoundItem;
 import lk.ijse.gdse.lostlink.entity.LostItem;
 import lk.ijse.gdse.lostlink.entity.Match;
 import lk.ijse.gdse.lostlink.entity.User;
@@ -29,4 +30,8 @@ public interface MatchingRepository extends JpaRepository<Match, Integer> {
             nativeQuery = true
     )
     List<Match> findMatchesByFoundItemOwnerUsernameNative(String username);
+
+    void deleteByLostItem(LostItem existingLostItem);
+
+    void deleteByFoundItem(FoundItem foundItem);
 }

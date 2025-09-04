@@ -79,8 +79,8 @@ public class FoundItemController {
 
     @GetMapping("/get2/{itemId}")
     public ResponseEntity<ApiResponse> getLostItem(@PathVariable Integer itemId) {
-        SecondLostItemDto lostItem = foundItemService.getFoundItem(itemId);
-        return ResponseEntity.ok(new ApiResponse(200, "Found items retrieved successfully", lostItem));
+        SecondFoundItemDto foundItem = foundItemService.getFoundItem(itemId);
+        return ResponseEntity.ok(new ApiResponse(200, "Found items retrieved successfully", foundItem));
     }
 
     @DeleteMapping("/delete/{itemId}")

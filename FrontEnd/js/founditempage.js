@@ -272,13 +272,16 @@ $(document).ready(function () {
                 'Authorization': 'Bearer ' + localStorage.getItem('authToken')
             },
             success: function(response) {
+
+                console.log(response);
+                
         
                 if (response && response.data) {
                     const item = response.data;
                     $('#itemTitle').val(item.title);
                     $('#itemCategory').val(item.categoryName); 
                     $('#itemDescription').val(item.description);
-                    $('#lostDate').val(item.lostDate);
+                    $('#foundDate').val(item.foundDate);
                     $('#latitude').val(item.latitude);
                     $('#longitude').val(item.longitude);
                     

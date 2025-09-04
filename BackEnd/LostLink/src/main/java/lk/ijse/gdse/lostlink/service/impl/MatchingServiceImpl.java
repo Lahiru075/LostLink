@@ -204,4 +204,14 @@ public class MatchingServiceImpl implements MatchingService {
 
         return matchDtos;
     }
+
+    @Override
+    public void deleteByLostItem(LostItem existingLostItem) {
+        matchingRepository.deleteByLostItem(existingLostItem);
+    }
+
+    @Override
+    public void deleteByFoundItem(FoundItem foundItem) {
+        matchingRepository.deleteByFoundItem(foundItem);
+    }
 }
