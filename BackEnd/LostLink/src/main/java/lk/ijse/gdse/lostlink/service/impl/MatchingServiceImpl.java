@@ -1,13 +1,21 @@
 package lk.ijse.gdse.lostlink.service.impl;
 
+import lk.ijse.gdse.lostlink.dto.MatchDto;
+import lk.ijse.gdse.lostlink.dto.SecondFoundItemDto;
+import lk.ijse.gdse.lostlink.dto.SecondLostItemDto;
 import lk.ijse.gdse.lostlink.entity.*;
 import lk.ijse.gdse.lostlink.repository.FoundItemRepository;
 import lk.ijse.gdse.lostlink.repository.LostItemRepository;
 import lk.ijse.gdse.lostlink.repository.MatchingRepository;
+import lk.ijse.gdse.lostlink.repository.UserRepository;
 import lk.ijse.gdse.lostlink.service.MatchingService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -16,6 +24,8 @@ public class MatchingServiceImpl implements MatchingService {
     private final MatchingRepository matchingRepository;
     private final FoundItemRepository foundItemRepository;
     private final LostItemRepository lostItemRepository;
+    private final UserRepository userRepository;
+    private final ModelMapper modelMapper;
 
     private static final int MATCH_THRESHOLD = 60;
 
@@ -75,14 +85,20 @@ public class MatchingServiceImpl implements MatchingService {
         // A. Calculate Image Similarity Score (Max 40 points)
         totalScore += calculateImageScore(lostItem.getImageHash(), foundItem.getImageHash());
 
+        System.out.println("Image score: " + totalScore);
+
         // B. Calculate Location Proximity Score (Max 40 points)
         totalScore += calculateLocationScore(
                 lostItem.getLatitude().doubleValue(), lostItem.getLongitude().doubleValue(),
                 foundItem.getLatitude().doubleValue(), foundItem.getLongitude().doubleValue()
         );
 
+        System.out.println("Image score and Location score: " + totalScore);
+
         // C. Calculate Title Keyword Score (Weight: 15 per word)
         totalScore += calculateKeywordScore(lostItem.getTitle(), foundItem.getTitle(), 15);
+
+        System.out.println("Image score, Location score and Title score: " + totalScore);
 
         // D. Calculate Description Keyword Score (Weight: 5 per word)
         totalScore += calculateKeywordScore(lostItem.getDescription(), foundItem.getDescription(), 5);
@@ -106,7 +122,7 @@ public class MatchingServiceImpl implements MatchingService {
 
     private int calculateHammingDistance(String s1, String s2) {
         int distance = 0;
-        for (int i = 0; i < s1.length(); i++) {
+        for (int i = 0; i < s1.length()-1; i++) {
             if (s1.charAt(i) != s2.charAt(i)) {
                 distance++;
             }
@@ -148,5 +164,44 @@ public class MatchingServiceImpl implements MatchingService {
         set1.retainAll(set2); // Keep only the common words in set1
 
         return set1.size() * weight; // Number of common words * weight
+    }
+
+    @Override
+    public List<MatchDto> getLostMatches(String currentUsername) {
+
+        User user = userRepository.findByUsername(currentUsername)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        List<Match> matches = matchingRepository.findMatchesByLostItemOwnerUsernameNative(user.getUsername());
+
+        if (matches.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        Type listType = new TypeToken<List<MatchDto>>() {}.getType();
+
+        List<MatchDto> matchDtos = modelMapper.map(matches, listType);
+
+        return matchDtos;
+
+    }
+
+    @Override
+    public List<MatchDto> getFoundMatches(String currentUsername) {
+
+        User user = userRepository.findByUsername(currentUsername)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        List<Match> matches = matchingRepository.findMatchesByFoundItemOwnerUsernameNative(user.getUsername());
+
+        if (matches.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        Type listType = new TypeToken<List<MatchDto>>() {}.getType();
+
+        List<MatchDto> matchDtos = modelMapper.map(matches, listType);
+
+        return matchDtos;
     }
 }

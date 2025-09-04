@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Matches - LostLink</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../css/matches.css">
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header"><a href="#" class="logo-link"><i class="fas fa-link logo-icon"></i>
+                    <h1 class="logo-text">LostLink</h1>
+                </a></div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="userdashboard.html"><i class="fas fa-house"></i><span>Home</span></a></li>
+                    <li><a href="lostitempage.html"><i class="fas fa-magnifying-glass-minus"></i><span>Lost
+                                Items</span></a></li>
+                    <li><a href="founditempage.html"><i class="fas fa-magnifying-glass-plus"></i><span>Found
+                                Items</span></a></li>
+                    <li><a href="#" class="active"><i class="fas fa-arrows-down-to-line"></i><span>Matches</span></a>
+                    </li>
+                    <li><a href="profile.html"><i class="fas fa-user"></i><span>Profile</span></a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer"><a href="#" class="logout-btn"><i
+                        class="fas fa-right-from-bracket"></i><span>Logout</span></a></div>
+        </aside>
+
+        <!-- Main Content for Unified Matches Page -->
+        <main class="main-content">
+            <header class="page-header">
+                <h1>My Matches</h1>
+                <p>Review all your potential item matches in one place.</p>
+            </header>
+
+            <div class="main-tabs">
+                <button class="main-tab-link active" onclick="openTab(event, 'LostItemMatches')"><i
+                        class="fas fa-arrow-down-up-across-line"></i> Matches for My Lost Items</button>
+                <button class="main-tab-link" onclick="openTab(event, 'FoundItemMatches')"><i
+                        class="fas fa-handshake"></i> Matches for My Found Items</button>
+            </div>
+
+            <!-- Tab Content 1: Lost Item Matches -->
+            <div id="LostItemMatches" class="tab-content active">
+                <nav class="filter-tabs">
+                    <button class="filter-tab-btn active">All</button> <button class="filter-tab-btn">Action
+                        Needed</button> <button class="filter-tab-btn">Request Sent</button> <button
+                        class="filter-tab-btn">Resolved</button>
+                </nav>
+                <div class="matches-list" id="lost-matches-list">
+                    <!-- Lost item matches will be loaded here by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Tab Content 2: Found Item Matches -->
+            <div id="FoundItemMatches" class="tab-content">
+                <nav class="filter-tabs">
+                    <button class="filter-tab-btn active">All</button> <button class="filter-tab-btn">Request
+                        Received</button> <button class="filter-tab-btn">Awaiting Claim</button> <button
+                        class="filter-tab-btn">Resolved</button>
+                </nav>
+                <div class="matches-list" id="found-matches-list">
+                    <!-- Found item matches will be loaded here by JavaScript -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="../js/matches.js"></script>
+
+</body>
+
+</html>
