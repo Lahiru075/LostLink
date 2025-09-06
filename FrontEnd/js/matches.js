@@ -5,6 +5,7 @@ function openTab(event, tabName) {
     $(event.currentTarget).addClass('active');
 }
 
+
 $(document).ready(function () {
     const authToken = localStorage.getItem('authToken');
 
@@ -13,6 +14,67 @@ $(document).ready(function () {
         window.location.href = 'login.html';
         return;
     }
+
+    
+    const $mapViewModal = $('#mapViewModal');
+    const $closeMapModalBtn = $('#closeMapModalBtn');
+    let comparisonMap = null; // Variable to hold the map instance
+
+    // Function to open the map modal
+    function openMapModal() {
+        $mapViewModal.addClass('active');
+    }
+
+    // Function to close the map modal
+    function closeMapModal() {
+        $mapViewModal.removeClass('active');
+    }
+
+    $closeMapModalBtn.on('click', closeMapModal);
+
+    // Event listener for the "View Location on Map" button
+    $('.matches-list').on('click', '.btn-view-location', function() {
+        const $button = $(this);
+        // Get all four coordinates from the button's data attributes
+        const lostLat = $button.data('lost-lat');
+        const lostLng = $button.data('lost-lng');
+        const foundLat = $button.data('found-lat');
+        const foundLng = $button.data('found-lng');
+        
+        openMapModal();
+        
+        // A small timeout to ensure the modal is visible before the map renders
+        setTimeout(function() {
+            // If the map hasn't been created yet, create it
+            if (!comparisonMap) {
+                comparisonMap = L.map('location-comparison-map');
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(comparisonMap);
+            }
+
+            // Clear any old markers/lines from the map
+            comparisonMap.eachLayer(function (layer) {
+                if (layer instanceof L.Marker || layer instanceof L.Polyline) {
+                    comparisonMap.removeLayer(layer);
+                }
+            });
+
+            // Create LatLng objects
+            const lostLatLng = L.latLng(lostLat, lostLng);
+            const foundLatLng = L.latLng(foundLat, foundLng);
+
+            // Add markers for Lost and Found locations
+            L.marker(lostLatLng).addTo(comparisonMap).bindPopup("<b>Your Lost Location</b>").openPopup();
+            L.marker(foundLatLng).addTo(comparisonMap).bindPopup("<b>Matched Found Location</b>");
+
+            // Draw a line between the two points
+            L.polyline([lostLatLng, foundLatLng], {color: 'red'}).addTo(comparisonMap);
+
+            // Automatically zoom and center the map to fit both markers
+            comparisonMap.fitBounds([lostLatLng, foundLatLng], { padding: [50, 50] });
+
+        }, 200);
+    });
+
 
     // --- Function to Load Matches for LOST Items ---
     function loadLostItemMatches() {
@@ -29,6 +91,9 @@ $(document).ready(function () {
                 $listContainer.empty();
                 if (response.data && response.data.length > 0) {
                     $.each(response.data, function (i, match) {
+
+                        console.log(match);
+
                         let footerHtml = '';
                         if (match.status === 'PENDING_ACTION') {
                             footerHtml = `<span class="status-badge status-action">Action Needed</span><div class="action-buttons"><a href="#" class="text-link">Not a Match</a><button class="btn-primary" data-match-id="${match.matchId}">Send Contact Request</button></div>`;
@@ -38,16 +103,59 @@ $(document).ready(function () {
                             footerHtml = `<span class="status-badge">Resolved</span>`;
                         }
 
+
+
                         const cardHtml = `
-                            <div class="match-card">
-                                <div class="card-header"><h3>Potential match for your '${match.lostItemTitle}'</h3></div>
-                                <div class="comparison-view">
-                                    <div class="item-half"><label>Your Lost Item</label><img src="http://localhost:8080/uploads/${match.lostItemImageUrl}" alt="${match.lostItemTitle}"><p class="item-name">${match.lostItemTitle}</p></div>
-                                    <div class="match-indicator"><i class="fas fa-arrows-left-right"></i><span>${match.matchScore}% Match</span></div>
-                                    <div class="item-half"><label>Matched Found Item</label><img src="http://localhost:8080/uploads/${match.foundItemImageUrl}" alt="${match.foundItemTitle}"><p class="item-name">${match.foundItemTitle}</p></div>
+                            <div class="match-card ${match.status === 'REQUEST_SENT' ? 'state-request-received' : ''}">
+                                <div class="card-header">
+                                    <h3>Potential owner for the '${match.foundItemTitle}' you found</h3>
                                 </div>
-                                <div class="match-footer">${footerHtml}</div>
-                            </div>`;
+                                <div class="comparison-view">
+                                    <div class="item-half">
+                                        <label>Item You Found</label>
+                                        <img src="http://localhost:8080/uploads/${match.foundItemImageUrl}" alt="${match.foundItemTitle}">
+                                        <p class="item-name">${match.foundItemTitle}</p>
+                                    </div>
+                                    <div class="match-indicator">
+                                        <i class="fas fa-arrows-left-right"></i>
+                                        <span>${match.matchScore}% Match</span>
+                                    </div>
+                                    <div class="item-half">
+                                        <label>Claimant's Lost Item</label>
+                                        <img src="http://localhost:8080/uploads/${match.lostItemImageUrl}" alt="${match.lostItemTitle}">
+                                        <p class="item-name">${match.lostItemTitle}</p>
+                                    </div>
+                                </div>
+
+                                <!-- ===== මෙන්න අලුතින් එකතු කළ කොටස ===== -->
+                                <div class="location-viewer">
+                                    <button class="btn-view-location" 
+                                            data-lost-lat="${match.lostItemLatitude}" 
+                                            data-lost-lng="${match.lostItemLongitude}"
+                                            data-found-lat="${match.foundItemLatitude}"
+                                            data-found-lng="${match.foundItemLongitude}">
+                                        <i class="fas fa-map-marked-alt"></i> View Locations on Map
+                                    </button>
+                                </div>
+                                <!-- ======================================= -->
+
+                                <div class="match-footer">
+                                    ${footerHtml}
+                                </div>
+                            </div>
+                        `;
+
+
+                        // const cardHtml = `
+                        //     <div class="match-card">
+                        //         <div class="card-header"><h3>Potential match for your '${match.lostItemTitle}'</h3></div>
+                        //         <div class="comparison-view">
+                        //             <div class="item-half"><label>Your Lost Item</label><img src="http://localhost:8080/uploads/${match.lostItemImageUrl}" alt="${match.lostItemTitle}"><p class="item-name">${match.lostItemTitle}</p></div>
+                        //             <div class="match-indicator"><i class="fas fa-arrows-left-right"></i><span>${match.matchScore}% Match</span></div>
+                        //             <div class="item-half"><label>Matched Found Item</label><img src="http://localhost:8080/uploads/${match.foundItemImageUrl}" alt="${match.foundItemTitle}"><p class="item-name">${match.foundItemTitle}</p></div>
+                        //         </div>
+                        //         <div class="match-footer">${footerHtml}</div>
+                        //     </div>`;
                         $listContainer.append(cardHtml);
                     });
                 } else {
@@ -70,6 +178,8 @@ $(document).ready(function () {
                 $listContainer.empty();
                 if (response.data && response.data.length > 0) {
                     $.each(response.data, function (i, match) {
+                        
+
                         let footerHtml = '';
                         if (match.status === 'REQUEST_SENT') { // This means a request was sent TO YOU
                             footerHtml = `<p class="request-info">Someone has claimed this item.</p><div class="action-buttons"><button class="btn-secondary" data-match-id="${match.matchId}">Decline</button><button class="btn-success" data-match-id="${match.matchId}">Accept Request</button></div>`;
@@ -89,6 +199,9 @@ $(document).ready(function () {
                                 </div>
                                 <div class="match-footer">${footerHtml}</div>
                             </div>`;
+
+                        
+
                         $listContainer.append(cardHtml);
                     });
                 } else {

@@ -80,7 +80,7 @@ public class FileStorageService {
     private final Path fileStorageLocation;
 
     public FileStorageService() {
-
+        // Creates a directory named "uploads" in the project's root folder
         this.fileStorageLocation = Paths.get("uploads").toAbsolutePath().normalize();
         try {
             Files.createDirectories(this.fileStorageLocation);
@@ -90,15 +90,16 @@ public class FileStorageService {
     }
 
     public String storeFile(MultipartFile file) {
-
+        // Normalize file name
         String originalFileName = StringUtils.cleanPath(file.getOriginalFilename());
 
         try {
-
+            // Check for invalid characters
             if (originalFileName.contains("..")) {
                 throw new RuntimeException("Sorry! Filename contains invalid path sequence " + originalFileName);
             }
 
+            // Create a unique file name to avoid conflicts
             String fileExtension = "";
             try {
                 fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
@@ -107,12 +108,14 @@ public class FileStorageService {
             }
             String uniqueFileName = UUID.randomUUID().toString() + fileExtension;
 
+
+            // Copy file to the target location (Replacing existing file with the same name)
             Path targetLocation = this.fileStorageLocation.resolve(uniqueFileName);
             try (InputStream inputStream = file.getInputStream()) {
                 Files.copy(inputStream, targetLocation, StandardCopyOption.REPLACE_EXISTING);
             }
 
-            return uniqueFileName;
+            return uniqueFileName; // Return the new, unique file name to be stored in DB
         } catch (IOException ex) {
             throw new RuntimeException("Could not store file " + originalFileName + ". Please try again!", ex);
         }
@@ -120,9 +123,10 @@ public class FileStorageService {
 
     public void deleteFile(String fileName) {
         try {
-
+            // Construct the full path to the file
             Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
 
+            // Check if the file exists before trying to delete it
             if (Files.exists(filePath)) {
                 Files.delete(filePath);
                 System.out.println("Successfully deleted file: " + fileName); // For logging
@@ -130,7 +134,8 @@ public class FileStorageService {
                 System.out.println("File to delete was not found: " + fileName); // For logging
             }
         } catch (IOException ex) {
-
+            // It's often better to just log this error and continue,
+            // rather than stopping the whole process if a file can't be deleted.
             System.err.println("Could not delete file " + fileName + ". Reason: " + ex.getMessage());
         }
     }

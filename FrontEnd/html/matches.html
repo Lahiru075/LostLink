@@ -7,6 +7,7 @@
     <title>My Matches - LostLink</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="../css/matches.css">
 </head>
 
@@ -73,6 +74,20 @@
         </main>
     </div>
 
+    <div class="modal-overlay" id="mapViewModal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h2>Location Comparison</h2>
+                <button class="close-modal-btn" id="closeMapModalBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- The Leaflet map will be rendered here -->
+                <div id="location-comparison-map"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="../js/matches.js"></script>
 

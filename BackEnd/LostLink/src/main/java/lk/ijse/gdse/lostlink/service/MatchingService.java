@@ -11,8 +11,6 @@ public interface MatchingService {
     void findMatches(FoundItem newFoundItem);
     List<MatchDto> getLostMatches(String currentUsername);
     List<MatchDto> getFoundMatches(String currentUsername);
-
     void deleteByLostItem(LostItem existingLostItem);
-
     void deleteByFoundItem(FoundItem foundItem);
 }

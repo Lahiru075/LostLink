@@ -1,8 +1,6 @@
 package lk.ijse.gdse.lostlink.service.impl;
 
 import lk.ijse.gdse.lostlink.dto.MatchDto;
-import lk.ijse.gdse.lostlink.dto.SecondFoundItemDto;
-import lk.ijse.gdse.lostlink.dto.SecondLostItemDto;
 import lk.ijse.gdse.lostlink.entity.*;
 import lk.ijse.gdse.lostlink.repository.FoundItemRepository;
 import lk.ijse.gdse.lostlink.repository.LostItemRepository;
@@ -92,17 +90,14 @@ public class MatchingServiceImpl implements MatchingService {
         }
     }
 
-    // ... (inside MatchingService class) ...
 
     private int calculateMatchScore(LostItem lostItem, FoundItem foundItem) {
         int totalScore = 0;
 
-        // A. Calculate Image Similarity Score (Max 40 points)
         totalScore += calculateImageScore(lostItem.getImageHash(), foundItem.getImageHash());
 
         System.out.println("Image score: " + totalScore);
 
-        // B. Calculate Location Proximity Score (Max 40 points)
         totalScore += calculateLocationScore(
                 lostItem.getLatitude().doubleValue(), lostItem.getLongitude().doubleValue(),
                 foundItem.getLatitude().doubleValue(), foundItem.getLongitude().doubleValue()
@@ -110,28 +105,31 @@ public class MatchingServiceImpl implements MatchingService {
 
         System.out.println("Image score and Location score: " + totalScore);
 
-        // C. Calculate Title Keyword Score (Weight: 15 per word)
-        totalScore += calculateKeywordScore(lostItem.getTitle(), foundItem.getTitle(), 15);
+        int titleScore = calculateKeywordScore(lostItem.getTitle(), foundItem.getTitle(), 15);
+
+        totalScore += Math.min(titleScore, 15);
 
         System.out.println("Image score, Location score and Title score: " + totalScore);
 
-        // D. Calculate Description Keyword Score (Weight: 5 per word)
-        totalScore += calculateKeywordScore(lostItem.getDescription(), foundItem.getDescription(), 5);
+//        totalScore += calculateKeywordScore(lostItem.getDescription(), foundItem.getDescription(), 5);
+
+        int descriptionScore = calculateKeywordScore(lostItem.getDescription(), foundItem.getDescription(), 5);
+
+        totalScore += Math.min(descriptionScore, 5);
+
+        System.out.println("Image score, Location score, Title score and Description score: " + totalScore);
 
         return totalScore;
     }
 
-    // --- Helper Method for Image Score ---
     private int calculateImageScore(String pHash1, String pHash2) {
         if (pHash1 == null || pHash2 == null) return 0;
 
-        // Hamming distance calculates how different the two hashes are.
         int distance = calculateHammingDistance(pHash1, pHash2);
 
-        // Lower distance means more similar images, so higher score.
-        if (distance <= 4) return 40; // Almost identical
-        if (distance <= 8) return 25; // Very similar
-        if (distance <= 12) return 10; // Somewhat similar
+        if (distance <= 4) return 30;
+        if (distance <= 8) return 20;
+        if (distance <= 12) return 10;
         return 0;
     }
 
@@ -145,17 +143,15 @@ public class MatchingServiceImpl implements MatchingService {
         return distance;
     }
 
-    // --- Helper Method for Location Score ---
     private int calculateLocationScore(double lat1, double lon1, double lat2, double lon2) {
         double distanceKm = calculateDistanceInKm(lat1, lon1, lat2, lon2);
 
-        if (distanceKm <= 1) return 40;  // Very close
-        if (distanceKm <= 5) return 25;  // Nearby
-        if (distanceKm <= 15) return 10; // In the same general area
+        if (distanceKm <= 1) return 50;
+        if (distanceKm <= 5) return 30;
+        if (distanceKm <= 15) return 10;
         return 0;
     }
 
-    // Haversine formula to calculate distance between two lat/lon points
     private double calculateDistanceInKm(double lat1, double lon1, double lat2, double lon2) {
         final int R = 6371; // Radius of the earth in km
         double latDistance = Math.toRadians(lat2 - lat1);
@@ -167,9 +163,7 @@ public class MatchingServiceImpl implements MatchingService {
         return R * c;
     }
 
-    // --- Helper Method for Keyword Score ---
     private int calculateKeywordScore(String text1, String text2, int weight) {
-        // Simple split by space, in a real app you would remove stop words
         String[] words1 = text1.toLowerCase().split("\\s+");
         String[] words2 = text2.toLowerCase().split("\\s+");
 
@@ -178,8 +172,30 @@ public class MatchingServiceImpl implements MatchingService {
 
         set1.retainAll(set2); // Keep only the common words in set1
 
-        return set1.size() * weight; // Number of common words * weight
+        return set1.size() * weight;
     }
+
+//    private int calculateKeywordScore(String text1, String text2, int maxScore) {
+//        String[] words1 = text1.toLowerCase().split("\\s+");
+//        String[] words2 = text2.toLowerCase().split("\\s+");
+//
+//        java.util.Set<String> set1 = new java.util.HashSet<>(java.util.Arrays.asList(words1));
+//        java.util.Set<String> set2 = new java.util.HashSet<>(java.util.Arrays.asList(words2));
+//
+//        java.util.Set<String> totalWordsSet = new java.util.HashSet<>(set1);
+//        totalWordsSet.addAll(set2);
+//        int totalWords = totalWordsSet.size();
+//
+//        if (totalWords == 0) return 0;
+//
+//        // Find the number of common words
+//        set1.retainAll(set2);
+//        int commonWords = set1.size();
+//
+//        double matchPercentage = (double) commonWords / totalWords;
+//
+//        return (int) (matchPercentage * maxScore);
+//    }
 
     @Override
     public List<MatchDto> getLostMatches(String currentUsername) {

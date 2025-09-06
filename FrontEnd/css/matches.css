@@ -362,13 +362,106 @@ ul {
 .btn-primary:hover { background-color: var(--primary-dark); transform: translateY(-2px); }
 
 
+.modal-header {
+    display: flex;
+    justify-content: space-between; /* This pushes items to opposite ends */
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-header h2 {
+    font-size: 1.5rem;
+    color: var(--text-color);
+}
+
+.close-modal-btn {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    line-height: 1; /* Aligns the '×' vertically */
+    cursor: pointer;
+    color: var(--text-light);
+    padding: 0.25rem 0.5rem; /* Makes it easier to click */
+    transition: color 0.3s, transform 0.3s;
+}
+
+.close-modal-btn:hover {
+    color: var(--danger-color); /* Changes color to red on hover */
+    transform: scale(1.2); /* Makes it slightly bigger on hover */
+}
 
 
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    
+    /* --- CRITICAL PART --- */
+    opacity: 0; /* Hidden by default */
+    pointer-events: none; /* Not clickable by default */
+    transition: opacity 0.3s ease;
+}
+
+/* This rule makes the modal VISIBLE when the 'active' class is added */
+.modal-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.modal-content {
+    background-color: var(--white-color);
+    border-radius: 12px;
+    width: 90%;
+    max-width: 800px; /* For the larger map modal */
+    transform: scale(0.95);
+    transition: transform 0.3s ease;
+}
+
+.modal-overlay.active .modal-content {
+    transform: scale(1);
+}
 
 
+.location-viewer {
+    padding: 0 1.5rem 1.5rem 1.5rem; /* Add padding below the comparison view */
+    text-align: center;
+}
 
+.btn-view-location {
+    background-color: var(--grey-light);
+    color: var(--text-color);
+    border: 1px solid #e5e7eb;
+    padding: 0.7rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    transition: all 0.3s ease;
+}
+.btn-view-location:hover {
+    background-color: #e5e7eb;
+    color: var(--primary-color);
+}
 
-
+/* Styles for the new Map Modal */
+.modal-lg {
+    max-width: 800px; /* A larger modal for the map */
+}
+#location-comparison-map {
+    height: 500px; /* A good height for the map */
+    width: 100%;
+    border-radius: 8px;
+}
 
 
 .btn-primary,

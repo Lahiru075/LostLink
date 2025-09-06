@@ -81,7 +81,6 @@ public class LostItemServiceImpl implements LostItemService {
 
         Type listType = new TypeToken<List<SecondLostItemDto>>() {}.getType();
 
-        // 4. Now, we pass this specific type to the map method
         List<SecondLostItemDto> dtoList = modelMapper.map(lostItems, listType);
 
         return dtoList;
