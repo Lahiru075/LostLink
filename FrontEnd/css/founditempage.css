@@ -567,24 +567,32 @@ ul {
 }
 
 /* Replace the old .suggestions-panel style with this */
+#map-container {
+    height: 300px;         /* Defines the height of the map */
+    width: 100%;           /* Makes the map responsive to the modal's width */
+    margin-top: 3rem;    /* Adds some space above the map */
+    border-radius: 12px;   /* Gives the map nice rounded corners */
+    border: 1px solid #e5e7eb; /* A subtle border to match your other inputs */
+    z-index: 100;          /* Ensures the map is on a lower layer than the suggestions panel */
+}
+
 .suggestions-panel {
     display: none;
-    /* Hidden by default */
-    position: relative;
-    top: 100%;
-    /* Position it right below the input field's parent */
+    position: absolute; /* IMPORTANT: This should be absolute */
+    width: 100%;       /* Make it take the full width of the parent */
+    /* top: 85px;         Adjust this value to position it correctly below the input */
     left: 0;
-    right: 0;
     background-color: var(--white-color);
     border: 1px solid #e5e7eb;
     border-radius: 8px;
     max-height: 200px;
     overflow-y: auto;
-    z-index: 1002;
-    /* Must be on top of EVERYTHING */
+    z-index: 1002;     /* CRITICAL: Must have a higher z-index than the map */
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    margin-top: 5px;
-    /* Small space between input and panel */
+}
+
+.form-group {
+    position: relative; /* Add this if it's not already there */
 }
 
 .suggestion-item {

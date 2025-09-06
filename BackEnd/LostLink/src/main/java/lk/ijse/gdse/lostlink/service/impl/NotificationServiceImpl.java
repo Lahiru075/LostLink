@@ -1,0 +1,32 @@
+package lk.ijse.gdse.lostlink.service.impl;
+
+import lk.ijse.gdse.lostlink.entity.Notification;
+import lk.ijse.gdse.lostlink.entity.User;
+import lk.ijse.gdse.lostlink.repository.NotificationRepository;
+import lk.ijse.gdse.lostlink.service.NotificationService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+public class NotificationServiceImpl implements NotificationService {
+
+    private final NotificationRepository notificationRepository;
+
+    @Override
+    public void createNotification(User userToNotify, String message, String targetType, Long targetId) {
+        Notification notification = new Notification();
+        notification.setUser(userToNotify);
+        notification.setMessage(message);
+        notification.setTargetType(targetType);
+        notification.setTargetId(targetId);
+        notification.setRead(false);
+
+        notificationRepository.save(notification);
+    }
+
+    @Override
+    public Long getUnreadNotificationCount(String currentUsername) {
+        return notificationRepository.countByUser_UsernameAndIsReadFalse(currentUsername);
+    }
+}

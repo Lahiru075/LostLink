@@ -39,10 +39,9 @@ public class Notification {
     )
     private String message;
     @Column(name = "is_read",
-            nullable = false,
-            columnDefinition = "BOOLEAN"
+            nullable = false
     )
-    private boolean isRead = false;
+    private Boolean isRead = false;
     @Column(
             name = "target_type",
             nullable = false

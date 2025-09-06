@@ -55,7 +55,7 @@ public class MatchingServiceImpl implements MatchingService {
                 String message = "We found a potential match for your '" + newMatch.getLostItem().getTitle() + "'!";
                 notificationService.createNotification(
                         foundItem.getUser(),
-                        message, "MATCH",
+                        message, "Match",
                         newMatch.getMatchId()
                 );
             }

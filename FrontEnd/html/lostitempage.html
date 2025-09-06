@@ -8,6 +8,7 @@
     <title>My Lost Items - LostLink</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="../css/lostitempage.css">
 </head>
 
@@ -52,31 +53,7 @@
                     </select></div>
             </div>
             <div class="items-grid">
-                <!-- <div class="item-card">
-                    <div class="card-image"><img
-                            src="https://images.unsplash.com/photo-1594223274512-ad4803739b7c?w=600"
-                            alt="Lost Wallet"><span class="status-badge status-active">Active</span></div>
-                    <div class="card-content">
-                        <h3>Black Leather Wallet</h3>
-                        <p class="item-detail"><i class="fas fa-calendar-alt"></i> Reported on: 2024-08-15</p>
-                        <p class="item-detail"><i class="fas fa-map-marker-alt"></i> Lost near: Liberty Plaza</p>
-                    </div>
-                    <div class="card-actions"><button class="action-btn btn-edit"><i class="fas fa-pencil-alt"></i>
-                            Edit</button><button class="action-btn btn-delete"><i class="fas fa-trash-alt"></i>
-                            Delete</button></div>
-                </div>
-                <div class="item-card">
-                    <div class="card-image"><img
-                            src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600"
-                            alt="Headphones"><span class="status-badge status-recovered">Recovered</span></div>
-                    <div class="card-content">
-                        <h3>Sony WH-1000XM4</h3>
-                        <p class="item-detail"><i class="fas fa-calendar-alt"></i> Reported on: 2024-07-20</p>
-                        <p class="item-detail"><i class="fas fa-map-marker-alt"></i> Lost in: Wellawatte</p>
-                    </div>
-                    <div class="card-actions"><button class="action-btn btn-view-details"><i class="fas fa-eye"></i>
-                            View Details</button></div>
-                </div> -->
+               
             </div>
         </main>
     </div>
@@ -122,7 +99,7 @@
 
                         <div class="suggestions-panel" id="suggestionsPanel"></div>
 
-                        <div id="map-container"></div> <!-- This can be removed if you are not using a map -->
+                        <div id="map-container"></div>
 
                         <!-- Hidden fields to store coordinates -->
                         <input type="hidden" id="latitude" name="latitude">
@@ -137,6 +114,7 @@
         </div>
     </div>
 
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="../js/lostitempage.js"></script>
 

@@ -4,74 +4,108 @@ $(document).ready(function () {
     const $addItemBtn = $('.add-item-btn');
     const $closeModalBtn = $('#closeModalBtn');
     const $cancelBtn = $('#cancelBtn');
+    
+    // Global variables for the map and marker, initialized to null
+    let map = null;
+    let marker = null;
 
+    // =================================================================
+    // === 2. MODAL CONTROLS (Updated to initialize map on open) ===
+    // =================================================================
     function openModal() {
         $reportItemModal.addClass('active');
+        // A small timeout to allow the modal animation to finish before rendering the map
+        setTimeout(function() {
+            // Initialize map with a default location (e.g., Colombo)
+            initializeOrUpdateMap(6.9271, 79.8612, 12);
+        }, 100); 
     }
 
     function closeModal() {
         $reportItemModal.removeClass('active');
-        clearFormFields();
     }
 
     $addItemBtn.on('click', openModal);
     $closeModalBtn.on('click', closeModal);
     $cancelBtn.on('click', closeModal);
+    $(window).on('click', function (event) {
+        if ($(event.target).is($reportItemModal)) {
+            closeModal();
+        }
+    });
 
+    // =================================================================
+    // === 3. IMAGE PREVIEW SCRIPTING (No changes needed) ===
+    // =================================================================
     const $itemImageInput = $('#itemImage');
     const $imagePreviewContainer = $('#imagePreview');
     const $imagePreview = $imagePreviewContainer.find('.image-preview-image');
     const $imagePreviewText = $imagePreviewContainer.find('.image-preview-text');
-
     $itemImageInput.on('change', function () {
         const file = this.files[0];
         if (file) {
             const reader = new FileReader();
             $imagePreviewText.hide();
             $imagePreview.show();
-            $(reader).on('load', function () {
-                $imagePreview.attr('src', this.result);
-            });
+            $(reader).on('load', function () { $imagePreview.attr('src', this.result); });
             reader.readAsDataURL(file);
         }
     });
 
+    // =================================================================
+    // === 4. LEAFLET MAP & LOCATIONIQ SCRIPTING (THE CORE LOGIC) ===
+    // =================================================================
     const $searchInput = $('#locationSearch');
     const $suggestionsPanel = $('#suggestionsPanel');
 
+    // This new function creates the map if it doesn't exist, or updates it if it does.
+    function initializeOrUpdateMap(lat, lng, zoom = 13) {
+        if (!map) { // If map hasn't been created yet
+            map = L.map('map-container').setView([lat, lng], zoom);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
+            marker = L.marker([lat, lng], { draggable: true }).addTo(map);
 
-    function debounce(func, delay) {
-        let timeout;
-        return function (...args) {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => func.apply(this, args), delay);
-        };
+            // Add event listeners ONLY when the map is first created
+            map.on('click', function(e) {
+                marker.setLatLng(e.latlng);
+                updateCoordinates(e.latlng.lat, e.latlng.lng);
+            });
+            marker.on('dragend', function() {
+                const newLatLng = marker.getLatLng();
+                updateCoordinates(newLatLng.lat, newLatLng.lng);
+            });
+        } else { // If map already exists, just move its view and marker
+            map.setView([lat, lng], zoom);
+            marker.setLatLng([lat, lng]);
+        }
+        updateCoordinates(lat, lng);
+    }
+    
+    // New helper function to update hidden lat/lng fields
+    function updateCoordinates(lat, lng) {
+        $('#latitude').val(lat);
+        $('#longitude').val(lng);
     }
 
+    // --- LocationIQ Autocomplete Logic (now connected to the map) ---
+    function debounce(func, delay) { let timeout; return function(...args) { clearTimeout(timeout); timeout = setTimeout(() => func.apply(this, args), delay); }; }
+
     function getSuggestions(query) {
-        if (query.length < 3) {
-            $suggestionsPanel.empty().hide();
-            return;
-        }
-        const apiKey =  ''; 
+        if (query.length < 3) { $suggestionsPanel.empty().hide(); return; }
+        const apiKey = ''; 
         const url = `https://api.locationiq.com/v1/autocomplete.php?key=${apiKey}&q=${encodeURIComponent(query)}&limit=5&countrycodes=LK`;
         $.ajax({
-            url: url,
-            method: 'GET',
-            success: function (data) {
-                displaySuggestions(data);
-            },
-            error: function (err) {
-                console.error('Failed to fetch suggestions:', err);
-            }
+            url: url, method: 'GET',
+            success: function (data) { displaySuggestions(data); },
+            error: function (err) { console.error('Failed to fetch suggestions:', err); }
         });
     }
 
+    // This function is now UPDATED to call the map function
     function displaySuggestions(suggestions) {
-        if (!suggestions || suggestions.length === 0) {
-            $suggestionsPanel.hide();
-            return;
-        }
+        if (!suggestions || suggestions.length === 0) { $suggestionsPanel.hide(); return; }
         $suggestionsPanel.empty();
         $.each(suggestions, function (index, place) {
             const $suggestionDiv = $('<div>').addClass('suggestion-item')
@@ -79,9 +113,11 @@ $(document).ready(function () {
 
             $suggestionDiv.on('click', function () {
                 $searchInput.val(place.display_name);
-                $('#latitude').val(place.lat);
-                $('#longitude').val(place.lon);
                 $suggestionsPanel.empty().hide();
+                
+                // === THIS IS THE INTEGRATION POINT ===
+                // When a suggestion is clicked, we tell our map to update
+                initializeOrUpdateMap(parseFloat(place.lat), parseFloat(place.lon), 15);
             });
 
             $suggestionsPanel.append($suggestionDiv);
@@ -89,14 +125,110 @@ $(document).ready(function () {
         $suggestionsPanel.show();
     }
 
-
     $searchInput.on('input', debounce(() => getSuggestions($searchInput.val()), 300));
-
     $(document).on('click', function (event) {
         if (!$(event.target).closest('#locationSearch, .suggestions-panel').length) {
             $suggestionsPanel.hide();
         }
     });
+
+    // const $reportItemModal = $('#reportItemModal');
+    // const $addItemBtn = $('.add-item-btn');
+    // const $closeModalBtn = $('#closeModalBtn');
+    // const $cancelBtn = $('#cancelBtn');
+
+    // function openModal() {
+    //     $reportItemModal.addClass('active');
+    // }
+
+    // function closeModal() {
+    //     $reportItemModal.removeClass('active');
+    //     clearFormFields();
+    // }
+
+    // $addItemBtn.on('click', openModal);
+    // $closeModalBtn.on('click', closeModal);
+    // $cancelBtn.on('click', closeModal);
+
+    // const $itemImageInput = $('#itemImage');
+    // const $imagePreviewContainer = $('#imagePreview');
+    // const $imagePreview = $imagePreviewContainer.find('.image-preview-image');
+    // const $imagePreviewText = $imagePreviewContainer.find('.image-preview-text');
+
+    // $itemImageInput.on('change', function () {
+    //     const file = this.files[0];
+    //     if (file) {
+    //         const reader = new FileReader();
+    //         $imagePreviewText.hide();
+    //         $imagePreview.show();
+    //         $(reader).on('load', function () {
+    //             $imagePreview.attr('src', this.result);
+    //         });
+    //         reader.readAsDataURL(file);
+    //     }
+    // });
+
+    // const $searchInput = $('#locationSearch');
+    // const $suggestionsPanel = $('#suggestionsPanel');
+
+
+    // function debounce(func, delay) {
+    //     let timeout;
+    //     return function (...args) {
+    //         clearTimeout(timeout);
+    //         timeout = setTimeout(() => func.apply(this, args), delay);
+    //     };
+    // }
+
+    // function getSuggestions(query) {
+    //     if (query.length < 3) {
+    //         $suggestionsPanel.empty().hide();
+    //         return;
+    //     }
+    //     const apiKey =  'pk.a95efca3c4d0ef92f09d20299a4bb659'; 
+    //     const url = `https://api.locationiq.com/v1/autocomplete.php?key=${apiKey}&q=${encodeURIComponent(query)}&limit=5&countrycodes=LK`;
+    //     $.ajax({
+    //         url: url,
+    //         method: 'GET',
+    //         success: function (data) {
+    //             displaySuggestions(data);
+    //         },
+    //         error: function (err) {
+    //             console.error('Failed to fetch suggestions:', err);
+    //         }
+    //     });
+    // }
+
+    // function displaySuggestions(suggestions) {
+    //     if (!suggestions || suggestions.length === 0) {
+    //         $suggestionsPanel.hide();
+    //         return;
+    //     }
+    //     $suggestionsPanel.empty();
+    //     $.each(suggestions, function (index, place) {
+    //         const $suggestionDiv = $('<div>').addClass('suggestion-item')
+    //             .html(`<i class="fas fa-map-marker-alt"></i> ${place.display_name}`);
+
+    //         $suggestionDiv.on('click', function () {
+    //             $searchInput.val(place.display_name);
+    //             $('#latitude').val(place.lat);
+    //             $('#longitude').val(place.lon);
+    //             $suggestionsPanel.empty().hide();
+    //         });
+
+    //         $suggestionsPanel.append($suggestionDiv);
+    //     });
+    //     $suggestionsPanel.show();
+    // }
+
+
+    // $searchInput.on('input', debounce(() => getSuggestions($searchInput.val()), 300));
+
+    // $(document).on('click', function (event) {
+    //     if (!$(event.target).closest('#locationSearch, .suggestions-panel').length) {
+    //         $suggestionsPanel.hide();
+    //     }
+    // });
 
 
     const $itemsGrid = $('.items-grid');
