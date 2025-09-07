@@ -1,5 +1,6 @@
 package lk.ijse.gdse.lostlink.service.impl;
 
+import lk.ijse.gdse.lostlink.entity.LostItem;
 import lk.ijse.gdse.lostlink.entity.Notification;
 import lk.ijse.gdse.lostlink.entity.User;
 import lk.ijse.gdse.lostlink.repository.NotificationRepository;
@@ -29,4 +30,11 @@ public class NotificationServiceImpl implements NotificationService {
     public Long getUnreadNotificationCount(String currentUsername) {
         return notificationRepository.countByUser_UsernameAndIsReadFalse(currentUsername);
     }
+
+    @Override
+    public void deleteByTargetTypeAndTargetId(String match, Long matchId) {
+        notificationRepository.deleteByTargetTypeAndTargetId(match, matchId);
+    }
+
+
 }

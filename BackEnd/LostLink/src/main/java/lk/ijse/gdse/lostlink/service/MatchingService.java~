@@ -12,9 +12,12 @@ public interface MatchingService {
     void findMatches(FoundItem newFoundItem);
     List<MatchDto> getLostMatches(String currentUsername);
     List<MatchDto> getFoundMatches(String currentUsername);
-    void deleteAllMatchesAndRelatedNotificationsForLostItem(LostItem lostItem);
+    void deleteByLostItem(LostItem existingLostItem);
+    void deleteByFoundItem(FoundItem foundItem);
+
+    void deleteAllMatchesAndRelatedNotificationsForItem(LostItem lostItem);
+
     List<Match> findAllByLostItem(LostItem existingLostItem);
+
     void deleteAll(List<Match> matchesToDelete);
-    List<Match> findAllByFoundItem(FoundItem foundItem);
-    void deleteAllMatchesAndRelatedNotificationsForFoundItem(FoundItem foundItem);
 }

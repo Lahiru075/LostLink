@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -237,12 +238,46 @@ public class MatchingServiceImpl implements MatchingService {
     }
 
     @Override
-    public void deleteByLostItem(LostItem existingLostItem) {
-        matchingRepository.deleteByLostItem(existingLostItem);
+    @Transactional
+    public void deleteAllMatchesAndRelatedNotificationsForLostItem(LostItem lostItem) {
+        // 1. Find all matches associated with this specific lost item
+        List<Match> associatedMatches = matchingRepository.findAllByLostItem(lostItem);
+
+        for (Match match : associatedMatches) {
+            // 2. For each match, delete all notifications that point TO THAT MATCH
+            notificationService.deleteByTargetTypeAndTargetId("MATCH", match.getMatchId());
+        }
+
+        // 3. After clearing the notifications, delete all the match records
+        matchingRepository.deleteAll(associatedMatches);
     }
 
     @Override
-    public void deleteByFoundItem(FoundItem foundItem) {
-        matchingRepository.deleteByFoundItem(foundItem);
+    public List<Match> findAllByLostItem(LostItem existingLostItem) {
+        return matchingRepository.findAllByLostItem(existingLostItem);
+    }
+
+    @Override
+    public void deleteAll(List<Match> matchesToDelete) {
+        matchingRepository.deleteAll(matchesToDelete);
+    }
+
+    @Override
+    public List<Match> findAllByFoundItem(FoundItem foundItem) {
+        return matchingRepository.findAllByFoundItem(foundItem);
+    }
+
+    @Override
+    public void deleteAllMatchesAndRelatedNotificationsForFoundItem(FoundItem foundItem) {
+        // 1. Find all matches associated with this specific found item
+        List<Match> associatedMatches = matchingRepository.findAllByFoundItem(foundItem);
+
+        for (Match match : associatedMatches) {
+            // 2. For each match, delete all notifications that point TO THAT MATCH
+            notificationService.deleteByTargetTypeAndTargetId("MATCH", match.getMatchId());
+        }
+
+        // 3. After clearing the notifications, delete all the match records
+        matchingRepository.deleteAll(associatedMatches);
     }
 }

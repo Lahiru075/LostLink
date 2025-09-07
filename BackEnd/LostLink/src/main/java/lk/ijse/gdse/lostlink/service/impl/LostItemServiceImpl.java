@@ -4,12 +4,14 @@ import lk.ijse.gdse.lostlink.dto.LostItemDto;
 import lk.ijse.gdse.lostlink.dto.SecondLostItemDto;
 import lk.ijse.gdse.lostlink.entity.Category;
 import lk.ijse.gdse.lostlink.entity.LostItem;
+import lk.ijse.gdse.lostlink.entity.Match;
 import lk.ijse.gdse.lostlink.entity.User;
 import lk.ijse.gdse.lostlink.repository.CategoryRepository;
 import lk.ijse.gdse.lostlink.repository.LostItemRepository;
 import lk.ijse.gdse.lostlink.repository.UserRepository;
 import lk.ijse.gdse.lostlink.service.LostItemService;
 import lk.ijse.gdse.lostlink.service.MatchingService;
+import lk.ijse.gdse.lostlink.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -25,20 +27,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LostItemServiceImpl implements LostItemService {
 
-    @Autowired
-    private LostItemRepository lostItemRepository;
-    @Autowired
-    private UserRepository userRepository; // To get the user object
-    @Autowired
-    private CategoryRepository categoryRepository; // To get the category object
-    @Autowired
-    private ImageHashingService imageHashingService;
-    @Autowired
-    private FileStorageService fileStorageService;
-
+    private final LostItemRepository lostItemRepository;
+    private final UserRepository userRepository; // To get the user object
+    private final CategoryRepository categoryRepository; // To get the category object
+    private final ImageHashingService imageHashingService;
+    private final FileStorageService fileStorageService;
     private final ModelMapper modelMapper;
-
     private final MatchingService matchingService;
+    private final NotificationService notificationService;
 
     @Override
     public void saveLostItem(LostItemDto lostItemDto,  /*MultipartFile imageFile,*/ String username) {
@@ -111,7 +107,6 @@ public class LostItemServiceImpl implements LostItemService {
             existingLostItem.setImageHash(pHash);
         }
 
-        matchingService.deleteByLostItem(existingLostItem);
 
         existingLostItem.setTitle(lostItemDto.getTitle());
         existingLostItem.setCategory(category);
@@ -121,6 +116,15 @@ public class LostItemServiceImpl implements LostItemService {
         existingLostItem.setLongitude(lostItemDto.getLongitude());
         existingLostItem.setLostDate(lostItemDto.getLostDate());
         existingLostItem.setStatus(lostItemDto.getStatus());
+
+
+        List<Match> matchesToDelete = matchingService.findAllByLostItem(existingLostItem);
+
+        for (Match match : matchesToDelete) {
+            notificationService.deleteByTargetTypeAndTargetId("MATCH", match.getMatchId());
+        }
+
+        matchingService.deleteAll(matchesToDelete);
 
         LostItem updatedLostItem = lostItemRepository.save(existingLostItem);
 
@@ -149,7 +153,7 @@ public class LostItemServiceImpl implements LostItemService {
             throw new RuntimeException("You are not authorized to delete this lost item");
         }
 
-        matchingService.deleteByLostItem(lostItem);
+        matchingService.deleteAllMatchesAndRelatedNotificationsForLostItem(lostItem);
 
         fileStorageService.deleteFile(lostItem.getImageUrl());
 

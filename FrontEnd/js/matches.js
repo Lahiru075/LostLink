@@ -63,7 +63,7 @@ $(document).ready(function () {
             const foundLatLng = L.latLng(foundLat, foundLng);
 
             // Add markers for Lost and Found locations
-            L.marker(lostLatLng).addTo(comparisonMap).bindPopup("<b>Your Lost Location</b>").openPopup();
+            L.marker(lostLatLng).addTo(comparisonMap).bindPopup("<b>Item Lost Location</b>").openPopup();
             L.marker(foundLatLng).addTo(comparisonMap).bindPopup("<b>Matched Found Location</b>");
 
             // Draw a line between the two points
@@ -182,23 +182,70 @@ $(document).ready(function () {
 
                         let footerHtml = '';
                         if (match.status === 'REQUEST_SENT') { // This means a request was sent TO YOU
-                            footerHtml = `<p class="request-info">Someone has claimed this item.</p><div class="action-buttons"><button class="btn-secondary" data-match-id="${match.matchId}">Decline</button><button class="btn-success" data-match-id="${match.matchId}">Accept Request</button></div>`;
+                            footerHtml = `
+                            <p class="request-info">Someone has claimed this item.</p>
+                            <div class="action-buttons">
+                                <button class="btn-secondary" data-match-id="${match.matchId}">Decline</button>
+                                <button class="btn-success" data-match-id="${match.matchId}">Accept Request</button>
+                            </div>`;
                         } else if (match.status === 'PENDING_ACTION') {
                             footerHtml = `<span class="status-badge status-awaiting">Awaiting Claim</span><div class="action-buttons"><p class="awaiting-text">A potential owner can send a request.</p></div>`;
                         } else {
                             footerHtml = `<span class="status-badge">Resolved</span>`;
                         }
 
+                        // const cardHtml = `
+                        //     <div class="match-card ${match.status === 'REQUEST_SENT' ? 'state-request-received' : ''}">
+                        //         <div class="card-header"><h3>Potential owner for the '${match.foundItemTitle}' you found</h3></div>
+                        //         <div class="comparison-view">
+                        //             <div class="item-half"><label>Item You Found</label><img src="http://localhost:8080/uploads/${match.foundItemImageUrl}" alt="${match.foundItemTitle}"><p class="item-name">${match.foundItemTitle}</p></div>
+                        //             <div class="match-indicator"><i class="fas fa-arrows-left-right"></i><span>${match.matchScore}% Match</span></div>
+                        //             <div class="item-half"><label>Claimant's Lost Item</label><img src="http://localhost:8080/uploads/${match.lostItemImageUrl}" alt="${match.lostItemTitle}"><p class="item-name">${match.lostItemTitle}</p></div>
+                        //         </div>
+                        //         <div class="match-footer">${footerHtml}</div>
+                        //     </div>`;
+
                         const cardHtml = `
-                            <div class="match-card ${match.status === 'REQUEST_SENT' ? 'state-request-received' : ''}">
-                                <div class="card-header"><h3>Potential owner for the '${match.foundItemTitle}' you found</h3></div>
-                                <div class="comparison-view">
-                                    <div class="item-half"><label>Item You Found</label><img src="http://localhost:8080/uploads/${match.foundItemImageUrl}" alt="${match.foundItemTitle}"><p class="item-name">${match.foundItemTitle}</p></div>
-                                    <div class="match-indicator"><i class="fas fa-arrows-left-right"></i><span>${match.matchScore}% Match</span></div>
-                                    <div class="item-half"><label>Claimant's Lost Item</label><img src="http://localhost:8080/uploads/${match.lostItemImageUrl}" alt="${match.lostItemTitle}"><p class="item-name">${match.lostItemTitle}</p></div>
+                        <div class="match-card ${match.status === 'REQUEST_SENT' ? 'state-request-received' : ''}">
+                            <div class="card-header">
+                                <!-- Changed Title -->
+                                <h3>Potential owner for the '<strong>${match.foundItemTitle}</strong>' you found</h3>
+                            </div>
+                            <div class="comparison-view">
+                                <div class="item-half">
+                                    <!-- Changed Label -->
+                                    <label>Item You Found</label> 
+                                    <img src="http://localhost:8080/uploads/${match.foundItemImageUrl}" alt="${match.foundItemTitle}">
+                                    <p class="item-name">${match.foundItemTitle}</p>
                                 </div>
-                                <div class="match-footer">${footerHtml}</div>
-                            </div>`;
+                                <div class="match-indicator">
+                                    <i class="fas fa-arrows-left-right"></i>
+                                    <span>${match.matchScore}% Match</span>
+                                </div>
+                                <div class="item-half">
+                                    <!-- Changed Label -->
+                                    <label>Claimant's Lost Item</label>
+                                    <img src="http://localhost:8080/uploads/${match.lostItemImageUrl}" alt="${match.lostItemTitle}">
+                                    <p class="item-name">${match.lostItemTitle}</p>
+                                </div>
+                            </div>
+
+                            <!-- "View Location" button is EXACTLY THE SAME -->
+                            <div class="location-viewer">
+                                <button class="btn-view-location" 
+                                        data-lost-lat="${match.lostItemLatitude}" 
+                                        data-lost-lng="${match.lostItemLongitude}"
+                                        data-found-lat="${match.foundItemLatitude}"
+                                        data-found-lng="${match.foundItemLongitude}">
+                                    <i class="fas fa-map-marked-alt"></i> View Locations on Map
+                                </button>
+                            </div>
+
+                            <div class="match-footer">
+                                ${footerHtml}
+                            </div>
+                        </div>
+                    `;
 
                         
 

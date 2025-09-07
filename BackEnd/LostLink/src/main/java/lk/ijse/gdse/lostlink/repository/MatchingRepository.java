@@ -34,4 +34,8 @@ public interface MatchingRepository extends JpaRepository<Match, Integer> {
     void deleteByLostItem(LostItem existingLostItem);
 
     void deleteByFoundItem(FoundItem foundItem);
+
+    List<Match> findAllByLostItem(LostItem lostItem);
+
+    List<Match> findAllByFoundItem(FoundItem foundItem);
 }

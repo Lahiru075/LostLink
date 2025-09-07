@@ -27,15 +27,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FoundItemServiceImpl implements FoundItemService {
 
-    private final FoundItemRepository foundItemRepository;
-
-    private final UserRepository userRepository;
-
-    private final CategoryRepository categoryRepository;
-
-    private final ImageHashingService imageHashingService;
-
-    private final FileStorageService fileStorageService;
+    @Autowired
+    private FoundItemRepository foundItemRepository;
+    @Autowired
+    private UserRepository userRepository; // To get the user object
+    @Autowired
+    private CategoryRepository categoryRepository; // To get the category object
+    @Autowired
+    private ImageHashingService imageHashingService;
+    @Autowired
+    private FileStorageService fileStorageService;
 
     private final ModelMapper modelMapper;
 
@@ -87,6 +88,7 @@ public class FoundItemServiceImpl implements FoundItemService {
             throw new RuntimeException("You are not authorized to update this found item");
         }
 
+//        matchingService.deleteByFoundItem(foundItem);
 
         List<Match> matchesToDelete = matchingService.findAllByFoundItem(foundItem);
 

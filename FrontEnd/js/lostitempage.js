@@ -18,18 +18,25 @@ $(document).ready(function () {
     // =================================================================
     function openModal() {
         $reportItemModal.addClass('active');
-        // A small timeout to allow the modal animation to finish before rendering the map
-        setTimeout(function() {
-            // Initialize map with a default location (e.g., Colombo)
-            initializeOrUpdateMap(6.9271, 79.8612, 12);
-        }, 100); 
+        
+        setTimeout(() => {
+            if (map) {
+                // This Leaflet function tells the map to re-calculate its size
+                map.invalidateSize(); 
+            }
+        }, 100);
     }
 
     function closeModal() {
         $reportItemModal.removeClass('active');
     }
 
-    $addItemBtn.on('click', openModal);
+    $addItemBtn.on('click', function() {
+        openModal();
+
+        initializeOrUpdateMap(6.9271, 79.8612, 12);
+    });
+    
     $closeModalBtn.on('click', closeModal);
     $cancelBtn.on('click', closeModal);
     $(window).on('click', function (event) {
@@ -197,7 +204,7 @@ $(document).ready(function () {
     //         $suggestionsPanel.empty().hide();
     //         return;
     //     }
-    //     const apiKey = 'pk.a95efca3c4d0ef92f09d20299a4bb659'; 
+    //     const apiKey = ''; 
     //     const url = `https://api.locationiq.com/v1/autocomplete.php?key=${apiKey}&q=${encodeURIComponent(query)}&limit=5&countrycodes=LK`;
     //     $.ajax({
     //         url: url,
@@ -446,6 +453,10 @@ $(document).ready(function () {
 
                     // 5. Finally, open the modal
                     openModal();
+
+                    if (item.latitude && item.longitude) {
+                        initializeOrUpdateMap(parseFloat(item.latitude), parseFloat(item.longitude), 16);
+                    }
                 }
             },
             error: function() {
