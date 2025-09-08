@@ -16,7 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -53,7 +55,7 @@ public class MatchingServiceImpl implements MatchingService {
                 // create notification for lost item owner
                 String message = "We found a potential match for your '" + newMatch.getLostItem().getTitle() + "'!";
                 notificationService.createNotification(
-                        foundItem.getUser(),
+                        newLostItem.getUser(),
                         message, "MATCH",
                         newMatch.getMatchId()
                 );
@@ -136,7 +138,7 @@ public class MatchingServiceImpl implements MatchingService {
 
     private int calculateHammingDistance(String s1, String s2) {
         int distance = 0;
-        for (int i = 0; i < s1.length()-1; i++) {
+        for (int i = 0; i < s1.length() - 1; i++) {
             if (s1.charAt(i) != s2.charAt(i)) {
                 distance++;
             }
@@ -210,7 +212,8 @@ public class MatchingServiceImpl implements MatchingService {
             return new ArrayList<>();
         }
 
-        Type listType = new TypeToken<List<MatchDto>>() {}.getType();
+        Type listType = new TypeToken<List<MatchDto>>() {
+        }.getType();
 
         List<MatchDto> matchDtos = modelMapper.map(matches, listType);
 
@@ -230,7 +233,8 @@ public class MatchingServiceImpl implements MatchingService {
             return new ArrayList<>();
         }
 
-        Type listType = new TypeToken<List<MatchDto>>() {}.getType();
+        Type listType = new TypeToken<List<MatchDto>>() {
+        }.getType();
 
         List<MatchDto> matchDtos = modelMapper.map(matches, listType);
 
@@ -279,5 +283,77 @@ public class MatchingServiceImpl implements MatchingService {
 
         // 3. After clearing the notifications, delete all the match records
         matchingRepository.deleteAll(associatedMatches);
+    }
+
+    @Override
+    @Transactional
+    public void sendRequest(String username, Integer matchId) {
+        Match match = matchingRepository.findById(matchId)
+                .orElseThrow(() -> new RuntimeException("Match not found"));
+
+        if (!match.getLostItem().getUser().getUsername().equals(username)) {
+            throw new RuntimeException("You are not authorized to send a request for this match");
+        }
+
+        match.setStatus(MatchStatus.REQUEST_SENT);
+
+        matchingRepository.save(match);
+
+        User user = match.getFoundItem().getUser();
+        String message = "You have a new contact request for the item: '" + match.getFoundItem().getTitle() + "'";
+        notificationService.createNotification(user, message, "MATCH", match.getMatchId());
+    }
+
+    @Override
+    @Transactional
+    public Object acceptRequest(String username, Integer matchId) {
+        Match match = matchingRepository.findById(matchId)
+                .orElseThrow(() -> new RuntimeException("Match not found"));
+
+        if (!match.getFoundItem().getUser().getUsername().equals(username)) {
+            throw new RuntimeException("You are not authorized to accept this request");
+        }
+
+        if (match.getStatus() != MatchStatus.REQUEST_SENT) {
+            throw new RuntimeException("This request has already been accepted or rejected");
+        }
+
+        match.setStatus(MatchStatus.ACCEPTED);
+
+        matchingRepository.save(match);
+
+        User user = match.getLostItem().getUser();
+        String message = "Good news! Your contact request for '" + match.getLostItem().getTitle() + "' has been accepted.";
+        notificationService.createNotification(user, message, "MATCH", match.getMatchId());
+
+        User foundUser = match.getFoundItem().getUser();
+
+        Map<String, String> response = new HashMap<>();
+        response.put("fullName", foundUser.getFullName());
+        response.put("mobile", foundUser.getPhoneNumber());
+        return response;
+    }
+
+    @Override
+    @Transactional
+    public void declineRequest(String username, Integer matchId) {
+        Match match = matchingRepository.findById(matchId)
+                .orElseThrow(() -> new RuntimeException("Match not found"));
+
+        if (!match.getFoundItem().getUser().getUsername().equals(username)) {
+            throw new RuntimeException("You are not authorized to decline this request");
+        }
+
+        if (match.getStatus() != MatchStatus.REQUEST_SENT) {
+            throw new RuntimeException("This request has already been accepted or rejected");
+        }
+
+        match.setStatus(MatchStatus.DECLINED);
+
+        matchingRepository.save(match);
+
+        User user = match.getLostItem().getUser();
+        String message = "Bad news! Your contact request for '" + match.getLostItem().getTitle() + "' has been declined.";
+        notificationService.createNotification(user, message, "MATCH", match.getMatchId());
     }
 }

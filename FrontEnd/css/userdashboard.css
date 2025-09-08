@@ -412,3 +412,12 @@ ul {
 .btn-view:hover {
     background-color: #e5e7eb;
 }
+
+.notification-bell {
+    position: relative; /* Crucial for positioning the dropdown */
+}
+
+.notification-badge {
+    display: none; /* Hidden by default, shown by JS if count > 0 */
+}
+

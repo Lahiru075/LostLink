@@ -6,10 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/matching")
@@ -39,6 +36,38 @@ public class MatchingController {
                 200,
                 "User's found items retrieved successfully",
                 matchingService.getFoundMatches(currentUsername))
+        );
+    }
+
+    @PatchMapping("/{matchId}/send_request")
+    public ResponseEntity<ApiResponse> sendRequest(@PathVariable Integer matchId) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        matchingService.sendRequest(username, matchId);
+        return ResponseEntity.ok(new ApiResponse(
+                200,
+                "Request sent successfully",
+                null)
+        );
+    }
+
+    @PatchMapping("/{matchId}/accept_request")
+    public ResponseEntity<ApiResponse> acceptRequest(@PathVariable Integer matchId) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return ResponseEntity.ok(new ApiResponse(
+                200,
+                "Request accepted successfully",
+                matchingService.acceptRequest(username, matchId))
+        );
+    }
+
+    @PatchMapping("/{matchId}/decline_request")
+    public ResponseEntity<ApiResponse> declineRequest(@PathVariable Integer matchId) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        matchingService.declineRequest(username, matchId);
+        return ResponseEntity.ok(new ApiResponse(
+                200,
+                "Request declined successfully",
+                null)
         );
     }
 }

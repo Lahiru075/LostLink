@@ -31,10 +31,6 @@ public interface MatchingRepository extends JpaRepository<Match, Integer> {
     )
     List<Match> findMatchesByFoundItemOwnerUsernameNative(String username);
 
-    void deleteByLostItem(LostItem existingLostItem);
-
-    void deleteByFoundItem(FoundItem foundItem);
-
     List<Match> findAllByLostItem(LostItem lostItem);
 
     List<Match> findAllByFoundItem(FoundItem foundItem);

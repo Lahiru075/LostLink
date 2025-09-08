@@ -5,6 +5,7 @@ import lk.ijse.gdse.lostlink.entity.FoundItem;
 import lk.ijse.gdse.lostlink.entity.LostItem;
 import lk.ijse.gdse.lostlink.entity.Match;
 
+import java.util.HashMap;
 import java.util.List;
 
 public interface MatchingService {
@@ -17,4 +18,10 @@ public interface MatchingService {
     void deleteAll(List<Match> matchesToDelete);
     List<Match> findAllByFoundItem(FoundItem foundItem);
     void deleteAllMatchesAndRelatedNotificationsForFoundItem(FoundItem foundItem);
+
+    void sendRequest(String username, Integer matchId);
+
+    Object acceptRequest(String username, Integer matchId);
+
+    void declineRequest(String username, Integer matchId);
 }
