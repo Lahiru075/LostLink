@@ -96,11 +96,21 @@ $(document).ready(function () {
 
                         let footerHtml = '';
                         if (match.status === 'PENDING_ACTION') {
-                            footerHtml = `<span class="status-badge status-action">Action Needed</span><div class="action-buttons"><a href="#" class="text-link">Not a Match</a><button class="btn-primary" data-match-id="${match.matchId}">Send Contact Request</button></div>`;
+                            footerHtml = `<span class="status-badge status-action">Action Needed</span><div class="action-buttons"><a href="#" class="text-link">Not a Match</a><button class="btn-primary btn-send-request" data-match-id="${match.matchId}">Send Contact Request</button></div>`;
                         } else if (match.status === 'REQUEST_SENT') {
                             footerHtml = `<span class="status-badge status-sent">Request Sent</span><div class="action-buttons"><p class="awaiting-text">Awaiting response...</p></div>`;
-                        } else {
-                            footerHtml = `<span class="status-badge">Resolved</span>`;
+                        } else if (match.status === 'ACCEPTED') {
+                            // === THIS IS THE NEW PART FOR THE LOSER ===
+                            footerHtml = `
+                                <span class="status-badge status-accepted">ACCEPTED</span>
+                                <div class="action-buttons">
+                                    <button class="btn-success btn-view-contact" data-match-id="${match.matchId}">
+                                        <i class="fas fa-phone-alt"></i> View Finder's Contact
+                                    </button>
+                                </div>
+                            `;
+                        } else { // DECLINED
+                            footerHtml = `<span class="status-badge status-declined">Declined</span>`;
                         }
 
 
@@ -185,8 +195,8 @@ $(document).ready(function () {
                             footerHtml = `
                             <p class="request-info">Someone has claimed this item.</p>
                             <div class="action-buttons">
-                                <button class="btn-secondary" data-match-id="${match.matchId}">Decline</button>
-                                <button class="btn-success" data-match-id="${match.matchId}">Accept Request</button>
+                                <button class="btn-secondary btn-decline-request" data-match-id="${match.matchId}">Decline</button>
+                                <button class="btn-success btn-accept-request" data-match-id="${match.matchId}">Accept Request</button>
                             </div>`;
                         } else if (match.status === 'PENDING_ACTION') {
                             footerHtml = `<span class="status-badge status-awaiting">Awaiting Claim</span><div class="action-buttons"><p class="awaiting-text">A potential owner can send a request.</p></div>`;
@@ -263,10 +273,215 @@ $(document).ready(function () {
     loadLostItemMatches();
     loadFoundItemMatches();
 
-    // TODO: Add click handlers for the action buttons (Send Request, Accept, Decline)
-    // Example:
-    // $('#lost-matches-list').on('click', '.btn-primary', function() {
-    //     const matchId = $(this).data('match-id');
-    //     // Make a POST request to /api/v1/matches/{matchId}/send-request
-    // });
+    
+    // =================================================================
+    // === CLICK HANDLER FOR "SEND CONTACT REQUEST" BUTTON ===
+    // =================================================================
+    // We use event delegation for dynamically created buttons
+    $('#lost-matches-list').on('click', '.btn-send-request', function() {
+        const $thisButton = $(this);
+        const matchId = $thisButton.data('match-id');
+
+        // 1. User Confirmation
+        if (!confirm('Are you sure you want to send a contact request to the finder?')) {
+            return; // Stop if the user clicks "Cancel"
+        }
+
+        $thisButton.prop('disabled', true).text('Sending...');
+
+        console.log(matchId);
+        
+
+        // 3. The AJAX Call
+        $.ajax({
+            url: `http://localhost:8080/matching/${matchId}/send_request`,
+            method: 'PATCH', // Or 'PATCH' if you prefer
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+            },
+            
+            success: function(response) {
+                console.log('Success:', response);
+                alert(response.message || 'Contact request sent successfully!');
+                
+                // 4. Update the UI Dynamically without a page reload
+                const $footer = $thisButton.closest('.match-footer');
+                
+                // Change the status badge
+                $footer.find('.status-badge')
+                    .removeClass('status-action')
+                    .addClass('status-sent')
+                    .text('Request Sent');
+                
+                // Replace the buttons with the "Awaiting response" text
+                $footer.find('.action-buttons').html('<p class="awaiting-text">Awaiting response from the finder...</p>');
+            },
+            
+            // This function runs if the request FAILS
+            error: function(jqXHR) {
+                console.error('Error:', jqXHR.responseText);
+                const errorMessage = jqXHR.responseJSON ? jqXHR.responseJSON.message : "Could not send the request.";
+                alert(`Error: ${errorMessage}`);
+                
+                // Re-enable the button on error
+                $thisButton.prop('disabled', false).text('Send Contact Request');
+            }
+        });
+    });
+
+
+    // =================================================================
+    // === CLICK HANDLER FOR "ACCEPT CONTACT REQUEST" BUTTON ===
+    // =================================================================
+    // We use event delegation on the FOUND items list container
+    $('#found-matches-list').on('click', '.btn-accept-request', function() {
+
+        const $thisButton = $(this);
+        const matchId = $thisButton.data('match-id');
+        
+        // 1. User Feedback: Disable buttons and show loading state
+        $thisButton.closest('.action-buttons').find('button').prop('disabled', true);
+        $thisButton.text('Accepting...');
+
+        // 2. The AJAX Call
+        $.ajax({
+            // === ඔබගේ Backend Accept Request API endpoint එක මෙතනට යොදන්න ===
+            url: `http://localhost:8080/matching/${matchId}/accept_request`,
+            method: 'PATCH',
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+            },
+            
+            // This function runs if the request is SUCCESSFUL
+            success: function(response) {
+                console.log('Success:', response);
+                alert('Request accepted successfully! The item owner has been notified.');
+
+                // --- UI UPDATE FOR THE FINDER ---
+                const $footer = $thisButton.closest('.match-footer');
+                const $card = $footer.closest('.match-card');
+                
+                // Remove highlight and buttons, just show "Resolved"
+                $card.removeClass('state-request-received');
+                $footer.find('.request-info').remove();
+                $footer.find('.action-buttons').html('<span class="status-badge">Resolved</span>');
+            },
+            
+            // This function runs if the request FAILS
+            error: function(jqXHR) {
+                $thisButton.closest('.action-buttons').find('button').prop('disabled', false);
+                $thisButton.text('Accept Request');
+            }
+        });
+
+    });
+
+
+    // =================================================================
+    // === CLICK HANDLER FOR "VIEW FINDER'S CONTACT" BUTTON ===
+    // =================================================================
+    // This event listener should be on the LOST items list container
+    $('#lost-matches-list').on('click', '.btn-view-contact', function() {
+        
+        const matchId = $(this).data('match-id');
+        const $thisButton = $(this);
+        
+        // User Feedback
+        $thisButton.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Loading...');
+
+        $.ajax({
+            // === This is the new API endpoint we created ===
+            url: `http://localhost:8080/matching/${matchId}/contact_details`,
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+            },
+            
+            success: function(response) {
+                if (response && response.data) {
+                    const details = response.data;
+                    
+                    // Display the details in a user-friendly alert or a custom modal
+                    alert(
+                        `Contact Details for Your Match:\n\n` +
+                        `Finder's Name: ${details.fullName}\n` +
+                        `Phone Number: ${details.mobile}\n\n` +
+                        `Please be respectful when making contact.`
+                    );
+
+                } else {
+                    alert('Could not retrieve contact details.');
+                }
+            },
+            
+            error: function(jqXHR) {
+                const errorMessage = jqXHR.responseJSON ? jqXHR.responseJSON.message : "Failed to get contact details.";
+                alert(`Error: ${errorMessage}`);
+            },
+            
+            complete: function() {
+                // Re-enable the button
+                $thisButton.prop('disabled', false).html('<i class="fas fa-phone-alt"></i> View Finder\'s Contact');
+            }
+        });
+    });
+
+
+    // =================================================================
+    // === CLICK HANDLER FOR "DECLINE CONTACT REQUEST" BUTTON ===
+    // =================================================================
+    // We use event delegation on the FOUND items list container
+
+    $('#found-matches-list').on('click', '.btn-decline-request', function() {
+
+        const $thisButton = $(this);
+        const matchId = $thisButton.data('match-id');
+        const $actionButtons = $thisButton.closest('.action-buttons');
+
+        // 1. User Confirmation
+        if (!confirm('Are you sure you want to decline this contact request?')) {
+            return; // Stop if the user clicks "Cancel"
+        }
+
+        // 2. User Feedback: Disable buttons and show loading state
+        $actionButtons.find('button').prop('disabled', true);
+        $thisButton.text('Declining...');
+
+        // 3. The AJAX Call
+        $.ajax({
+            // === ඔබගේ Backend Decline Request API endpoint එක මෙතනට යොදන්න ===
+            url: `http://localhost:8080/matching/${matchId}/decline_request`,
+            method: 'PATCH',
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+            },
+            
+            // This function runs if the request is SUCCESSFUL
+            success: function(response) {
+                console.log('Success:', response);
+                alert(response.message || 'Request has been successfully declined.');
+                
+                // 4. Update the UI Dynamically
+                const $footer = $thisButton.closest('.match-footer');
+                const $card = $footer.closest('.match-card');
+
+                // Remove highlight and buttons, and show a "Resolved" or "Declined" status
+                $card.removeClass('state-request-received');
+                $footer.find('.request-info').remove(); // Remove the "Someone has claimed..." text
+                $actionButtons.html('<span class="status-badge status-declined">DECLINED</span>');
+            },
+            
+            // This function runs if the request FAILS
+            error: function(jqXHR) {
+                console.error('Error:', jqXHR.responseText);
+                const errorMessage = jqXHR.responseJSON ? jqXHR.responseJSON.message : "Could not decline the request.";
+                alert(`Error: ${errorMessage}`);
+                
+                // Re-enable buttons on error
+                $actionButtons.find('button').prop('disabled', false);
+                $thisButton.text('Decline');
+            }
+        });
+    });
+
 });

@@ -53,10 +53,11 @@ public class MatchingController {
     @PatchMapping("/{matchId}/accept_request")
     public ResponseEntity<ApiResponse> acceptRequest(@PathVariable Integer matchId) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        matchingService.acceptRequest(username, matchId);
         return ResponseEntity.ok(new ApiResponse(
                 200,
                 "Request accepted successfully",
-                matchingService.acceptRequest(username, matchId))
+                null)
         );
     }
 
@@ -68,6 +69,16 @@ public class MatchingController {
                 200,
                 "Request declined successfully",
                 null)
+        );
+    }
+
+    @GetMapping("/{matchId}/contact_details")
+    public ResponseEntity<ApiResponse> getContactDetails(@PathVariable Integer matchId) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return ResponseEntity.ok(new ApiResponse(
+                200,
+                "Contact details retrieved successfully",
+                matchingService.getContactDetails(matchId,username))
         );
     }
 }

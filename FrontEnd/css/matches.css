@@ -509,8 +509,14 @@ ul {
     font-weight: 500;
 }
 
-.match-card.state-request-received {
+/* .match-card.state-request-received {
     border-left: 4px solid var(--success-color);
+} */
+
+.status-badge.status-declined {
+    background-color: #fee2e2; /* Light red */
+    color: #991b1b;       /* Dark red */
+    font-weight: 600;
 }
 
 .loading-message,

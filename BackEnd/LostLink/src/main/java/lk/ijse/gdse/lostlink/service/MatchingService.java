@@ -21,7 +21,9 @@ public interface MatchingService {
 
     void sendRequest(String username, Integer matchId);
 
-    Object acceptRequest(String username, Integer matchId);
+    void acceptRequest(String username, Integer matchId);
 
     void declineRequest(String username, Integer matchId);
+
+    Object getContactDetails(Integer matchId, String username);
 }

@@ -306,7 +306,7 @@ public class MatchingServiceImpl implements MatchingService {
 
     @Override
     @Transactional
-    public Object acceptRequest(String username, Integer matchId) {
+    public void acceptRequest(String username, Integer matchId) {
         Match match = matchingRepository.findById(matchId)
                 .orElseThrow(() -> new RuntimeException("Match not found"));
 
@@ -326,12 +326,12 @@ public class MatchingServiceImpl implements MatchingService {
         String message = "Good news! Your contact request for '" + match.getLostItem().getTitle() + "' has been accepted.";
         notificationService.createNotification(user, message, "MATCH", match.getMatchId());
 
-        User foundUser = match.getFoundItem().getUser();
-
-        Map<String, String> response = new HashMap<>();
-        response.put("fullName", foundUser.getFullName());
-        response.put("mobile", foundUser.getPhoneNumber());
-        return response;
+//        User foundUser = match.getFoundItem().getUser();
+//
+//        Map<String, String> response = new HashMap<>();
+//        response.put("fullName", foundUser.getFullName());
+//        response.put("mobile", foundUser.getPhoneNumber());
+//        return response;
     }
 
     @Override
@@ -355,5 +355,27 @@ public class MatchingServiceImpl implements MatchingService {
         User user = match.getLostItem().getUser();
         String message = "Bad news! Your contact request for '" + match.getLostItem().getTitle() + "' has been declined.";
         notificationService.createNotification(user, message, "MATCH", match.getMatchId());
+    }
+
+    @Override
+    public Map<String, String> getContactDetails(Integer matchId, String currentUsername) {
+        Match match = matchingRepository.findById(matchId)
+                .orElseThrow(() -> new RuntimeException("Match not found"));
+
+        if (!match.getStatus().equals(MatchStatus.ACCEPTED)) {
+            throw new RuntimeException("This match has not been accepted yet");
+        }
+
+        if (!match.getLostItem().getUser().getUsername().equals(currentUsername)) {
+            throw new RuntimeException("You are not authorized to view this contact information");
+        }
+
+        User foundUser = match.getFoundItem().getUser();
+
+        Map<String, String> response = new HashMap<>();
+        response.put("fullName", foundUser.getFullName());
+        response.put("mobile", foundUser.getPhoneNumber());
+
+        return response;
     }
 }
