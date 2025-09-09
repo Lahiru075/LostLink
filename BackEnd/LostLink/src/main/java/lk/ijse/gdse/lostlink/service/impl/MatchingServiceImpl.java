@@ -57,7 +57,8 @@ public class MatchingServiceImpl implements MatchingService {
                 notificationService.createNotification(
                         newLostItem.getUser(),
                         message, "MATCH",
-                        newMatch.getMatchId()
+                        newMatch.getMatchId(),
+                        true
                 );
             }
         }
@@ -87,7 +88,8 @@ public class MatchingServiceImpl implements MatchingService {
                         lostItem.getUser(),
                         message,
                         "MATCH",
-                        newMatch.getMatchId()
+                        newMatch.getMatchId(),
+                        true
                 );
             }
         }
@@ -301,7 +303,7 @@ public class MatchingServiceImpl implements MatchingService {
 
         User user = match.getFoundItem().getUser();
         String message = "You have a new contact request for the item: '" + match.getFoundItem().getTitle() + "'";
-        notificationService.createNotification(user, message, "MATCH", match.getMatchId());
+        notificationService.createNotification(user, message, "MATCH", match.getMatchId(), false);
     }
 
     @Override
@@ -324,7 +326,7 @@ public class MatchingServiceImpl implements MatchingService {
 
         User user = match.getLostItem().getUser();
         String message = "Good news! Your contact request for '" + match.getLostItem().getTitle() + "' has been accepted.";
-        notificationService.createNotification(user, message, "MATCH", match.getMatchId());
+        notificationService.createNotification(user, message, "MATCH", match.getMatchId(), true);
 
 //        User foundUser = match.getFoundItem().getUser();
 //
@@ -354,7 +356,7 @@ public class MatchingServiceImpl implements MatchingService {
 
         User user = match.getLostItem().getUser();
         String message = "Bad news! Your contact request for '" + match.getLostItem().getTitle() + "' has been declined.";
-        notificationService.createNotification(user, message, "MATCH", match.getMatchId());
+        notificationService.createNotification(user, message, "MATCH", match.getMatchId(), true);
     }
 
     @Override

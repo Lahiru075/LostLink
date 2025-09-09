@@ -7,6 +7,9 @@ function openTab(event, tabName) {
 
 
 $(document).ready(function () {
+
+
+
     const authToken = localStorage.getItem('authToken');
 
     if (!authToken) {
@@ -14,6 +17,24 @@ $(document).ready(function () {
         window.location.href = 'login.html';
         return;
     }
+
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabToOpen = urlParams.get('open_tab'); // This will be 'lost' or 'found'
+
+    // Check if the 'open_tab' parameter exists
+    if (tabToOpen === 'found') {
+        // If it's 'found', click the "Found Item Matches" tab button
+        $('button[onclick*="FoundItemMatches"]').click();
+    } else {
+        // For 'lost' or any other case (including no parameter),
+        // click the "Lost Item Matches" tab button by default.
+        $('button[onclick*="LostItemMatches"]').click();
+    }
+
+    // --- Now, load the data for both tabs as usual ---
+    loadLostItemMatches();
+    loadFoundItemMatches();
 
     
     const $mapViewModal = $('#mapViewModal');
@@ -86,7 +107,6 @@ $(document).ready(function () {
             method: 'GET',
             headers: { 'Authorization': 'Bearer ' + authToken },
             success: function (response) {
-                console.log(response);
                 
                 $listContainer.empty();
                 if (response.data && response.data.length > 0) {
@@ -123,7 +143,7 @@ $(document).ready(function () {
                                 <div class="comparison-view">
                                     <div class="item-half">
                                         <label>Item You Found</label>
-                                        <img src="http://localhost:8080/uploads/${match.foundItemImageUrl}" alt="${match.foundItemTitle}">
+                                        <img src="${match.foundItemImageUrl}" alt="${match.foundItemTitle}">
                                         <p class="item-name">${match.foundItemTitle}</p>
                                     </div>
                                     <div class="match-indicator">
@@ -132,7 +152,7 @@ $(document).ready(function () {
                                     </div>
                                     <div class="item-half">
                                         <label>Claimant's Lost Item</label>
-                                        <img src="http://localhost:8080/uploads/${match.lostItemImageUrl}" alt="${match.lostItemTitle}">
+                                        <img src="${match.lostItemImageUrl}" alt="${match.lostItemTitle}">
                                         <p class="item-name">${match.lostItemTitle}</p>
                                     </div>
                                 </div>
@@ -225,7 +245,7 @@ $(document).ready(function () {
                                 <div class="item-half">
                                     <!-- Changed Label -->
                                     <label>Item You Found</label> 
-                                    <img src="http://localhost:8080/uploads/${match.foundItemImageUrl}" alt="${match.foundItemTitle}">
+                                    <img src="${match.foundItemImageUrl}" alt="${match.foundItemTitle}">
                                     <p class="item-name">${match.foundItemTitle}</p>
                                 </div>
                                 <div class="match-indicator">
@@ -235,7 +255,7 @@ $(document).ready(function () {
                                 <div class="item-half">
                                     <!-- Changed Label -->
                                     <label>Claimant's Lost Item</label>
-                                    <img src="http://localhost:8080/uploads/${match.lostItemImageUrl}" alt="${match.lostItemTitle}">
+                                    <img src="${match.lostItemImageUrl}" alt="${match.lostItemTitle}">
                                     <p class="item-name">${match.lostItemTitle}</p>
                                 </div>
                             </div>

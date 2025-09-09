@@ -15,10 +15,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class NotificationDto {
     private Long notificationId;
-    private String user;
+    private String userId;
     private String message;
     private boolean isRead;
     private String targetType;
+    private boolean isForLoser;
     private Long targetId;
     private LocalDateTime createdAt;
 }

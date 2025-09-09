@@ -49,6 +49,12 @@ public class Notification {
     )
     private String targetType;
     @Column(
+            name = "is_for_loser",
+            nullable = false,
+            columnDefinition = "BOOLEAN"
+    )
+    private boolean isForLoser; // true if the notification is FOR the Lost Item Owner
+    @Column(
             name = "target_id",
             nullable = false
     )

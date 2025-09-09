@@ -280,7 +280,9 @@ $(document).ready(function () {
                     
                     $.each(response.data, function (index, item) {
                         
-                        const imageUrl = `http://localhost:8080/uploads/${item.imageUrl}`;
+                        // const imageUrl = `http://localhost:8080/uploads/${item.imageUrl}`;
+
+                        const imageUrl = item.imageUrl;
                         
                         const statusClass = item.status === 'ACTIVE' ? 'status-active' : 'status-recovered';
                         const statusText = item.status === 'ACTIVE' ? 'Active' : 'Recovered';
@@ -440,7 +442,7 @@ $(document).ready(function () {
                     console.log(item.categoryName);
                     
                     
-                    const imageUrl = `http://localhost:8080/uploads/${item.imageUrl}`;
+                    const imageUrl = item.imageUrl;
                     $('#imagePreview .image-preview-image').attr('src', imageUrl).show();
                     $('#imagePreview .image-preview-text').hide();
 
