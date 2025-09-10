@@ -551,7 +551,7 @@ $(document).ready(function () {
                         const imageUrl = item.imageUrl;
                         const statusClass = item.status === 'ACTIVE' ? 'status-active' : 'status-returned';
                         const statusText = item.status === 'ACTIVE' ? 'Active' : 'Returned';
-
+                        
                         let actionButtonsHtml = '';
                         if (item.status === 'ACTIVE') {
                             actionButtonsHtml = `

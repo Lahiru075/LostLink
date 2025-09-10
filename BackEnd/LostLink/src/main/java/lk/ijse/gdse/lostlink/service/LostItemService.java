@@ -22,5 +22,7 @@ public interface LostItemService {
 
     Object findItemTitlesByKeyword(String keyword, String username);
 
-    List<SecondLostItemDto> getFilteredLostItems(String keyword, String currentUsername);
+//    List<SecondLostItemDto> getFilteredLostItems(String keyword, String currentUsername);
+
+    List<SecondLostItemDto> getFilteredLostItemsForStatus(String keyword, String status,String category ,String currentUsername);
 }
