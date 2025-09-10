@@ -47,4 +47,15 @@ public class NotificationController {
                 null)
         );
     }
+
+    @GetMapping("/all")
+    public ResponseEntity<ApiResponse> getAllNotifications() {
+        String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        return ResponseEntity.ok(new ApiResponse(
+                200,
+                "Notifications retrieved successfully",
+                notificationService.getAllNotifications(currentUsername))
+        );
+
+    }
 }

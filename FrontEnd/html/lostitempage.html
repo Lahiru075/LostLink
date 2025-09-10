@@ -39,7 +39,7 @@
                     <p>Manage and track all the items you've reported as lost.</p>
                 </div><button class="btn-primary add-item-btn"><i class="fas fa-plus"></i> Report New Lost Item</button>
             </header>
-            <div class="control-panel">
+            <!-- <div class="control-panel">
                 <div class="search-bar"><i class="fas fa-search"></i><input type="text"
                         placeholder="Search by item name or keyword..."></div>
                 <div class="filters"><select name="category" id="category-filter">
@@ -51,6 +51,28 @@
                         <option value="active">Active</option>
                         <option value="recovered">Recovered</option>
                     </select></div>
+            </div> -->
+            <div class="control-panel">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <!-- මෙන්න අලුතින් එකතු කළ id එක -->
+                    <input type="text" id="searchInput" placeholder="Search by item name or keyword...">
+                    <div class="search-suggestions-box" id="searchSuggestions">
+                        <!-- Suggestions will be dynamically loaded here by JavaScript -->
+                    </div>
+                </div>
+                <div class="filters">
+                    <select name="category" id="category-filter">
+                        <option value="">All Categories</option> <!-- Use empty string for "all" -->
+                        <option value="Electronics">Electronics</option>
+                        <option value="Bags & Luggage">Bags & Luggage</option>
+                    </select>
+                    <select name="status" id="status-filter">
+                        <option value="">All Statuses</option> <!-- Use empty string for "all" -->
+                        <option value="ACTIVE">Active</option>
+                        <option value="RECOVERED">Recovered</option>
+                    </select>
+                </div>
             </div>
             <div class="items-grid">
                

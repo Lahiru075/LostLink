@@ -19,4 +19,8 @@ public interface LostItemService {
     SecondLostItemDto getLostItem(Integer itemId);
 
     void deleteLostItem(Integer itemId, String currentUsername);
+
+    Object findItemTitlesByKeyword(String keyword, String username);
+
+    List<SecondLostItemDto> getFilteredLostItems(String keyword, String currentUsername);
 }

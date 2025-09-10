@@ -340,8 +340,8 @@ $(document).ready(function () {
                         // const imageUrl = `http://localhost:8080/uploads/${item.imageUrl}`;
                         const imageUrl = item.imageUrl;
                         
-                        const statusClass = item.status === 'ACTIVE' ? 'status-active' : 'status-recovered';
-                        const statusText = item.status === 'ACTIVE' ? 'Active' : 'Recovered';
+                        const statusClass = item.status === 'ACTIVE' ? 'status-active' : 'status-returned';
+                        const statusText = item.status === 'ACTIVE' ? 'Active' : 'Returned';
                         
                         let actionButtonsHtml = '';
                         if (item.status === 'ACTIVE') {
@@ -505,6 +505,168 @@ $(document).ready(function () {
 
 
     }
+
+
+
+    // =================================================================
+    // === 2. THE MAIN FUNCTION TO LOAD/RELOAD ITEM CARDS (GET AJAX) ===
+    // =================================================================
+
+
+    const $mainSearchInput = $('#searchInput'); 
+    const $categoryFilter = $('#category-filter');
+    const $statusFilter = $('#status-filter');
+    const $searchSuggestions = $('#searchSuggestions');
+
+    // Debounce function
+    function debounce(func, delay) {
+        let timeout;
+        return function(...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), delay);
+        };
+    }
+
+    // --- 1. Load Lost Items from backend ---
+    function loadLostItemsforKeyword(keyword) {
+        if (!authToken) {
+            $itemsGrid.html('<p class="error-message">Please <a href="login.html">login</a>.</p>');
+            return;
+        }
+
+        $itemsGrid.html('<p class="loading-message">Loading items...</p>');
+
+        const filterData = {};
+        if (keyword) filterData.keyword = keyword;
+        $.ajax({
+            url: 'http://localhost:8080/found_item/my_items',
+            method: 'GET',
+            headers: { 'Authorization': 'Bearer ' + authToken },
+            data: filterData,
+            success: function(response) {
+                $itemsGrid.empty();
+
+                if (response && response.data && response.data.length > 0) {
+                    $.each(response.data, function (index, item) {
+                        const imageUrl = item.imageUrl;
+                        const statusClass = item.status === 'ACTIVE' ? 'status-active' : 'status-returned';
+                        const statusText = item.status === 'ACTIVE' ? 'Active' : 'Returned';
+
+                        let actionButtonsHtml = '';
+                        if (item.status === 'ACTIVE') {
+                            actionButtonsHtml = `
+                                <button class="action-btn btn-edit" data-item-id="${item.lostItemId}">
+                                    <i class="fas fa-pencil-alt"></i> Edit
+                                </button>
+                                <button class="action-btn btn-delete" data-item-id="${item.lostItemId}">
+                                    <i class="fas fa-trash-alt"></i> Delete
+                                </button>`;
+                        } else {
+                            actionButtonsHtml = `
+                                <button class="action-btn btn-view-details" data-item-id="${item.lostItemId}">
+                                    <i class="fas fa-eye"></i> View Details
+                                </button>`;
+                        }
+
+                        const cardHtml = `
+                            <div class="item-card">
+                                <div class="card-image">
+                                    <img src="${imageUrl}" alt="${item.title}">
+                                    <span class="status-badge ${statusClass}">${statusText}</span>
+                                </div>
+                                <div class="card-content">
+                                    <h3>${item.title}</h3>
+                                    <p class="item-detail"><i class="fas fa-calendar-alt"></i> Reported on: ${item.lostDate}</p>
+                                    <p class="item-detail"><i class="fas fa-tags"></i> Category: ${item.categoryName}</p>
+                                </div>
+                                <div class="card-actions">${actionButtonsHtml}</div>
+                            </div>`;
+                        $itemsGrid.append(cardHtml);
+                    });
+                } else {
+                    $itemsGrid.html('<p class="no-items-message">No items found matching your criteria.</p>');
+                }
+            },
+            error: function () {
+                $itemsGrid.html('<p class="error-message">Could not load items. Please try again.</p>');
+            }
+        });
+    }
+
+    // --- 2. Suggestions Loader ---
+    function getSearchSuggestions(keyword) {
+        if (keyword.length < 2) {
+            $searchSuggestions.hide().empty();
+            return;
+        }
+
+        $.ajax({
+            url: 'http://localhost:8080/found_item/search_suggestion',
+            method: 'GET',
+            headers: { 'Authorization': 'Bearer ' + authToken },
+            data: { keyword: keyword },
+            success: function(response) {
+                console.log("Suggestions:", response);
+
+                $searchSuggestions.empty();
+
+                let suggestions = response.data ? response.data : response; // handle both formats
+
+                if (suggestions && suggestions.length > 0) {
+                    $.each(suggestions, function(i, title) {
+                        const itemHtml = `<div class="suggestion-item">${title}</div>`;
+                        $searchSuggestions.append(itemHtml);
+                    });
+                    $searchSuggestions.show();
+                } else {
+                    $searchSuggestions.hide();
+                }
+            },
+            error: function() { $searchSuggestions.hide(); }
+        });
+    }
+
+    // --- 3. Helper to reload with all filters ---
+    function loadFilteredItems() {
+        const keyword = $mainSearchInput.val(); 
+    
+        loadLostItemsforKeyword(keyword);
+    }
+
+    // --- 4. Event Listeners ---
+    $mainSearchInput.on('keyup', debounce(function() {
+        const keyword = $(this).val().trim();
+
+        if (keyword === "") {
+            // Text empty -> load all previous items (initial load)
+            $searchSuggestions.hide().empty();
+            loadFilteredItems(); // empty keyword, so backend will return all items
+        } else {
+            // Otherwise -> show suggestions
+            getSearchSuggestions(keyword);
+        }
+    }, 400));
+
+    $searchSuggestions.on('click', '.suggestion-item', function() {
+        const selectedTitle = $(this).text();
+        $mainSearchInput.val(selectedTitle); 
+        $searchSuggestions.hide().empty();
+        loadFilteredItems(); // load items for selected suggestion
+    });
+
+    $mainSearchInput.on('keypress', function(e) {
+        if (e.which === 13) {
+            e.preventDefault();
+            $searchSuggestions.hide().empty();
+            loadFilteredItems();
+        }
+    });
+
+    $categoryFilter.on('change', loadFilteredItems);
+    $statusFilter.on('change', loadFilteredItems);
+
+    // --- 5. Initial Load ---
+    loadLostItemsforKeyword('');
 
 });
 

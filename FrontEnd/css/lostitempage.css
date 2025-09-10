@@ -614,3 +614,87 @@ ul {
 .suggestion-item i {
     color: #9ca3af;
 }
+
+
+
+.control-panel .search-bar {
+    position: relative; /* This is crucial for positioning the dropdown */
+    flex-grow: 1;
+    min-width: 300px;
+}
+
+.search-bar .fa-search {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+    z-index: 2; /* Ensure icon is above the input field's background */
+}
+
+.search-bar input[type="text"] {
+    width: 80%;
+    padding: 0.8rem 1rem 0.8rem 2.7rem;
+    border: 1px solid #d1d5db; /* A standard border color */
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.3s ease;
+}
+
+.search-bar input[type="text"]:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+
+/* --- The Suggestions Dropdown Box --- */
+.search-suggestions-box {
+    display: none; /* Hidden by default */
+    position: absolute;
+    top: calc(100% + 8px); /* Position it below the search bar with an 8px gap */
+    left: 0;
+    width: 80%;
+    background-color: var(--white-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    z-index: 999; /* A high z-index to ensure it appears on top of all other content */
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+/* --- A Single Suggestion Item --- */
+.suggestion-item {
+    padding: 12px 20px;
+    cursor: pointer;
+    font-weight: 500;
+    color: var(--text-color);
+    border-bottom: 1px solid #f3f4f6;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: background-color 0.2s ease;
+}
+
+.suggestion-item:last-child {
+    border-bottom: none;
+}
+
+/* The hover effect */
+.suggestion-item:hover {
+    background-color: var(--primary-light);
+    color: var(--primary-color);
+}
+
+/* Optional: Add an icon to the suggestion items */
+.suggestion-item::before {
+    content: '\f002'; /* Font Awesome search icon code */
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    color: var(--text-light);
+}
+
+.suggestion-item:hover::before {
+    color: var(--primary-color);
+}

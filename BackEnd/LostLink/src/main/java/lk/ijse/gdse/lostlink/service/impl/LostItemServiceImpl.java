@@ -161,4 +161,27 @@ public class LostItemServiceImpl implements LostItemService {
 
     }
 
+    @Override
+    public List<String> findItemTitlesByKeyword(String keyword, String username) {
+        return lostItemRepository.findTopTitlesByKeywordAndUsername(keyword, username);
+    }
+
+    @Override
+    public List<SecondLostItemDto> getFilteredLostItems(String keyword, String currentUsername) {
+        User user = userRepository.findByUsername(currentUsername)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        List<LostItem> lostItems;
+
+        if (keyword == null || keyword.isEmpty()) {
+            lostItems = lostItemRepository.findByUser(user);
+        } else {
+            lostItems = lostItemRepository.findByUserAndTitleContainingIgnoreCase(user, keyword);
+        }
+
+        Type listType = new TypeToken<List<SecondLostItemDto>>() {}.getType();
+
+        List<SecondLostItemDto> dtoList = modelMapper.map(lostItems, listType);
+        return dtoList;
+    }
 }

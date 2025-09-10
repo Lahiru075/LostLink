@@ -16,4 +16,6 @@ public interface NotificationService {
     List<NotificationDto> getRecentNotifications(String currentUsername);
 
     void markNotificationAsRead(Integer notificationId, String currentUsername);
+
+    Object getAllNotifications(String currentUsername);
 }

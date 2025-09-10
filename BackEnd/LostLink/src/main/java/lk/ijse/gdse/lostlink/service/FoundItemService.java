@@ -17,4 +17,8 @@ public interface FoundItemService {
     SecondFoundItemDto getFoundItem(Integer itemId);
 
     void deleteFoundItem(Integer itemId, String currentUsername);
+
+    Object findItemTitlesByKeyword(String keyword, String username);
+
+    List<SecondFoundItemDto> getFilteredFoundItems(String keyword, String currentUsername);
 }

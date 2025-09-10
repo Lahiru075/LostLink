@@ -92,4 +92,31 @@ public class FoundItemController {
         return ResponseEntity.ok(new ApiResponse(200, "Found Item deleted successfully", null));
     }
 
+    @GetMapping("/search_suggestion")
+    public ResponseEntity<ApiResponse> getSearchSuggestions(@RequestParam("keyword") String keyword){
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        return ResponseEntity.ok(new ApiResponse(
+                200,
+                "Search suggestions retrieved successfully",
+                foundItemService.findItemTitlesByKeyword(keyword, username))
+        );
+    }
+
+    @GetMapping("/my_items")
+    public ResponseEntity<ApiResponse> getMyLostItems(
+            // Use @RequestParam for each filter. They are not required.
+            @RequestParam(required = false) String keyword
+    ) {
+
+        String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        return ResponseEntity.ok(new ApiResponse(
+                200,
+                "Filtered lost items retrieved successfully",
+                foundItemService.getFilteredFoundItems(keyword, currentUsername))
+        );
+
+    }
+
 }

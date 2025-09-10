@@ -161,4 +161,28 @@ public class FoundItemServiceImpl implements FoundItemService {
 
         foundItemRepository.delete(foundItem);
     }
+
+    @Override
+    public List<String> findItemTitlesByKeyword(String keyword, String username) {
+        return foundItemRepository.findTopTitlesByKeywordAndUsername(keyword, username);
+    }
+
+    @Override
+    public List<SecondFoundItemDto> getFilteredFoundItems(String keyword, String currentUsername) {
+        User user = userRepository.findByUsername(currentUsername)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        List<FoundItem> foundItems;
+
+        if (keyword == null || keyword.isEmpty()) {
+            foundItems = foundItemRepository.findByUser(user);
+        } else {
+            foundItems = foundItemRepository.findByUserAndTitleContainingIgnoreCase(user, keyword);
+        }
+
+        Type listType = new TypeToken<List<SecondFoundItemDto>>() {}.getType();
+
+        List<SecondFoundItemDto> dtoList = modelMapper.map(foundItems, listType);
+        return dtoList;
+    }
 }

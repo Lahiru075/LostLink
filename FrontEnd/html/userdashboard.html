@@ -132,6 +132,23 @@
                 </div>
             </section>
         </main>
+        <!-- ===== ALL NOTIFICATIONS MODAL ===== -->
+        <div class="modal-overlay" id="allNotificationsModal">
+            <div class="modal-content modal-md"> <!-- Medium size modal -->
+                <div class="modal-header">
+                    <h2>All Notifications</h2>
+    <!-- Move the button to be the second element inside the header -->
+                    <button class="close-modal-btn" id="closeAllNotificationsBtn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <!-- We will use the same styling as the dropdown list -->
+                    <ul id="full-notification-list" class="notification-list">
+                        <!-- All notifications will be loaded here by JavaScript -->
+                        <li class="list-group-item text-center">Loading all notifications...</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

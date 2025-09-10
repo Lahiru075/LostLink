@@ -634,3 +634,85 @@ ul {
     font-style: italic;
     color: var(--text-light);
 }
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    
+    /* === THIS IS THE FIX for the initial loading issue === */
+    opacity: 0;
+    pointer-events: none; /* Makes it non-interactive when hidden */
+    visibility: hidden; /* Completely hides it */
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* This rule makes the modal VISIBLE only when the 'active' class is added */
+.modal-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+    visibility: visible;
+}
+
+/* --- The content box of the modal --- */
+.modal-content {
+    background-color: #fff;
+    border-radius: 12px;
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    transform: scale(0.95);
+    transition: transform 0.3s ease;
+}
+
+.modal-overlay.active .modal-content {
+    transform: scale(1);
+}
+
+/* Sizing for different modals */
+.modal-md { max-width: 600px; }
+.modal-lg { max-width: 800px; }
+
+/* --- Modal Header (with corrected close button position) --- */
+.modal-header {
+    display: flex;
+    justify-content: space-between; /* This pushes the title and button apart */
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-header h2 {
+    font-size: 1.5rem;
+    color: #1f2937;
+}
+
+.close-modal-btn {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    line-height: 1;
+    cursor: pointer;
+    color: #9ca3af;
+    transition: color 0.2s;
+}
+
+.close-modal-btn:hover {
+    color: #1f2937;
+}
+
+/* --- Modal Body --- */
+.modal-body {
+    padding: 1.5rem;
+    overflow-y: auto;
+    /* We use the .notification-list styles from the dropdown, */
+    /* but we might need to adjust the height for the modal */
+    max-height: 65vh; 
+}

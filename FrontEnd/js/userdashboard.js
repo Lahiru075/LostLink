@@ -167,4 +167,110 @@ $(document).ready(function () {
     });
 
 
+
+    // --- Get Modal Elements (add these at the top with other modal variables) ---
+    const $allNotificationsModal = $('#allNotificationsModal');
+    const $closeAllNotificationsBtn = $('#closeAllNotificationsBtn');
+    const $viewAllLink = $('.notification-footer a'); // Select the "View All" link
+    const $fullNotificationList = $('#full-notification-list');
+
+    // --- Functions to control the new modal ---
+    function openAllNotificationsModal() {
+        $allNotificationsModal.addClass('active');
+    }
+    function closeAllNotificationsModal() {
+        $allNotificationsModal.removeClass('active');
+    }
+
+    $closeAllNotificationsBtn.on('click', closeAllNotificationsModal);
+
+    // --- UPDATED Event Handler for "View All" Link ---
+    $viewAllLink.on('click', function(event) {
+        event.preventDefault(); // Prevent the link from trying to navigate
+        
+        // First, close the small dropdown
+        $notificationDropdown.removeClass('show');
+        
+        // Then, open the big modal
+        openAllNotificationsModal();
+        
+        // Now, fetch ALL notifications
+        $fullNotificationList.html('<li class="list-group-item text-center">Loading...</li>');
+        $.ajax({
+            url: 'http://localhost:8080/notification/all', // The new endpoint
+            method: 'GET',
+            headers: { 'Authorization': 'Bearer ' + authToken },
+            success: function(response) {
+                $fullNotificationList.empty();
+                if (response.data && response.data.length > 0) {
+                    // We can reuse the same logic as the dropdown to build the list
+                    $.each(response.data, function(i, noti) {
+                        const isUnreadClass = noti.read ? '' : 'unread';
+                        const icon = noti.targetType === 'MATCH' ? 'fa-link' : 'fa-info-circle';
+                        const notificationDate = new Date(noti.createdAt).toLocaleString();
+                        const notiHtml = `
+                        <li class="list-group-item ${isUnreadClass}" 
+                                data-noti-id="${noti.notificationId}" 
+                                data-target-type="${noti.targetType}" 
+                                data-target-id="${noti.targetId}"
+                                data-is-for-loser="${noti.forLoser}"> 
+
+                                <i class="fas ${icon} notification-icon"></i>
+                                <div>
+                                    <p class="notification-message">${noti.message}</p>
+                                    <span class="notification-time">${notificationDate}</span>
+                                </div>
+                            </li>`; // (Same notiHtml as your dropdown)
+                        $fullNotificationList.append(notiHtml);
+                    });
+                } else {
+                    $fullNotificationList.html('<li class="list-group-item text-center">No notifications found.</li>');
+                }
+            }
+        });
+    });
+
+    // Add click handler for items inside the big modal as well
+    $fullNotificationList.on('click', '.list-group-item', function() {
+        const $item = $(this);
+        const notificationId = $item.data('noti-id');
+        const targetType = $item.data('target-type');
+        const targetId = $item.data('target-id');
+        const isForLoser = $item.data('is-for-loser');
+
+        console.log(isForLoser);
+        
+
+        // If the item is unread, mark it as read via the API
+        if ($item.hasClass('unread')) {
+            $.ajax({
+                url: `http://localhost:8080/notification/${notificationId}/mark-as-read`,
+                method: 'PATCH',
+                headers: { 'Authorization': 'Bearer ' + authToken },
+                success: function() {
+                    console.log(`Notification ${notificationId} marked as read.`);
+                    // Visually mark as read without a full refresh
+                    $item.removeClass('unread');
+                    // Update the badge count after a slight delay
+                    setTimeout(fetchUnreadNotificationCount, 500); 
+                }
+            });
+        }
+
+        // Redirect to the relevant page based on the target
+        if (targetType === 'MATCH') {
+           
+            // 1. Determine which tab to open
+            const tabToOpen = isForLoser ? 'lost' : 'found';
+
+            // 2. Construct a URL with ONE simple parameter
+            const redirectUrl = `matches.html?open_tab=${tabToOpen}`;
+
+            // 3. Redirect the user
+            window.location.href = redirectUrl;
+           
+        }
+    });
+
+
 });
