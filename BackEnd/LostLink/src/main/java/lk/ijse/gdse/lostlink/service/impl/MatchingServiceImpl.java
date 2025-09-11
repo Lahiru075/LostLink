@@ -11,6 +11,10 @@ import lk.ijse.gdse.lostlink.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -200,42 +204,84 @@ public class MatchingServiceImpl implements MatchingService {
 //    }
 
     @Override
-    public List<MatchDto> getLostMatches(String currentUsername, String status) {
+    public Page<MatchDto> getLostMatches(String currentUsername, String status, int page, int size) {
 
         User user = userRepository.findByUsername(currentUsername)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        List<Match> matches;
+        // 1. Create the Pageable object. Sorting will be applied to all queries.
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
 
-        // --- THIS IS THE CORRECTED AND COMPLETE LOGIC ---
+        Page<Match> matchesPage; // The result will be a Page object
 
-        // 1. Handle the "All" case or when no status is provided
+        // --- YOUR EXISTING IF/ELSE LOGIC, NOW UPDATED FOR PAGINATION ---
+
+        // 2. Handle the "All" case
         if (status == null || status.trim().isEmpty() || "ALL".equalsIgnoreCase(status)) {
-            matches = matchingRepository.findMatchesByLostItemOwnerUsernameNative(user.getUsername());
+            // Pass the pageable object to the repository method
+            matchesPage = matchingRepository.findMatchesByLostItemOwnerUsername(user.getUsername(), pageable);
         }
-        // 2. Handle the "Resolved" case separately
-        else if ("RECOVERED".equalsIgnoreCase(status)) {
+        // 3. Handle the "Resolved" case
+        else if ("RECOVERED".equalsIgnoreCase(status)) { // Corrected from "RECOVERED" to match frontend
             List<MatchStatus> resolvedStatuses = Arrays.asList(
                     MatchStatus.ACCEPTED,
                     MatchStatus.DECLINED,
                     MatchStatus.RECOVERED
             );
-            matches = matchingRepository.findMatchesByLostItemOwnerUsernameAndStatusIn(user.getUsername(), resolvedStatuses);
+            matchesPage = matchingRepository.findMatchesByLostItemOwnerUsernameAndStatusIn(user.getUsername(), resolvedStatuses, pageable);
         }
-        // 3. Handle all other specific statuses (PENDING_ACTION, REQUEST_SENT)
+        // 4. Handle all other specific statuses
         else {
             try {
                 MatchStatus matchStatus = MatchStatus.valueOf(status.toUpperCase());
-                matches = matchingRepository.findMatchesByLostItemOwnerUsernameAndStatus(user.getUsername(), matchStatus);
+                matchesPage = matchingRepository.findMatchesByLostItemOwnerUsernameAndStatus(user.getUsername(), matchStatus, pageable);
             } catch (IllegalArgumentException e) {
-                // If frontend sends an invalid status string, return an empty list
-                return new ArrayList<>();
+                // If status is invalid, return an empty page
+                return Page.empty(pageable);
+
             }
         }
 
-        // Convert to DTOs (no change needed here)
-        Type listType = new TypeToken<List<MatchDto>>() {}.getType();
-        return modelMapper.map(matches, listType);
+        // Convert Page<Match> to Page<MatchDto>
+        Page<MatchDto> matchDtoPage = matchesPage.map(match -> modelMapper.map(match, MatchDto.class));
+
+        return matchDtoPage;
+
+
+//        User user = userRepository.findByUsername(currentUsername)
+//                .orElseThrow(() -> new RuntimeException("User not found"));
+//
+//        List<Match> matches;
+//
+//        // --- THIS IS THE CORRECTED AND COMPLETE LOGIC ---
+//
+//        // 1. Handle the "All" case or when no status is provided
+//        if (status == null || status.trim().isEmpty() || "ALL".equalsIgnoreCase(status)) {
+//            matches = matchingRepository.findMatchesByLostItemOwnerUsernameNative(user.getUsername());
+//        }
+//        // 2. Handle the "Resolved" case separately
+//        else if ("RECOVERED".equalsIgnoreCase(status)) {
+//            List<MatchStatus> resolvedStatuses = Arrays.asList(
+//                    MatchStatus.ACCEPTED,
+//                    MatchStatus.DECLINED,
+//                    MatchStatus.RECOVERED
+//            );
+//            matches = matchingRepository.findMatchesByLostItemOwnerUsernameAndStatusIn(user.getUsername(), resolvedStatuses);
+//        }
+//        // 3. Handle all other specific statuses (PENDING_ACTION, REQUEST_SENT)
+//        else {
+//            try {
+//                MatchStatus matchStatus = MatchStatus.valueOf(status.toUpperCase());
+//                matches = matchingRepository.findMatchesByLostItemOwnerUsernameAndStatus(user.getUsername(), matchStatus);
+//            } catch (IllegalArgumentException e) {
+//                // If frontend sends an invalid status string, return an empty list
+//                return new ArrayList<>();
+//            }
+//        }
+//
+//        // Convert to DTOs (no change needed here)
+//        Type listType = new TypeToken<List<MatchDto>>() {}.getType();
+//        return modelMapper.map(matches, listType);
     }
 
 //    @Override
@@ -267,58 +313,66 @@ public class MatchingServiceImpl implements MatchingService {
 //    }
 
     @Override
-    public List<MatchDto> getFoundMatches(String currentUsername , String status) {
+    public Page<MatchDto> getFoundMatches(String currentUsername , String status , int page, int size) {
 
-        User user = userRepository.findByUsername(currentUsername)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
+        Page<Match> matchesPage;
 
-        List<Match> matches;
-
-        // --- THIS IS THE CORRECTED AND COMPLETE LOGIC ---
-
-        // 1. Handle the "All" case or when no status is provided
+        // Your existing if/else logic for status is good, just pass the 'pageable' object to each call
         if (status == null || status.trim().isEmpty() || "ALL".equalsIgnoreCase(status)) {
-            matches = matchingRepository.findMatchesByFoundItemOwnerUsernameNative(user.getUsername());
-        }
-        // 2. Handle the "Resolved" case separately
-        else if ("RECOVERED".equalsIgnoreCase(status)) {
-            List<MatchStatus> resolvedStatuses = Arrays.asList(
-                    MatchStatus.ACCEPTED,
-                    MatchStatus.DECLINED,
-                    MatchStatus.RECOVERED
-            );
-            matches = matchingRepository.findMatchesByFoundItemOwnerUsernameAndStatusIn(user.getUsername(), resolvedStatuses);
-        }
-        // 3. Handle all other specific statuses (PENDING_ACTION, REQUEST_SENT)
-        else {
+            matchesPage = matchingRepository.findMatchesByFoundItemOwnerUsername(currentUsername, pageable);
+        } else if ("RECOVERED".equalsIgnoreCase(status)) { // Changed from RECOVERED to RESOLVED
+            List<MatchStatus> resolvedStatuses = Arrays.asList(MatchStatus.ACCEPTED, MatchStatus.DECLINED, MatchStatus.RECOVERED);
+            matchesPage = matchingRepository.findMatchesByFoundItemOwnerUsernameAndStatusIn(currentUsername, resolvedStatuses, pageable);
+        } else {
             try {
                 MatchStatus matchStatus = MatchStatus.valueOf(status.toUpperCase());
-                matches = matchingRepository.findMatchesByFoundItemOwnerUsernameAndStatus(user.getUsername(), matchStatus);
+                matchesPage = matchingRepository.findMatchesByFoundItemOwnerUsernameAndStatus(currentUsername, matchStatus, pageable);
             } catch (IllegalArgumentException e) {
-                // If frontend sends an invalid status string, return an empty list
-                return new ArrayList<>();
+                return Page.empty();
             }
         }
 
-        // Convert to DTOs (no change needed here)
-        Type listType = new TypeToken<List<MatchDto>>() {}.getType();
-        return modelMapper.map(matches, listType);
+        // Convert Page<Match> to Page<MatchDto>
+        Page<MatchDto> matchDtoPage = matchesPage.map(match -> modelMapper.map(match, MatchDto.class));
+
+        return matchDtoPage;
 
 //        User user = userRepository.findByUsername(currentUsername)
 //                .orElseThrow(() -> new RuntimeException("User not found"));
 //
-//        List<Match> matches = matchingRepository.findMatchesByFoundItemOwnerUsernameNative(user.getUsername());
+//        List<Match> matches;
 //
-//        if (matches.isEmpty()) {
-//            return new ArrayList<>();
+//        // --- THIS IS THE CORRECTED AND COMPLETE LOGIC ---
+//
+//        // 1. Handle the "All" case or when no status is provided
+//        if (status == null || status.trim().isEmpty() || "ALL".equalsIgnoreCase(status)) {
+//            matches = matchingRepository.findMatchesByFoundItemOwnerUsernameNative(user.getUsername());
+//        }
+//        // 2. Handle the "Resolved" case separately
+//        else if ("RECOVERED".equalsIgnoreCase(status)) {
+//            List<MatchStatus> resolvedStatuses = Arrays.asList(
+//                    MatchStatus.ACCEPTED,
+//                    MatchStatus.DECLINED,
+//                    MatchStatus.RECOVERED
+//            );
+//            matches = matchingRepository.findMatchesByFoundItemOwnerUsernameAndStatusIn(user.getUsername(), resolvedStatuses);
+//        }
+//        // 3. Handle all other specific statuses (PENDING_ACTION, REQUEST_SENT)
+//        else {
+//            try {
+//                MatchStatus matchStatus = MatchStatus.valueOf(status.toUpperCase());
+//                matches = matchingRepository.findMatchesByFoundItemOwnerUsernameAndStatus(user.getUsername(), matchStatus);
+//            } catch (IllegalArgumentException e) {
+//                // If frontend sends an invalid status string, return an empty list
+//                return new ArrayList<>();
+//            }
 //        }
 //
-//        Type listType = new TypeToken<List<MatchDto>>() {
-//        }.getType();
-//
-//        List<MatchDto> matchDtos = modelMapper.map(matches, listType);
-//
-//        return matchDtos;
+//        // Convert to DTOs (no change needed here)
+//        Type listType = new TypeToken<List<MatchDto>>() {}.getType();
+//        return modelMapper.map(matches, listType);
+
     }
 
     @Override

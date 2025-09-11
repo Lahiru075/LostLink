@@ -4,6 +4,7 @@ import lk.ijse.gdse.lostlink.dto.MatchDto;
 import lk.ijse.gdse.lostlink.entity.FoundItem;
 import lk.ijse.gdse.lostlink.entity.LostItem;
 import lk.ijse.gdse.lostlink.entity.Match;
+import org.springframework.data.domain.Page;
 
 import java.util.HashMap;
 import java.util.List;
@@ -11,8 +12,8 @@ import java.util.List;
 public interface MatchingService {
     void findMatches(LostItem newLostItem);
     void findMatches(FoundItem newFoundItem);
-    List<MatchDto> getLostMatches(String currentUsername, String status);
-    List<MatchDto> getFoundMatches(String currentUsername, String status);
+    Page<MatchDto> getLostMatches(String currentUsername, String status, int page, int size);
+    Page<MatchDto> getFoundMatches(String currentUsername, String status, int page, int size);
     void deleteAllMatchesAndRelatedNotificationsForLostItem(LostItem lostItem);
     List<Match> findAllByLostItem(LostItem existingLostItem);
     void deleteAll(List<Match> matchesToDelete);

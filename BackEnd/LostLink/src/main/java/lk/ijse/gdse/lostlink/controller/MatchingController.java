@@ -4,6 +4,7 @@ import lk.ijse.gdse.lostlink.dto.ApiResponse;
 import lk.ijse.gdse.lostlink.dto.MatchDto;
 import lk.ijse.gdse.lostlink.service.MatchingService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,19 +19,42 @@ import java.util.List;
 public class MatchingController {
     private final MatchingService matchingService;
 
+//    @GetMapping("/get_lost_matches")
+//    public ResponseEntity<ApiResponse> getLostMatches(@RequestParam(required = false) String status ) {
+//        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+//        List<MatchDto> matches = matchingService.getLostMatches(username, status);
+//        return ResponseEntity.ok(new ApiResponse(200, "User's lost Matches retrieved", matches));
+//    }
+
     @GetMapping("/get_lost_matches")
-    public ResponseEntity<ApiResponse> getLostMatches(@RequestParam(required = false) String status ) {
+    public ResponseEntity<ApiResponse> getLostMatches(
+            @RequestParam(required = false) String status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2") int size // e.g., 4 matches per page
+    ) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        List<MatchDto> matches = matchingService.getLostMatches(username, status);
-        return ResponseEntity.ok(new ApiResponse(200, "User's lost Matches retrieved", matches));
+        Page<MatchDto> matchesPage = matchingService.getLostMatches(username, status, page, size);
+        return ResponseEntity.ok(new ApiResponse(200, "User's found Matches retrieved", matchesPage));
     }
 
+//    @GetMapping("/get_found_matches")
+//    public ResponseEntity<ApiResponse> getFoundMatches(@RequestParam(required = false) String status) {
+//        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+//        List<MatchDto> matches = matchingService.getFoundMatches(username, status);
+//        return ResponseEntity.ok(new ApiResponse(200, "User's found Matches retrieved", matches));
+//    }
+
     @GetMapping("/get_found_matches")
-    public ResponseEntity<ApiResponse> getFoundMatches(@RequestParam(required = false) String status) {
+    public ResponseEntity<ApiResponse> getFoundMatches(
+            @RequestParam(required = false) String status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2") int size // e.g., 4 matches per page
+    ) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        List<MatchDto> matches = matchingService.getFoundMatches(username, status);
-        return ResponseEntity.ok(new ApiResponse(200, "User's found Matches retrieved", matches));
+        Page<MatchDto> matchesPage = matchingService.getFoundMatches(username, status, page, size);
+        return ResponseEntity.ok(new ApiResponse(200, "User's found Matches retrieved", matchesPage));
     }
+
 
     @PatchMapping("/{matchId}/send_request")
     public ResponseEntity<ApiResponse> sendRequest(@PathVariable Integer matchId) {

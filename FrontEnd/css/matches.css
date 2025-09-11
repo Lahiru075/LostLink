@@ -553,3 +553,64 @@ ul {
     background-color: #6b7280; /* A neutral grey color */
     color: #fff;
 }
+
+
+
+/* --- The main container for the pagination buttons --- */
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 2.5rem;
+    padding-bottom: 1rem; /* Add some space at the bottom */
+}
+
+/* --- General style for ALL pagination links (the buttons) --- */
+.pagination-container a.page-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    
+    min-width: 42px; /* Ensures all number buttons have the same width */
+    height: 42px;
+    margin: 0 0.25rem; /* This creates the space between buttons */
+    padding: 0.5rem 1rem;
+    
+    border: 1px solid #e5e7eb; /* Subtle border for all buttons */
+    border-radius: 8px; /* Rounded corners for each individual button */
+    
+    background-color: #fff;
+    color: var(--text-light);
+    font-weight: 500;
+    font-size: 0.95rem;
+    
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* --- Hover effect for clickable links --- */
+.pagination-container a.page-link:not(.disabled):not(.active):hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    background-color: var(--primary-light);
+}
+
+/* --- Style for the CURRENTLY ACTIVE page number --- */
+.pagination-container a.page-link.active {
+    background-color: var(--primary-color);
+    color: var(--white-color);
+    border-color: var(--primary-color);
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+    cursor: default;
+    transform: translateY(-2px); /* Slight lift effect */
+}
+
+/* --- Style for DISABLED links (e.g., "Previous" on the first page) --- */
+.pagination-container a.page-link.disabled {
+    color: #d1d5db; /* A very light grey for disabled text */
+    background-color: #f9fafb;
+    pointer-events: none; /* Make it unclickable */
+    cursor: default;
+}
