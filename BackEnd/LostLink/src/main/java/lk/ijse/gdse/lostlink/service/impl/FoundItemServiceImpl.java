@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -167,62 +168,87 @@ public class FoundItemServiceImpl implements FoundItemService {
         return foundItemRepository.findTopTitlesByKeywordAndUsername(keyword, username);
     }
 
+//    @Override
+//    public List<SecondFoundItemDto> getFilteredFoundItems(String keyword, String currentUsername) {
+//        User user = userRepository.findByUsername(currentUsername)
+//                .orElseThrow(() -> new RuntimeException("User not found"));
+//
+//        List<FoundItem> foundItems;
+//
+//        if (keyword == null || keyword.isEmpty()) {
+//            foundItems = foundItemRepository.findByUser(user);
+//        } else {
+//            foundItems = foundItemRepository.findByUserAndTitleContainingIgnoreCase(user, keyword);
+//        }
+//
+//        Type listType = new TypeToken<List<SecondFoundItemDto>>() {}.getType();
+//
+//        List<SecondFoundItemDto> dtoList = modelMapper.map(foundItems, listType);
+//        return dtoList;
+//    }
+
     @Override
-    public List<SecondFoundItemDto> getFilteredFoundItems(String keyword, String currentUsername) {
+    public Page<SecondFoundItemDto> getFilteredFoundItemsForStatus(String keyword, String categoryName, String status, String currentUsername, int page, int size) {
+
         User user = userRepository.findByUsername(currentUsername)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        List<FoundItem> foundItems;
-
-        if (keyword == null || keyword.isEmpty()) {
-            foundItems = foundItemRepository.findByUser(user);
-        } else {
-            foundItems = foundItemRepository.findByUserAndTitleContainingIgnoreCase(user, keyword);
-        }
-
-        Type listType = new TypeToken<List<SecondFoundItemDto>>() {}.getType();
-
-        List<SecondFoundItemDto> dtoList = modelMapper.map(foundItems, listType);
-        return dtoList;
-    }
-
-    @Override
-    public List<SecondFoundItemDto> getFilteredLostItemsForStatus(String keyword, String status, String category, String currentUsername) {
-        User user = userRepository.findByUsername(currentUsername)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        // 3. Create a Pageable object with sorting
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
 
         FoundItemStatus itemStatus = null;
         if (status != null && !status.isEmpty()) {
             try {
                 itemStatus = FoundItemStatus.valueOf(status.toUpperCase());
-            } catch (IllegalArgumentException ignored) {}
+            } catch (IllegalArgumentException ignored) {
+
+            }
         }
+
+        // ... (your existing logic to parse status) ...
 
         boolean hasKeyword = keyword != null && !keyword.isEmpty();
         boolean hasStatus = itemStatus != null;
-        boolean hasCategory = category != null && !category.isEmpty();
+        boolean hasCategory = categoryName != null && !categoryName.isEmpty();
 
-        List<FoundItem> foundItems;
+        // 4. This now returns a Page<LostItem> instead of a List<LostItem>
+        Page<FoundItem> foundItemPage;
 
+        // 5. Update each if/else condition to call the paginated repository method
         if (!hasKeyword && !hasStatus && !hasCategory) {
-            foundItems = foundItemRepository.findByUser(user);
+            System.out.println("1");
+            foundItemPage = foundItemRepository.findByUser(user, pageable);
         } else if (hasKeyword && !hasStatus && !hasCategory) {
-            foundItems = foundItemRepository.findByUserAndTitleContainingIgnoreCase(user, keyword);
+            System.out.println("2");
+            foundItemPage = foundItemRepository.findByUserAndTitleContainingIgnoreCase(user, keyword, pageable);
         } else if (!hasKeyword && hasStatus && !hasCategory) {
-            foundItems = foundItemRepository.findByUserAndStatus(user, itemStatus);
+            System.out.println("3");
+            foundItemPage = foundItemRepository.findByUserAndStatus(user, itemStatus, pageable);
         } else if (!hasKeyword && !hasStatus && hasCategory) {
-            foundItems = foundItemRepository.findByUserAndCategory_CategoryNameIgnoreCase(user, category);
+            System.out.println("4");
+            foundItemPage = foundItemRepository.findByUserAndCategory_CategoryNameIgnoreCase(user, categoryName, pageable);
         } else if (!hasKeyword && hasStatus && hasCategory) {
-            foundItems = foundItemRepository.findByUserAndStatusAndCategory_CategoryNameIgnoreCase(user, itemStatus, category);
+            System.out.println("5");
+            foundItemPage = foundItemRepository.findByUserAndStatusAndCategory_CategoryNameIgnoreCase(user, itemStatus, categoryName, pageable);
         } else if (hasKeyword && !hasStatus && hasCategory) {
-            foundItems = foundItemRepository.findByUserAndTitleContainingIgnoreCaseAndCategory_CategoryNameIgnoreCase(user, keyword, category);
+            System.out.println("6");
+            foundItemPage = foundItemRepository.findByUserAndTitleContainingIgnoreCaseAndCategory_CategoryNameIgnoreCase(user, keyword, categoryName, pageable);
         } else if (hasKeyword && hasStatus && !hasCategory) {
-            foundItems = foundItemRepository.findByUserAndTitleContainingIgnoreCaseAndStatus(user, keyword, itemStatus);
+            System.out.println("7");
+            foundItemPage = foundItemRepository.findByUserAndTitleContainingIgnoreCaseAndStatus(user, keyword, itemStatus, pageable);
         } else {
-            foundItems = foundItemRepository.findByUserAndTitleContainingIgnoreCaseAndStatusAndCategory_CategoryNameIgnoreCase(user, keyword, itemStatus, category);
+            System.out.println("8");
+            foundItemPage = foundItemRepository.findByUserAndTitleContainingIgnoreCaseAndStatusAndCategory_CategoryNameIgnoreCase(user, keyword, itemStatus, categoryName, pageable);
         }
 
-        Type listType = new TypeToken<List<SecondFoundItemDto>>() {}.getType();
-        return modelMapper.map(foundItems, listType);
+        // 6. Convert the Page of entities to a Page of DTOs
+        List<SecondFoundItemDto> dtoList = modelMapper.map(
+                foundItemPage.getContent(),
+                new TypeToken<List<SecondFoundItemDto>>() {}.getType()
+        );
+
+        // 7. Create a new Page object with the DTOs and return it
+        return new PageImpl<>(dtoList, pageable, foundItemPage.getTotalElements());
+
     }
 }

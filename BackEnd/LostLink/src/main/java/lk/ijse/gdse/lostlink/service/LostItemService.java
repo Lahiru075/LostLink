@@ -3,6 +3,7 @@ package lk.ijse.gdse.lostlink.service;
 import lk.ijse.gdse.lostlink.dto.LostItemDto;
 import lk.ijse.gdse.lostlink.dto.SecondLostItemDto;
 import lk.ijse.gdse.lostlink.entity.LostItem;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,9 +21,7 @@ public interface LostItemService {
 
     void deleteLostItem(Integer itemId, String currentUsername);
 
-    Object findItemTitlesByKeyword(String keyword, String username);
+    List<String> findItemTitlesByKeyword(String keyword, String username);
 
-//    List<SecondLostItemDto> getFilteredLostItems(String keyword, String currentUsername);
-
-    List<SecondLostItemDto> getFilteredLostItemsForStatus(String keyword, String status,String category ,String currentUsername);
+    Page<SecondLostItemDto> getFilteredLostItems(String keyword, String categoryName, String status, String username, int page, int size);
 }

@@ -3,6 +3,7 @@ package lk.ijse.gdse.lostlink.controller;
 import lk.ijse.gdse.lostlink.dto.*;
 import lk.ijse.gdse.lostlink.service.FoundItemService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -103,19 +104,36 @@ public class FoundItemController {
         );
     }
 
-    @GetMapping("/items_for_status")
-    public ResponseEntity<ApiResponse> getLostItemForStatus(
-            @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) String status,
-            @RequestParam(required = false) String category // new parameter
-    ) {
-        String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+//    @GetMapping("/items_for_status")
+//    public ResponseEntity<ApiResponse> getLostItemForStatus(
+//            @RequestParam(required = false) String keyword,
+//            @RequestParam(required = false) String status,
+//            @RequestParam(required = false) String category // new parameter
+//    ) {
+//        String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+//
+//        return ResponseEntity.ok(new ApiResponse(
+//                200,
+//                "Retrieved successfully Filtered found items",
+//                foundItemService.getFilteredLostItemsForStatus(keyword, status, category, currentUsername))
+//        );
+//    }
 
-        return ResponseEntity.ok(new ApiResponse(
-                200,
-                "Retrieved successfully Filtered found items",
-                foundItemService.getFilteredLostItemsForStatus(keyword, status, category, currentUsername))
-        );
+    @GetMapping("/items_for_status")
+    public ResponseEntity<ApiResponse> getMyLostItems(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String categoryName,
+            @RequestParam(required = false) String status,
+            // --- NEW PAGINATION PARAMETERS ---
+            @RequestParam(defaultValue = "0") int page, // Default to the first page
+            @RequestParam(defaultValue = "4") int size   // Default to 6 items per page
+    ) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        // The service now returns a Page object
+        Page<SecondFoundItemDto> itemPage = foundItemService.getFilteredFoundItemsForStatus(keyword, categoryName, status, username, page, size);
+
+        return ResponseEntity.ok(new ApiResponse(200, "Items retrieved successfully", itemPage));
     }
 
 }
