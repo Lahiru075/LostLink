@@ -185,4 +185,44 @@ public class FoundItemServiceImpl implements FoundItemService {
         List<SecondFoundItemDto> dtoList = modelMapper.map(foundItems, listType);
         return dtoList;
     }
+
+    @Override
+    public List<SecondFoundItemDto> getFilteredLostItemsForStatus(String keyword, String status, String category, String currentUsername) {
+        User user = userRepository.findByUsername(currentUsername)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        FoundItemStatus itemStatus = null;
+        if (status != null && !status.isEmpty()) {
+            try {
+                itemStatus = FoundItemStatus.valueOf(status.toUpperCase());
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        boolean hasKeyword = keyword != null && !keyword.isEmpty();
+        boolean hasStatus = itemStatus != null;
+        boolean hasCategory = category != null && !category.isEmpty();
+
+        List<FoundItem> foundItems;
+
+        if (!hasKeyword && !hasStatus && !hasCategory) {
+            foundItems = foundItemRepository.findByUser(user);
+        } else if (hasKeyword && !hasStatus && !hasCategory) {
+            foundItems = foundItemRepository.findByUserAndTitleContainingIgnoreCase(user, keyword);
+        } else if (!hasKeyword && hasStatus && !hasCategory) {
+            foundItems = foundItemRepository.findByUserAndStatus(user, itemStatus);
+        } else if (!hasKeyword && !hasStatus && hasCategory) {
+            foundItems = foundItemRepository.findByUserAndCategory_CategoryNameIgnoreCase(user, category);
+        } else if (!hasKeyword && hasStatus && hasCategory) {
+            foundItems = foundItemRepository.findByUserAndStatusAndCategory_CategoryNameIgnoreCase(user, itemStatus, category);
+        } else if (hasKeyword && !hasStatus && hasCategory) {
+            foundItems = foundItemRepository.findByUserAndTitleContainingIgnoreCaseAndCategory_CategoryNameIgnoreCase(user, keyword, category);
+        } else if (hasKeyword && hasStatus && !hasCategory) {
+            foundItems = foundItemRepository.findByUserAndTitleContainingIgnoreCaseAndStatus(user, keyword, itemStatus);
+        } else {
+            foundItems = foundItemRepository.findByUserAndTitleContainingIgnoreCaseAndStatusAndCategory_CategoryNameIgnoreCase(user, keyword, itemStatus, category);
+        }
+
+        Type listType = new TypeToken<List<SecondFoundItemDto>>() {}.getType();
+        return modelMapper.map(foundItems, listType);
+    }
 }

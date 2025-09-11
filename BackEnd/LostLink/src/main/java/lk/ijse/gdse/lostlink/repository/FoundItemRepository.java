@@ -1,9 +1,6 @@
 package lk.ijse.gdse.lostlink.repository;
 
-import lk.ijse.gdse.lostlink.entity.Category;
-import lk.ijse.gdse.lostlink.entity.FoundItem;
-import lk.ijse.gdse.lostlink.entity.FoundItemStatus;
-import lk.ijse.gdse.lostlink.entity.User;
+import lk.ijse.gdse.lostlink.entity.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -20,6 +17,17 @@ public interface FoundItemRepository  extends JpaRepository<FoundItem, Integer> 
     @Query("SELECT li.title FROM FoundItem li WHERE LOWER(li.title) LIKE LOWER(CONCAT('%', :keyword, '%')) AND li.user.username = :username ORDER BY li.createdAt DESC")
     List<String> findTopTitlesByKeywordAndUsername(@Param("keyword") String keyword, @Param("username") String username);
 
-
     List<FoundItem> findByUserAndTitleContainingIgnoreCase(User user, String keyword);
+
+    List<FoundItem> findByUserAndStatus(User user, FoundItemStatus itemStatus);
+
+    List<FoundItem> findByUserAndCategory_CategoryNameIgnoreCase(User user, String category);
+
+    List<FoundItem> findByUserAndStatusAndCategory_CategoryNameIgnoreCase(User user, FoundItemStatus itemStatus, String category);
+
+    List<FoundItem> findByUserAndTitleContainingIgnoreCaseAndCategory_CategoryNameIgnoreCase(User user, String keyword, String category);
+
+    List<FoundItem> findByUserAndTitleContainingIgnoreCaseAndStatus(User user, String keyword, FoundItemStatus itemStatus);
+
+    List<FoundItem> findByUserAndTitleContainingIgnoreCaseAndStatusAndCategory_CategoryNameIgnoreCase(User user, String keyword, FoundItemStatus itemStatus, String category);
 }

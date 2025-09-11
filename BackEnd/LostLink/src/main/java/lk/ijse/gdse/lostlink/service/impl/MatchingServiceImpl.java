@@ -15,10 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -203,44 +200,125 @@ public class MatchingServiceImpl implements MatchingService {
 //    }
 
     @Override
-    public List<MatchDto> getLostMatches(String currentUsername) {
+    public List<MatchDto> getLostMatches(String currentUsername, String status) {
 
         User user = userRepository.findByUsername(currentUsername)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        List<Match> matches = matchingRepository.findMatchesByLostItemOwnerUsernameNative(user.getUsername());
+        List<Match> matches;
 
-        if (matches.isEmpty()) {
-            return new ArrayList<>();
+        // --- THIS IS THE CORRECTED AND COMPLETE LOGIC ---
+
+        // 1. Handle the "All" case or when no status is provided
+        if (status == null || status.trim().isEmpty() || "ALL".equalsIgnoreCase(status)) {
+            matches = matchingRepository.findMatchesByLostItemOwnerUsernameNative(user.getUsername());
+        }
+        // 2. Handle the "Resolved" case separately
+        else if ("RECOVERED".equalsIgnoreCase(status)) {
+            List<MatchStatus> resolvedStatuses = Arrays.asList(
+                    MatchStatus.ACCEPTED,
+                    MatchStatus.DECLINED,
+                    MatchStatus.RECOVERED
+            );
+            matches = matchingRepository.findMatchesByLostItemOwnerUsernameAndStatusIn(user.getUsername(), resolvedStatuses);
+        }
+        // 3. Handle all other specific statuses (PENDING_ACTION, REQUEST_SENT)
+        else {
+            try {
+                MatchStatus matchStatus = MatchStatus.valueOf(status.toUpperCase());
+                matches = matchingRepository.findMatchesByLostItemOwnerUsernameAndStatus(user.getUsername(), matchStatus);
+            } catch (IllegalArgumentException e) {
+                // If frontend sends an invalid status string, return an empty list
+                return new ArrayList<>();
+            }
         }
 
-        Type listType = new TypeToken<List<MatchDto>>() {
-        }.getType();
-
-        List<MatchDto> matchDtos = modelMapper.map(matches, listType);
-
-        return matchDtos;
-
+        // Convert to DTOs (no change needed here)
+        Type listType = new TypeToken<List<MatchDto>>() {}.getType();
+        return modelMapper.map(matches, listType);
     }
 
+//    @Override
+//    public List<MatchDto> getLostMatches(String currentUsername , String status) {
+//
+//        User user = userRepository.findByUsername(currentUsername)
+//                .orElseThrow(() -> new RuntimeException("User not found"));
+//
+//        List<Match> matches;
+//
+//        if (status == null || status.isEmpty() || status.equalsIgnoreCase("ALL")) {
+//            matches = matchingRepository.findMatchesByLostItemOwnerUsernameNative(user.getUsername()); // Your existing method
+//        } else {
+//            try {
+//                MatchStatus matchStatus = MatchStatus.valueOf(status.toUpperCase());
+//                matches = matchingRepository.findByLostItemOwnerUsernameAndStatus(user.getUsername(), matchStatus);
+//            } catch (IllegalArgumentException e) {
+//                return new ArrayList<>();
+//            }
+//        }
+//
+//        Type listType = new TypeToken<List<MatchDto>>() {
+//        }.getType();
+//
+//        List<MatchDto> matchDtos = modelMapper.map(matches, listType);
+//
+//        return matchDtos;
+//
+//    }
+
     @Override
-    public List<MatchDto> getFoundMatches(String currentUsername) {
+    public List<MatchDto> getFoundMatches(String currentUsername , String status) {
 
         User user = userRepository.findByUsername(currentUsername)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        List<Match> matches = matchingRepository.findMatchesByFoundItemOwnerUsernameNative(user.getUsername());
+        List<Match> matches;
 
-        if (matches.isEmpty()) {
-            return new ArrayList<>();
+        // --- THIS IS THE CORRECTED AND COMPLETE LOGIC ---
+
+        // 1. Handle the "All" case or when no status is provided
+        if (status == null || status.trim().isEmpty() || "ALL".equalsIgnoreCase(status)) {
+            matches = matchingRepository.findMatchesByFoundItemOwnerUsernameNative(user.getUsername());
+        }
+        // 2. Handle the "Resolved" case separately
+        else if ("RECOVERED".equalsIgnoreCase(status)) {
+            List<MatchStatus> resolvedStatuses = Arrays.asList(
+                    MatchStatus.ACCEPTED,
+                    MatchStatus.DECLINED,
+                    MatchStatus.RECOVERED
+            );
+            matches = matchingRepository.findMatchesByFoundItemOwnerUsernameAndStatusIn(user.getUsername(), resolvedStatuses);
+        }
+        // 3. Handle all other specific statuses (PENDING_ACTION, REQUEST_SENT)
+        else {
+            try {
+                MatchStatus matchStatus = MatchStatus.valueOf(status.toUpperCase());
+                matches = matchingRepository.findMatchesByFoundItemOwnerUsernameAndStatus(user.getUsername(), matchStatus);
+            } catch (IllegalArgumentException e) {
+                // If frontend sends an invalid status string, return an empty list
+                return new ArrayList<>();
+            }
         }
 
-        Type listType = new TypeToken<List<MatchDto>>() {
-        }.getType();
+        // Convert to DTOs (no change needed here)
+        Type listType = new TypeToken<List<MatchDto>>() {}.getType();
+        return modelMapper.map(matches, listType);
 
-        List<MatchDto> matchDtos = modelMapper.map(matches, listType);
-
-        return matchDtos;
+//        User user = userRepository.findByUsername(currentUsername)
+//                .orElseThrow(() -> new RuntimeException("User not found"));
+//
+//        List<Match> matches = matchingRepository.findMatchesByFoundItemOwnerUsernameNative(user.getUsername());
+//
+//        if (matches.isEmpty()) {
+//            return new ArrayList<>();
+//        }
+//
+//        Type listType = new TypeToken<List<MatchDto>>() {
+//        }.getType();
+//
+//        List<MatchDto> matchDtos = modelMapper.map(matches, listType);
+//
+//        return matchDtos;
     }
 
     @Override
@@ -379,5 +457,35 @@ public class MatchingServiceImpl implements MatchingService {
         response.put("mobile", foundUser.getPhoneNumber());
 
         return response;
+    }
+
+    @Override
+    @Transactional
+    public void markAsRecovered(Integer matchId, String username) {
+        Match match = matchingRepository.findById(matchId)
+                .orElseThrow(() -> new RuntimeException("Match not found"));
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        boolean isLostItemOwner = match.getLostItem().getUser().equals(user);
+        boolean isFoundItemOwner = match.getFoundItem().getUser().equals(user);
+
+        if (!isLostItemOwner && !isFoundItemOwner) {
+            throw new RuntimeException("You are not authorized to mark this item as recovered");
+        }
+
+        match.setStatus(MatchStatus.RECOVERED);
+        matchingRepository.save(match);
+
+        LostItem lostItem = match.getLostItem();
+        FoundItem foundItem = match.getFoundItem();
+
+        lostItem.setStatus(LostItemStatus.RECOVERED);
+        foundItem.setStatus(FoundItemStatus.RETURNED);
+
+        lostItemRepository.save(lostItem);
+        foundItemRepository.save(foundItem);
+
     }
 }

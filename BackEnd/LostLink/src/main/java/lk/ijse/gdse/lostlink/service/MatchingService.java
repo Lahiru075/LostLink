@@ -11,8 +11,8 @@ import java.util.List;
 public interface MatchingService {
     void findMatches(LostItem newLostItem);
     void findMatches(FoundItem newFoundItem);
-    List<MatchDto> getLostMatches(String currentUsername);
-    List<MatchDto> getFoundMatches(String currentUsername);
+    List<MatchDto> getLostMatches(String currentUsername, String status);
+    List<MatchDto> getFoundMatches(String currentUsername, String status);
     void deleteAllMatchesAndRelatedNotificationsForLostItem(LostItem lostItem);
     List<Match> findAllByLostItem(LostItem existingLostItem);
     void deleteAll(List<Match> matchesToDelete);
@@ -26,4 +26,6 @@ public interface MatchingService {
     void declineRequest(String username, Integer matchId);
 
     Object getContactDetails(Integer matchId, String username);
+
+    void markAsRecovered(Integer matchId, String username);
 }

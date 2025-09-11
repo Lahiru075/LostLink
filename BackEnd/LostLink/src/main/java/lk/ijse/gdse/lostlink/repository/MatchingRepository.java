@@ -1,9 +1,6 @@
 package lk.ijse.gdse.lostlink.repository;
 
-import lk.ijse.gdse.lostlink.entity.FoundItem;
-import lk.ijse.gdse.lostlink.entity.LostItem;
-import lk.ijse.gdse.lostlink.entity.Match;
-import lk.ijse.gdse.lostlink.entity.User;
+import lk.ijse.gdse.lostlink.entity.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -29,9 +26,24 @@ public interface MatchingRepository extends JpaRepository<Match, Integer> {
                     "WHERE u.username = :username",
             nativeQuery = true
     )
-    List<Match> findMatchesByFoundItemOwnerUsernameNative(String username);
+    List<Match> findMatchesByFoundItemOwnerUsernameNative(@Param("username")String username);
 
     List<Match> findAllByLostItem(LostItem lostItem);
 
     List<Match> findAllByFoundItem(FoundItem foundItem);
+
+    @Query("SELECT m FROM Match m JOIN FETCH m.lostItem li JOIN FETCH m.foundItem fi WHERE li.user.username = :username AND m.status = :status")
+    List<Match> findMatchesByLostItemOwnerUsernameAndStatus(@Param("username") String username, @Param("status") MatchStatus status);
+
+    // For the "Resolved" tab (takes a list of statuses)
+    @Query("SELECT m FROM Match m JOIN FETCH m.lostItem li JOIN FETCH m.foundItem fi WHERE li.user.username = :username AND m.status IN :statuses")
+    List<Match> findMatchesByLostItemOwnerUsernameAndStatusIn(@Param("username") String username, @Param("statuses") List<MatchStatus> statuses);
+
+
+    @Query("SELECT m FROM Match m JOIN FETCH m.lostItem li JOIN FETCH m.foundItem fi WHERE fi.user.username = :username AND m.status = :status")
+    List<Match> findMatchesByFoundItemOwnerUsernameAndStatus(@Param("username") String username, @Param("status") MatchStatus status);
+
+    @Query("SELECT m FROM Match m JOIN FETCH m.lostItem li JOIN FETCH m.foundItem fi WHERE fi.user.username = :username AND m.status IN :statuses")
+    List<Match> findMatchesByFoundItemOwnerUsernameAndStatusIn(@Param("username") String username, @Param("statuses") List<MatchStatus> statuses);
+
 }

@@ -50,10 +50,18 @@
 
             <!-- Tab Content 1: Lost Item Matches -->
             <div id="LostItemMatches" class="tab-content active">
-                <nav class="filter-tabs">
-                    <button class="filter-tab-btn active">All</button> <button class="filter-tab-btn">Action
-                        Needed</button> <button class="filter-tab-btn">Request Sent</button> <button
-                        class="filter-tab-btn">Resolved</button>
+                <!-- <nav class="filter-tabs">
+                    <button class="filter-tab-btn active">All</button> 
+                    <button class="filter-tab-btn">Action Needed</button> 
+                    <button class="filter-tab-btn">Request Sent</button> 
+                    <button class="filter-tab-btn">Resolved</button>
+                </nav> -->
+                <nav class="filter-tabs" id="lost-item-filter-tabs">
+                    <button class="filter-tab-btn active" data-status="ALL">All</button>
+                    <button class="filter-tab-btn" data-status="PENDING_ACTION">Action Needed</button>
+                    <button class="filter-tab-btn" data-status="REQUEST_SENT">Request Sent</button>
+                    <!-- For Resolved, we might need to query for both ACCEPTED and DECLINED, handled in backend -->
+                    <button class="filter-tab-btn" data-status="RECOVERED">Recovered</button>
                 </nav>
                 <div class="matches-list" id="lost-matches-list">
                     <!-- Lost item matches will be loaded here by JavaScript -->
@@ -62,10 +70,11 @@
 
             <!-- Tab Content 2: Found Item Matches -->
             <div id="FoundItemMatches" class="tab-content">
-                <nav class="filter-tabs">
-                    <button class="filter-tab-btn active">All</button> <button class="filter-tab-btn">Request
-                        Received</button> <button class="filter-tab-btn">Awaiting Claim</button> <button
-                        class="filter-tab-btn">Resolved</button>
+                <nav class="filter-tabs" id="found-item-filter-tabs">
+                    <button class="filter-tab-btn active" data-status="ALL">All</button>         
+                    <button class="filter-tab-btn" data-status="REQUEST_SENT">Request Received</button> 
+                    <button class="filter-tab-btn" data-status="PENDING_ACTION">Awaiting Claim</button>
+                    <button class="filter-tab-btn" data-status="RECOVERED">Recovered</button>
                 </nav>
                 <div class="matches-list" id="found-matches-list">
                     <!-- Found item matches will be loaded here by JavaScript -->

@@ -33,8 +33,7 @@ $(document).ready(function () {
     }
 
     // --- Now, load the data for both tabs as usual ---
-    loadLostItemMatches();
-    loadFoundItemMatches();
+
 
     
     const $mapViewModal = $('#mapViewModal');
@@ -98,200 +97,280 @@ $(document).ready(function () {
 
 
     // --- Function to Load Matches for LOST Items ---
-    function loadLostItemMatches() {
-        const $listContainer = $('#lost-matches-list');
-        $listContainer.html('<p class="loading-message">Loading matches for your lost items...</p>');
+    // function loadLostItemMatches() {
+    //     const $listContainer = $('#lost-matches-list');
+    //     $listContainer.html('<p class="loading-message">Loading matches for your lost items...</p>');
 
-        $.ajax({
-            url: 'http://localhost:8080/matching/get_lost_matches',
-            method: 'GET',
-            headers: { 'Authorization': 'Bearer ' + authToken },
-            success: function (response) {
+    //     $.ajax({
+    //         url: 'http://localhost:8080/matching/get_lost_matches',
+    //         method: 'GET',
+    //         headers: { 'Authorization': 'Bearer ' + authToken },
+    //         success: function (response) {
                 
-                $listContainer.empty();
-                if (response.data && response.data.length > 0) {
-                    $.each(response.data, function (i, match) {
+    //             $listContainer.empty();
+    //             if (response.data && response.data.length > 0) {
+    //                 $.each(response.data, function (i, match) {
 
-                        console.log(match);
+                    
 
-                        let footerHtml = '';
-                        if (match.status === 'PENDING_ACTION') {
-                            footerHtml = `<span class="status-badge status-action">Action Needed</span><div class="action-buttons"><a href="#" class="text-link">Not a Match</a><button class="btn-primary btn-send-request" data-match-id="${match.matchId}">Send Contact Request</button></div>`;
-                        } else if (match.status === 'REQUEST_SENT') {
-                            footerHtml = `<span class="status-badge status-sent">Request Sent</span><div class="action-buttons"><p class="awaiting-text">Awaiting response...</p></div>`;
-                        } else if (match.status === 'ACCEPTED') {
-                            // === THIS IS THE NEW PART FOR THE LOSER ===
-                            footerHtml = `
-                                <span class="status-badge status-accepted">ACCEPTED</span>
-                                <div class="action-buttons">
-                                    <button class="btn-success btn-view-contact" data-match-id="${match.matchId}">
-                                        <i class="fas fa-phone-alt"></i> View Finder's Contact
-                                    </button>
-                                </div>
-                            `;
-                        } else { // DECLINED
-                            footerHtml = `<span class="status-badge status-declined">Declined</span>`;
-                        }
-
-
-
-                        const cardHtml = `
-                            <div class="match-card ${match.status === 'REQUEST_SENT' ? 'state-request-received' : ''}">
-                                <div class="card-header">
-                                    <h3>Potential owner for the '${match.foundItemTitle}' you found</h3>
-                                </div>
-                                <div class="comparison-view">
-                                    <div class="item-half">
-                                        <label>Item You Found</label>
-                                        <img src="${match.foundItemImageUrl}" alt="${match.foundItemTitle}">
-                                        <p class="item-name">${match.foundItemTitle}</p>
-                                    </div>
-                                    <div class="match-indicator">
-                                        <i class="fas fa-arrows-left-right"></i>
-                                        <span>${match.matchScore}% Match</span>
-                                    </div>
-                                    <div class="item-half">
-                                        <label>Claimant's Lost Item</label>
-                                        <img src="${match.lostItemImageUrl}" alt="${match.lostItemTitle}">
-                                        <p class="item-name">${match.lostItemTitle}</p>
-                                    </div>
-                                </div>
-
-                                <!-- ===== මෙන්න අලුතින් එකතු කළ කොටස ===== -->
-                                <div class="location-viewer">
-                                    <button class="btn-view-location" 
-                                            data-lost-lat="${match.lostItemLatitude}" 
-                                            data-lost-lng="${match.lostItemLongitude}"
-                                            data-found-lat="${match.foundItemLatitude}"
-                                            data-found-lng="${match.foundItemLongitude}">
-                                        <i class="fas fa-map-marked-alt"></i> View Locations on Map
-                                    </button>
-                                </div>
-                                <!-- ======================================= -->
-
-                                <div class="match-footer">
-                                    ${footerHtml}
-                                </div>
-                            </div>
-                        `;
+    //                     let footerHtml = '';
+    //                     if (match.status === 'PENDING_ACTION') {
+    //                         footerHtml = `
+    //                             <span class="status-badge status-action">Action Needed</span>
+    //                             <div class="action-buttons">
+    //                                 <button class="text-link btn-decline-match" data-match-id="${match.matchId}">Not a Match</button>
+    //                                 <button class="btn-primary btn-send-request" data-match-id="${match.matchId}">Send Contact Request</button>
+    //                             </div>
+    //                         `;
+    //                     } else if (match.status === 'REQUEST_SENT') {
+    //                         footerHtml = `
+    //                             <span class="status-badge status-sent">Request Sent</span>
+    //                             <div class="action-buttons">
+    //                                 <p class="awaiting-text">Awaiting finder's response...</p>
+    //                             </div>
+    //                         `;
+    //                     } else if (match.status === 'ACCEPTED') {
+    //                         footerHtml = `
+    //                             <span class="status-badge status-accepted">CONTACT ACCEPTED</span>
+    //                             <div class="action-buttons">
+    //                                 <button class="btn-primary btn-view-contact" data-match-id="${match.matchId}">
+    //                                     <i class="fas fa-phone-alt"></i> View Contact
+    //                                 </button>
+    //                                 <button class="btn-success btn-mark-recovered" data-match-id="${match.matchId}">
+    //                                     <i class="fas fa-check-circle"></i> Mark as Recovered
+    //                                 </button>
+    //                             </div>
+    //                         `;
+    //                     } else if (match.status === 'DECLINED') {
+    //                         footerHtml = `
+    //                             <span class="status-badge status-declined">DECLINED</span>
+    //                             <div class="action-buttons">
+    //                                 <p class="status-text">The finder declined your request.</p>
+    //                             </div>
+    //                         `;
+    //                     } else if (match.status === 'RECOVERED') {
+    //                         // === THIS IS THE NEW PART FOR THE FINAL STATUS ===
+    //                         footerHtml = `
+    //                             <span class="status-badge status-recovered">RECOVERED</span>
+    //                             <div class="action-buttons">
+    //                                 <p class="status-text"><i class="fas fa-check-circle"></i> Transaction Completed!</p>
+    //                             </div>
+    //                         `;
+    //                     } else {
+    //                         // Fallback for any other status
+    //                         footerHtml = `<span class="status-badge">${match.status}</span>`;
+    //                     }
 
 
-                        // const cardHtml = `
-                        //     <div class="match-card">
-                        //         <div class="card-header"><h3>Potential match for your '${match.lostItemTitle}'</h3></div>
-                        //         <div class="comparison-view">
-                        //             <div class="item-half"><label>Your Lost Item</label><img src="http://localhost:8080/uploads/${match.lostItemImageUrl}" alt="${match.lostItemTitle}"><p class="item-name">${match.lostItemTitle}</p></div>
-                        //             <div class="match-indicator"><i class="fas fa-arrows-left-right"></i><span>${match.matchScore}% Match</span></div>
-                        //             <div class="item-half"><label>Matched Found Item</label><img src="http://localhost:8080/uploads/${match.foundItemImageUrl}" alt="${match.foundItemTitle}"><p class="item-name">${match.foundItemTitle}</p></div>
-                        //         </div>
-                        //         <div class="match-footer">${footerHtml}</div>
-                        //     </div>`;
-                        $listContainer.append(cardHtml);
-                    });
-                } else {
-                    $listContainer.html('<p class="no-items-message">No matches found for your lost items yet.</p>');
-                }
-            },
-            error: function () { $listContainer.html('<p class="loading-message">Could not load matches.</p>'); }
-        });
-    }
+
+    //                     const cardHtml = `
+    //                         <div class="match-card ${match.status === 'REQUEST_SENT' ? 'state-request-received' : ''}">
+    //                             <div class="card-header">
+    //                                 <h3>Potential owner for the '${match.foundItemTitle}' you found</h3>
+    //                             </div>
+    //                             <div class="comparison-view">
+    //                                 <div class="item-half">
+    //                                     <label>Item You Found</label>
+    //                                     <img src="${match.foundItemImageUrl}" alt="${match.foundItemTitle}">
+    //                                     <p class="item-name">${match.foundItemTitle}</p>
+    //                                 </div>
+    //                                 <div class="match-indicator">
+    //                                     <i class="fas fa-arrows-left-right"></i>
+    //                                     <span>${match.matchScore}% Match</span>
+    //                                 </div>
+    //                                 <div class="item-half">
+    //                                     <label>Claimant's Lost Item</label>
+    //                                     <img src="${match.lostItemImageUrl}" alt="${match.lostItemTitle}">
+    //                                     <p class="item-name">${match.lostItemTitle}</p>
+    //                                 </div>
+    //                             </div>
+
+    //                             <!-- ===== මෙන්න අලුතින් එකතු කළ කොටස ===== -->
+    //                             <div class="location-viewer">
+    //                                 <button class="btn-view-location" 
+    //                                         data-lost-lat="${match.lostItemLatitude}" 
+    //                                         data-lost-lng="${match.lostItemLongitude}"
+    //                                         data-found-lat="${match.foundItemLatitude}"
+    //                                         data-found-lng="${match.foundItemLongitude}">
+    //                                     <i class="fas fa-map-marked-alt"></i> View Locations on Map
+    //                                 </button>
+    //                             </div>
+    //                             <!-- ======================================= -->
+
+    //                             <div class="match-footer">
+    //                                 ${footerHtml}
+    //                             </div>
+    //                         </div>
+    //                     `;
+
+
+    //                     // const cardHtml = `
+    //                     //     <div class="match-card">
+    //                     //         <div class="card-header"><h3>Potential match for your '${match.lostItemTitle}'</h3></div>
+    //                     //         <div class="comparison-view">
+    //                     //             <div class="item-half"><label>Your Lost Item</label><img src="http://localhost:8080/uploads/${match.lostItemImageUrl}" alt="${match.lostItemTitle}"><p class="item-name">${match.lostItemTitle}</p></div>
+    //                     //             <div class="match-indicator"><i class="fas fa-arrows-left-right"></i><span>${match.matchScore}% Match</span></div>
+    //                     //             <div class="item-half"><label>Matched Found Item</label><img src="http://localhost:8080/uploads/${match.foundItemImageUrl}" alt="${match.foundItemTitle}"><p class="item-name">${match.foundItemTitle}</p></div>
+    //                     //         </div>
+    //                     //         <div class="match-footer">${footerHtml}</div>
+    //                     //     </div>`;
+    //                     $listContainer.append(cardHtml);
+    //                 });
+    //             } else {
+    //                 $listContainer.html('<p class="no-items-message">No matches found for your lost items yet.</p>');
+    //             }
+    //         },
+    //         error: function () { $listContainer.html('<p class="loading-message">Could not load matches.</p>'); }
+    //     });
+    // }
 
     // --- Function to Load Matches for FOUND Items ---
-    function loadFoundItemMatches() {
-        const $listContainer = $('#found-matches-list');
-        $listContainer.html('<p class="loading-message">Loading matches for items you found...</p>');
-        $.ajax({
-            url: 'http://localhost:8080/matching/get_found_matches',
-            method: 'GET',
-            headers: { 'Authorization': 'Bearer ' + authToken },
-            success: function (response) {
-                $listContainer.empty();
-                if (response.data && response.data.length > 0) {
-                    $.each(response.data, function (i, match) {
+    // function loadFoundItemMatches() {
+    //     const $listContainer = $('#found-matches-list');
+    //     $listContainer.html('<p class="loading-message">Loading matches for items you found...</p>');
+    //     $.ajax({
+    //         url: 'http://localhost:8080/matching/get_found_matches',
+    //         method: 'GET',
+    //         headers: { 'Authorization': 'Bearer ' + authToken },
+    //         success: function (response) {
+    //             $listContainer.empty();
+    //             if (response.data && response.data.length > 0) {
+    //                 $.each(response.data, function (i, match) {
                         
 
-                        let footerHtml = '';
-                        if (match.status === 'REQUEST_SENT') { // This means a request was sent TO YOU
-                            footerHtml = `
-                            <p class="request-info">Someone has claimed this item.</p>
-                            <div class="action-buttons">
-                                <button class="btn-secondary btn-decline-request" data-match-id="${match.matchId}">Decline</button>
-                                <button class="btn-success btn-accept-request" data-match-id="${match.matchId}">Accept Request</button>
-                            </div>`;
-                        } else if (match.status === 'PENDING_ACTION') {
-                            footerHtml = `<span class="status-badge status-awaiting">Awaiting Claim</span><div class="action-buttons"><p class="awaiting-text">A potential owner can send a request.</p></div>`;
-                        } else {
-                            footerHtml = `<span class="status-badge">Resolved</span>`;
-                        }
+    //                     let footerHtml = '';
 
-                        // const cardHtml = `
-                        //     <div class="match-card ${match.status === 'REQUEST_SENT' ? 'state-request-received' : ''}">
-                        //         <div class="card-header"><h3>Potential owner for the '${match.foundItemTitle}' you found</h3></div>
-                        //         <div class="comparison-view">
-                        //             <div class="item-half"><label>Item You Found</label><img src="http://localhost:8080/uploads/${match.foundItemImageUrl}" alt="${match.foundItemTitle}"><p class="item-name">${match.foundItemTitle}</p></div>
-                        //             <div class="match-indicator"><i class="fas fa-arrows-left-right"></i><span>${match.matchScore}% Match</span></div>
-                        //             <div class="item-half"><label>Claimant's Lost Item</label><img src="http://localhost:8080/uploads/${match.lostItemImageUrl}" alt="${match.lostItemTitle}"><p class="item-name">${match.lostItemTitle}</p></div>
-                        //         </div>
-                        //         <div class="match-footer">${footerHtml}</div>
-                        //     </div>`;
+    //                     if (match.status === 'PENDING_ACTION') {
+    //                         footerHtml = `
+    //                             <span class="status-badge status-awaiting">AWAITING CLAIM</span>
+    //                             <div class="action-buttons">
+    //                                 <p class="awaiting-text">The potential owner can send a request.</p>
+    //                             </div>
+    //                         `;
+    //                     } 
+    //                     // This status means a contact request has been sent TO YOU (the Finder).
+    //                     else if (match.status === 'REQUEST_SENT') { 
+    //                         footerHtml = `
+    //                             <p class="request-info"><strong>Action Required:</strong> A user has claimed this item.</p>
+    //                             <div class="action-buttons">
+    //                                 <button class="btn-secondary btn-decline-request" data-match-id="${match.matchId}">Decline</button>
+    //                                 <button class="btn-success btn-accept-request" data-match-id="${match.matchId}">Accept Request</button>
+    //                             </div>
+    //                         `;
+    //                     } 
+    //                     // This status means YOU have accepted the request.
+    //                     else if (match.status === 'ACCEPTED') {
+    //                         footerHtml = `
+    //                             <span class="status-badge status-accepted">CONTACT SHARED</span>
+    //                             <div class="action-buttons">
+    //                                 <p class="status-text">You have shared your contact. Waiting for the owner to mark as recovered.</p>
+    //                             </div>
+    //                         `;
+    //                     } 
+    //                     // This status means YOU declined the request.
+    //                     else if (match.status === 'DECLINED') {
+    //                         footerHtml = `
+    //                             <span class="status-badge status-declined">YOU DECLINED</span>
+    //                             <div class="action-buttons">
+    //                                 <p class="status-text">You have declined this request.</p>
+    //                             </div>
+    //                         `;
+    //                     } 
+    //                     // This status means the transaction is successfully completed.
+    //                     else if (match.status === 'RECOVERED') {
+    //                         footerHtml = `
+    //                             <span class="status-badge status-recovered">RETURNED</span>
+    //                             <div class="action-buttons">
+    //                                 <p class="status-text"><i class="fas fa-check-circle"></i> Transaction Completed!</p>
+    //                             </div>
+    //                         `;
+    //                     } 
+    //                     // Fallback for any other status
+    //                     else {
+    //                         footerHtml = `<span class="status-badge">${match.status}</span>`;
+    //                     }
 
-                        const cardHtml = `
-                        <div class="match-card ${match.status === 'REQUEST_SENT' ? 'state-request-received' : ''}">
-                            <div class="card-header">
-                                <!-- Changed Title -->
-                                <h3>Potential owner for the '<strong>${match.foundItemTitle}</strong>' you found</h3>
-                            </div>
-                            <div class="comparison-view">
-                                <div class="item-half">
-                                    <!-- Changed Label -->
-                                    <label>Item You Found</label> 
-                                    <img src="${match.foundItemImageUrl}" alt="${match.foundItemTitle}">
-                                    <p class="item-name">${match.foundItemTitle}</p>
-                                </div>
-                                <div class="match-indicator">
-                                    <i class="fas fa-arrows-left-right"></i>
-                                    <span>${match.matchScore}% Match</span>
-                                </div>
-                                <div class="item-half">
-                                    <!-- Changed Label -->
-                                    <label>Claimant's Lost Item</label>
-                                    <img src="${match.lostItemImageUrl}" alt="${match.lostItemTitle}">
-                                    <p class="item-name">${match.lostItemTitle}</p>
-                                </div>
-                            </div>
+    //                     // if (match.status === 'REQUEST_SENT') { // This means a request was sent TO YOU
+    //                     //     footerHtml = `
+    //                     //     <p class="request-info">Someone has claimed this item.</p>
+    //                     //     <div class="action-buttons">
+    //                     //         <button class="btn-secondary btn-decline-request" data-match-id="${match.matchId}">Decline</button>
+    //                     //         <button class="btn-success btn-accept-request" data-match-id="${match.matchId}">Accept Request</button>
+    //                     //     </div>`;
+    //                     // } else if (match.status === 'PENDING_ACTION') {
+    //                     //     footerHtml = `<span class="status-badge status-awaiting">Awaiting Claim</span><div class="action-buttons"><p class="awaiting-text">A potential owner can send a request.</p></div>`;
+    //                     // } else {
+    //                     //     footerHtml = `<span class="status-badge">Resolved</span>`;
+    //                     // }
 
-                            <!-- "View Location" button is EXACTLY THE SAME -->
-                            <div class="location-viewer">
-                                <button class="btn-view-location" 
-                                        data-lost-lat="${match.lostItemLatitude}" 
-                                        data-lost-lng="${match.lostItemLongitude}"
-                                        data-found-lat="${match.foundItemLatitude}"
-                                        data-found-lng="${match.foundItemLongitude}">
-                                    <i class="fas fa-map-marked-alt"></i> View Locations on Map
-                                </button>
-                            </div>
+    //                     // const cardHtml = `
+    //                     //     <div class="match-card ${match.status === 'REQUEST_SENT' ? 'state-request-received' : ''}">
+    //                     //         <div class="card-header"><h3>Potential owner for the '${match.foundItemTitle}' you found</h3></div>
+    //                     //         <div class="comparison-view">
+    //                     //             <div class="item-half"><label>Item You Found</label><img src="http://localhost:8080/uploads/${match.foundItemImageUrl}" alt="${match.foundItemTitle}"><p class="item-name">${match.foundItemTitle}</p></div>
+    //                     //             <div class="match-indicator"><i class="fas fa-arrows-left-right"></i><span>${match.matchScore}% Match</span></div>
+    //                     //             <div class="item-half"><label>Claimant's Lost Item</label><img src="http://localhost:8080/uploads/${match.lostItemImageUrl}" alt="${match.lostItemTitle}"><p class="item-name">${match.lostItemTitle}</p></div>
+    //                     //         </div>
+    //                     //         <div class="match-footer">${footerHtml}</div>
+    //                     //     </div>`;
 
-                            <div class="match-footer">
-                                ${footerHtml}
-                            </div>
-                        </div>
-                    `;
+    //                     const cardHtml = `
+    //                     <div class="match-card ${match.status === 'REQUEST_SENT' ? 'state-request-received' : ''}">
+    //                         <div class="card-header">
+    //                             <!-- Changed Title -->
+    //                             <h3>Potential owner for the '<strong>${match.foundItemTitle}</strong>' you found</h3>
+    //                         </div>
+    //                         <div class="comparison-view">
+    //                             <div class="item-half">
+    //                                 <!-- Changed Label -->
+    //                                 <label>Item You Found</label> 
+    //                                 <img src="${match.foundItemImageUrl}" alt="${match.foundItemTitle}">
+    //                                 <p class="item-name">${match.foundItemTitle}</p>
+    //                             </div>
+    //                             <div class="match-indicator">
+    //                                 <i class="fas fa-arrows-left-right"></i>
+    //                                 <span>${match.matchScore}% Match</span>
+    //                             </div>
+    //                             <div class="item-half">
+    //                                 <!-- Changed Label -->
+    //                                 <label>Claimant's Lost Item</label>
+    //                                 <img src="${match.lostItemImageUrl}" alt="${match.lostItemTitle}">
+    //                                 <p class="item-name">${match.lostItemTitle}</p>
+    //                             </div>
+    //                         </div>
+
+    //                         <!-- "View Location" button is EXACTLY THE SAME -->
+    //                         <div class="location-viewer">
+    //                             <button class="btn-view-location" 
+    //                                     data-lost-lat="${match.lostItemLatitude}" 
+    //                                     data-lost-lng="${match.lostItemLongitude}"
+    //                                     data-found-lat="${match.foundItemLatitude}"
+    //                                     data-found-lng="${match.foundItemLongitude}">
+    //                                 <i class="fas fa-map-marked-alt"></i> View Locations on Map
+    //                             </button>
+    //                         </div>
+
+    //                         <div class="match-footer">
+    //                             ${footerHtml}
+    //                         </div>
+    //                     </div>
+    //                 `;
 
                         
 
-                        $listContainer.append(cardHtml);
-                    });
-                } else {
-                    $listContainer.html('<p class="no-items-message">No matches found for your reported items.</p>');
-                }
-            },
-            error: function () { $listContainer.html('<p class="loading-message">Could not load matches.</p>'); }
-        });
-    }
+    //                     $listContainer.append(cardHtml);
+    //                 });
+    //             } else {
+    //                 $listContainer.html('<p class="no-items-message">No matches found for your reported items.</p>');
+    //             }
+    //         },
+    //         error: function () { $listContainer.html('<p class="loading-message">Could not load matches.</p>'); }
+    //     });
+    // }
 
     // Initial Load
-    loadLostItemMatches();
-    loadFoundItemMatches();
+    // loadLostItemMatches();
+    // loadFoundItemMatches();
 
     
     // =================================================================
@@ -503,5 +582,564 @@ $(document).ready(function () {
             }
         });
     });
+
+
+
+    // =================================================================
+    // === CLICK HANDLER FOR "MARK AS RECOVERED" BUTTON ===
+    // =================================================================
+    // This can be triggered from BOTH the Lost Item and Found Item tabs
+    // So, we attach the listener to the parent container of both lists.
+    $('.main-content').on('click', '.btn-mark-recovered', function() {
+
+        const $thisButton = $(this);
+        const matchId = $thisButton.data('match-id');
+        
+        // 1. User Confirmation
+        if (!confirm('Have you successfully recovered/returned the item? This will close the transaction.')) {
+            return; // Stop if the user clicks "Cancel"
+        }
+
+        // 2. User Feedback: Disable the button and show a loading state
+        $thisButton.prop('disabled', true).text('Marking...');
+        
+        // 3. The AJAX Call
+        $.ajax({
+            // === ඔබගේ Backend Mark as Recovered API endpoint එක මෙතනට යොදන්න ===
+            url: `http://localhost:8080/matching/${matchId}/mark-as-recovered`,
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+            },
+            
+            // This function runs if the request is SUCCESSFUL
+            success: function(response) {
+                console.log('Success:', response);
+                alert(response.message || 'Transaction successfully marked as recovered!');
+               
+                loadLostItemMatches();
+                loadFoundItemMatches();
+            },
+            
+            // This function runs if the request FAILS
+            error: function(jqXHR) {
+                console.error('Error:', jqXHR.responseText);
+                const errorMessage = jqXHR.responseJSON ? jqXHR.responseJSON.message : "Could not complete this action.";
+                alert(`Error: ${errorMessage}`);
+                
+                // Re-enable the button on error
+                $thisButton.prop('disabled', false).text('Mark as Recovered');
+            }
+        });
+    });
+
+
+
+
+
+
+
+    function loadLostItemMatches() {
+        const $listContainer = $('#lost-matches-list');
+        // Get the currently active filter status for this tab
+        const statusToFilter = $('#lost-item-filter-tabs .filter-tab-btn.active').data('status');
+        
+        $listContainer.html('<p class="loading-message">Loading matches...</p>');
+
+        $.ajax({
+            url: 'http://localhost:8080/matching/get_lost_matches',
+            method: 'GET',
+            headers: { 'Authorization': 'Bearer ' + authToken },
+            data: {
+                status: statusToFilter // Send the selected status to the backend
+            },
+            success: function(response) {
+                // The rest of this success function is EXACTLY THE SAME as your
+                // original loadLostItemMatches function. You can create a reusable
+                // function to render the cards to avoid repeating code.
+                
+                $listContainer.empty();
+                if (response.data && response.data.length > 0) {
+                    $.each(response.data, function(i, match) {
+                        // ... (your existing, complete card building logic)
+                        
+                        let footerHtml = '';
+                        if (match.status === 'PENDING_ACTION') {
+                            footerHtml = `
+                                <span class="status-badge status-action">Action Needed</span>
+                                <div class="action-buttons">
+                                    <button class="text-link btn-decline-match" data-match-id="${match.matchId}">Not a Match</button>
+                                    <button class="btn-primary btn-send-request" data-match-id="${match.matchId}">Send Contact Request</button>
+                                </div>
+                            `;
+                        } else if (match.status === 'REQUEST_SENT') {
+                            footerHtml = `
+                                <span class="status-badge status-sent">Request Sent</span>
+                                <div class="action-buttons">
+                                    <p class="awaiting-text">Awaiting finder's response...</p>
+                                </div>
+                            `;
+                        } else if (match.status === 'ACCEPTED') {
+                            footerHtml = `
+                                <span class="status-badge status-accepted">CONTACT ACCEPTED</span>
+                                <div class="action-buttons">
+                                    <button class="btn-primary btn-view-contact" data-match-id="${match.matchId}">
+                                        <i class="fas fa-phone-alt"></i> View Contact
+                                    </button>
+                                    <button class="btn-success btn-mark-recovered" data-match-id="${match.matchId}">
+                                        <i class="fas fa-check-circle"></i> Mark as Recovered
+                                    </button>
+                                </div>
+                            `;
+                        } else if (match.status === 'DECLINED') {
+                            footerHtml = `
+                                <span class="status-badge status-declined">DECLINED</span>
+                                <div class="action-buttons">
+                                    <p class="status-text">The finder declined your request.</p>
+                                </div>
+                            `;
+                        } else if (match.status === 'RECOVERED') {
+                            // === THIS IS THE NEW PART FOR THE FINAL STATUS ===
+                            footerHtml = `
+                                <span class="status-badge status-recovered">RECOVERED</span>
+                                <div class="action-buttons">
+                                    <p class="status-text"><i class="fas fa-check-circle"></i> Transaction Completed!</p>
+                                </div>
+                            `;
+                        } else {
+                            // Fallback for any other status
+                            footerHtml = `<span class="status-badge">${match.status}</span>`;
+                        }
+
+
+
+                        const cardHtml = `
+                            <div class="match-card ${match.status === 'REQUEST_SENT' ? 'state-request-received' : ''}">
+                                <div class="card-header">
+                                    <h3>Potential owner for the '${match.foundItemTitle}' you found</h3>
+                                </div>
+                                <div class="comparison-view">
+                                    <div class="item-half">
+                                        <label>Item You Found</label>
+                                        <img src="${match.foundItemImageUrl}" alt="${match.foundItemTitle}">
+                                        <p class="item-name">${match.foundItemTitle}</p>
+                                    </div>
+                                    <div class="match-indicator">
+                                        <i class="fas fa-arrows-left-right"></i>
+                                        <span>${match.matchScore}% Match</span>
+                                    </div>
+                                    <div class="item-half">
+                                        <label>Claimant's Lost Item</label>
+                                        <img src="${match.lostItemImageUrl}" alt="${match.lostItemTitle}">
+                                        <p class="item-name">${match.lostItemTitle}</p>
+                                    </div>
+                                </div>
+
+                                <!-- ===== මෙන්න අලුතින් එකතු කළ කොටස ===== -->
+                                <div class="location-viewer">
+                                    <button class="btn-view-location" 
+                                            data-lost-lat="${match.lostItemLatitude}" 
+                                            data-lost-lng="${match.lostItemLongitude}"
+                                            data-found-lat="${match.foundItemLatitude}"
+                                            data-found-lng="${match.foundItemLongitude}">
+                                        <i class="fas fa-map-marked-alt"></i> View Locations on Map
+                                    </button>
+                                </div>
+                                <!-- ======================================= -->
+
+                                <div class="match-footer">
+                                    ${footerHtml}
+                                </div>
+                            </div>
+                        `;
+
+
+                        $listContainer.append(cardHtml);
+                    });
+                } else {
+                    $listContainer.html('<p class="no-items-message">No matches found for this filter.</p>');
+                }
+            },
+            error: function() {
+                $listContainer.html('<p class="loading-message">Could not load matches.</p>');
+            }
+        });
+    }
+
+
+
+
+
+
+
+
+
+    function loadFoundItemMatches() {
+        const $listContainer = $('#found-matches-list');
+        // Get the currently active filter status for this tab
+        const statusToFilter = $('#found-item-filter-tabs .filter-tab-btn.active').data('status');
+
+        $listContainer.html('<p class="loading-message">Loading matches...</p>');
+
+        $.ajax({
+            url: 'http://localhost:8080/matching/get_found_matches', // <-- IMPORTANT: The URL is different
+            method: 'GET',
+            headers: { 'Authorization': 'Bearer ' + authToken },
+            data: {
+                status: statusToFilter
+            },
+            success: function(response) {
+                $listContainer.empty();
+                if (response.data && response.data.length > 0) {
+                    $.each(response.data, function(i, match) {
+                        
+                        // --- This is the footer logic specific to the FINDER's perspective ---
+                        let footerHtml = '';
+                        if (match.status === 'REQUEST_SENT') { // A request was sent TO YOU
+                            footerHtml = `
+                                <p class="request-info"><strong>Action Required:</strong> A user has claimed this item.</p>
+                                <div class="action-buttons">
+                                    <button class="btn-secondary btn-decline-request" data-match-id="${match.matchId}">Decline</button>
+                                    <button class="btn-success btn-accept-request" data-match-id="${match.matchId}">Accept Request</button>
+                                </div>`;
+                        } else if (match.status === 'PENDING_ACTION') {
+                            footerHtml = `
+                                <span class="status-badge status-awaiting">AWAITING CLAIM</span>
+                                <div class="action-buttons">
+                                    <p class="awaiting-text">A potential owner can send a request.</p>
+                                </div>`;
+                        } else if (match.status === 'ACCEPTED') {
+                            footerHtml = `
+                                <span class="status-badge status-accepted">CONTACT SHARED</span>
+                                <div class="action-buttons">
+                                    <p class="status-text">You shared your contact. Waiting for recovery confirmation.</p>
+                                </div>`;
+                        } else { // DECLINED or RECOVERED
+                            footerHtml = `<span class="status-badge status-resolved">${match.status.replace('_', ' ')}</span>`;
+                        }
+
+                        // --- The card structure is the same, but the labels and title are different ---
+                        const cardHtml = `
+                            <div class="match-card ${match.status === 'REQUEST_SENT' ? 'state-request-received' : ''}" data-match-id="${match.matchId}">
+                                <div class="card-header">
+                                    <h3>Potential owner for the '<strong>${match.foundItemTitle}</strong>' you found</h3>
+                                </div>
+                                <div class="comparison-view">
+                                    <div class="item-half">
+                                        <label>Item You Found</label>
+                                        <img src="${match.foundItemImageUrl}" alt="${match.foundItemTitle}">
+                                        <p class="item-name">${match.foundItemTitle}</p>
+                                    </div>
+                                    <div class="match-indicator">
+                                        <i class="fas fa-arrows-left-right"></i>
+                                        <span>${match.matchScore}% Match</span>
+                                    </div>
+                                    <div class="item-half">
+                                        <label>Claimant's Lost Item</label>
+                                        <img src="${match.lostItemImageUrl}" alt="${match.lostItemTitle}">
+                                        <p class="item-name">${match.lostItemTitle}</p>
+                                    </div>
+                                </div>
+                                <div class="location-viewer">
+                                    <button class="btn-view-location" 
+                                            data-lost-lat="${match.lostItemLatitude}" 
+                                            data-lost-lng="${match.lostItemLongitude}"
+                                            data-found-lat="${match.foundItemLatitude}"
+                                            data-found-lng="${match.foundItemLongitude}">
+                                        <i class="fas fa-map-marked-alt"></i> View Locations on Map
+                                    </button>
+                                </div>
+                                <div class="match-footer">
+                                    ${footerHtml}
+                                </div>
+                            </div>
+                        `;
+                        $listContainer.append(cardHtml);
+                    });
+                } else {
+                    $listContainer.html('<p class="no-items-message">No matches found for items you have reported.</p>');
+                }
+            },
+            error: function() {
+                $listContainer.html('<p class="loading-message">Could not load matches.</p>');
+            }
+        });
+    }
+
+
+
+    $('#lost-item-filter-tabs').on('click', '.filter-tab-btn', function() {
+        $('#lost-item-filter-tabs .filter-tab-btn').removeClass('active');
+        $(this).addClass('active');
+        loadLostItemMatches(); // Just call the main loader function
+    });
+
+    $('#found-item-filter-tabs').on('click', '.filter-tab-btn', function() {
+        $('#found-item-filter-tabs .filter-tab-btn').removeClass('active');
+        $(this).addClass('active');
+        loadFoundItemMatches(); // Just call the main loader function
+    });
+
+    loadLostItemMatches();
+    loadFoundItemMatches();
+
+
+
+
+
+
+
+    // // =================================================================
+    // // === CLICK HANDLER FOR LOST ITEM FILTER TABS ===
+    // // =================================================================
+    // $('#lost-item-filter-tabs').on('click', '.filter-tab-btn', function () {
+        
+    //     const $thisButton = $(this);
+        
+    //     // 1. Update the active state for the UI
+    //     $('#lost-item-filter-tabs .filter-tab-btn').removeClass('active');
+    //     $thisButton.addClass('active');
+        
+    //     // 2. Get the status to filter by from the button's data attribute
+    //     const statusToFilter = $thisButton.data('status');
+        
+    //     // 3. Get the container for the list
+    //     const $listContainer = $('#lost-matches-list');
+    //     $listContainer.html('<p class="loading-message">Filtering matches...</p>');
+
+        
+        
+
+    //     // 4. Make the AJAX call with the new 'status' parameter
+    //     $.ajax({
+    //         url: 'http://localhost:8080/matching/get_lost_matches',
+    //         method: 'GET',
+    //         headers: { 'Authorization': 'Bearer ' + authToken },
+    //         data: {
+    //             status: statusToFilter // Send the selected status to the backend
+    //         },
+    //         success: function(response) {
+    //             // The rest of this success function is EXACTLY THE SAME as your
+    //             // original loadLostItemMatches function. You can create a reusable
+    //             // function to render the cards to avoid repeating code.
+                
+    //             $listContainer.empty();
+    //             if (response.data && response.data.length > 0) {
+    //                 $.each(response.data, function(i, match) {
+    //                     // ... (your existing, complete card building logic)
+                        
+    //                     let footerHtml = '';
+    //                     if (match.status === 'PENDING_ACTION') {
+    //                         footerHtml = `
+    //                             <span class="status-badge status-action">Action Needed</span>
+    //                             <div class="action-buttons">
+    //                                 <button class="text-link btn-decline-match" data-match-id="${match.matchId}">Not a Match</button>
+    //                                 <button class="btn-primary btn-send-request" data-match-id="${match.matchId}">Send Contact Request</button>
+    //                             </div>
+    //                         `;
+    //                     } else if (match.status === 'REQUEST_SENT') {
+    //                         footerHtml = `
+    //                             <span class="status-badge status-sent">Request Sent</span>
+    //                             <div class="action-buttons">
+    //                                 <p class="awaiting-text">Awaiting finder's response...</p>
+    //                             </div>
+    //                         `;
+    //                     } else if (match.status === 'ACCEPTED') {
+    //                         footerHtml = `
+    //                             <span class="status-badge status-accepted">CONTACT ACCEPTED</span>
+    //                             <div class="action-buttons">
+    //                                 <button class="btn-primary btn-view-contact" data-match-id="${match.matchId}">
+    //                                     <i class="fas fa-phone-alt"></i> View Contact
+    //                                 </button>
+    //                                 <button class="btn-success btn-mark-recovered" data-match-id="${match.matchId}">
+    //                                     <i class="fas fa-check-circle"></i> Mark as Recovered
+    //                                 </button>
+    //                             </div>
+    //                         `;
+    //                     } else if (match.status === 'DECLINED') {
+    //                         footerHtml = `
+    //                             <span class="status-badge status-declined">DECLINED</span>
+    //                             <div class="action-buttons">
+    //                                 <p class="status-text">The finder declined your request.</p>
+    //                             </div>
+    //                         `;
+    //                     } else if (match.status === 'RECOVERED') {
+    //                         // === THIS IS THE NEW PART FOR THE FINAL STATUS ===
+    //                         footerHtml = `
+    //                             <span class="status-badge status-recovered">RECOVERED</span>
+    //                             <div class="action-buttons">
+    //                                 <p class="status-text"><i class="fas fa-check-circle"></i> Transaction Completed!</p>
+    //                             </div>
+    //                         `;
+    //                     } else {
+    //                         // Fallback for any other status
+    //                         footerHtml = `<span class="status-badge">${match.status}</span>`;
+    //                     }
+
+
+
+    //                     const cardHtml = `
+    //                         <div class="match-card ${match.status === 'REQUEST_SENT' ? 'state-request-received' : ''}">
+    //                             <div class="card-header">
+    //                                 <h3>Potential owner for the '${match.foundItemTitle}' you found</h3>
+    //                             </div>
+    //                             <div class="comparison-view">
+    //                                 <div class="item-half">
+    //                                     <label>Item You Found</label>
+    //                                     <img src="${match.foundItemImageUrl}" alt="${match.foundItemTitle}">
+    //                                     <p class="item-name">${match.foundItemTitle}</p>
+    //                                 </div>
+    //                                 <div class="match-indicator">
+    //                                     <i class="fas fa-arrows-left-right"></i>
+    //                                     <span>${match.matchScore}% Match</span>
+    //                                 </div>
+    //                                 <div class="item-half">
+    //                                     <label>Claimant's Lost Item</label>
+    //                                     <img src="${match.lostItemImageUrl}" alt="${match.lostItemTitle}">
+    //                                     <p class="item-name">${match.lostItemTitle}</p>
+    //                                 </div>
+    //                             </div>
+
+    //                             <!-- ===== මෙන්න අලුතින් එකතු කළ කොටස ===== -->
+    //                             <div class="location-viewer">
+    //                                 <button class="btn-view-location" 
+    //                                         data-lost-lat="${match.lostItemLatitude}" 
+    //                                         data-lost-lng="${match.lostItemLongitude}"
+    //                                         data-found-lat="${match.foundItemLatitude}"
+    //                                         data-found-lng="${match.foundItemLongitude}">
+    //                                     <i class="fas fa-map-marked-alt"></i> View Locations on Map
+    //                                 </button>
+    //                             </div>
+    //                             <!-- ======================================= -->
+
+    //                             <div class="match-footer">
+    //                                 ${footerHtml}
+    //                             </div>
+    //                         </div>
+    //                     `;
+
+
+    //                     $listContainer.append(cardHtml);
+    //                 });
+    //             } else {
+    //                 $listContainer.html('<p class="no-items-message">No matches found for this filter.</p>');
+    //             }
+    //         },
+    //         error: function() {
+    //             $listContainer.html('<p class="loading-message">Could not load matches.</p>');
+    //         }
+    //     });
+    // });
+
+
+    // =================================================================
+    // === CLICK HANDLER FOR "FOUND ITEM" FILTER TABS ===
+    // =================================================================
+    // $('#found-item-filter-tabs').on('click', '.filter-tab-btn', function () {
+        
+    //     const $thisButton = $(this);
+        
+    //     // 1. Update the active state for the UI
+    //     $('#found-item-filter-tabs .filter-tab-btn').removeClass('active');
+    //     $thisButton.addClass('active');
+        
+    //     // 2. Get the status to filter by
+    //     const statusToFilter = $thisButton.data('status');
+        
+    //     // 3. Get the container for the list
+    //     const $listContainer = $('#found-matches-list');
+    //     $listContainer.html('<p class="loading-message">Filtering matches...</p>');
+
+    //     // 4. Make the AJAX call with the new 'status' parameter
+    //     $.ajax({
+    //         url: 'http://localhost:8080/matching/get_found_matches', // <-- IMPORTANT: The URL is different
+    //         method: 'GET',
+    //         headers: { 'Authorization': 'Bearer ' + authToken },
+    //         data: {
+    //             status: statusToFilter
+    //         },
+    //         success: function(response) {
+    //             $listContainer.empty();
+    //             if (response.data && response.data.length > 0) {
+    //                 $.each(response.data, function(i, match) {
+                        
+    //                     // --- This is the footer logic specific to the FINDER's perspective ---
+    //                     let footerHtml = '';
+    //                     if (match.status === 'REQUEST_SENT') { // A request was sent TO YOU
+    //                         footerHtml = `
+    //                             <p class="request-info"><strong>Action Required:</strong> A user has claimed this item.</p>
+    //                             <div class="action-buttons">
+    //                                 <button class="btn-secondary btn-decline-request" data-match-id="${match.matchId}">Decline</button>
+    //                                 <button class="btn-success btn-accept-request" data-match-id="${match.matchId}">Accept Request</button>
+    //                             </div>`;
+    //                     } else if (match.status === 'PENDING_ACTION') {
+    //                         footerHtml = `
+    //                             <span class="status-badge status-awaiting">AWAITING CLAIM</span>
+    //                             <div class="action-buttons">
+    //                                 <p class="awaiting-text">A potential owner can send a request.</p>
+    //                             </div>`;
+    //                     } else if (match.status === 'ACCEPTED') {
+    //                         footerHtml = `
+    //                             <span class="status-badge status-accepted">CONTACT SHARED</span>
+    //                             <div class="action-buttons">
+    //                                 <p class="status-text">You shared your contact. Waiting for recovery confirmation.</p>
+    //                             </div>`;
+    //                     } else { // DECLINED or RECOVERED
+    //                         footerHtml = `<span class="status-badge status-resolved">${match.status.replace('_', ' ')}</span>`;
+    //                     }
+
+    //                     // --- The card structure is the same, but the labels and title are different ---
+    //                     const cardHtml = `
+    //                         <div class="match-card ${match.status === 'REQUEST_SENT' ? 'state-request-received' : ''}" data-match-id="${match.matchId}">
+    //                             <div class="card-header">
+    //                                 <h3>Potential owner for the '<strong>${match.foundItemTitle}</strong>' you found</h3>
+    //                             </div>
+    //                             <div class="comparison-view">
+    //                                 <div class="item-half">
+    //                                     <label>Item You Found</label>
+    //                                     <img src="${match.foundItemImageUrl}" alt="${match.foundItemTitle}">
+    //                                     <p class="item-name">${match.foundItemTitle}</p>
+    //                                 </div>
+    //                                 <div class="match-indicator">
+    //                                     <i class="fas fa-arrows-left-right"></i>
+    //                                     <span>${match.matchScore}% Match</span>
+    //                                 </div>
+    //                                 <div class="item-half">
+    //                                     <label>Claimant's Lost Item</label>
+    //                                     <img src="${match.lostItemImageUrl}" alt="${match.lostItemTitle}">
+    //                                     <p class="item-name">${match.lostItemTitle}</p>
+    //                                 </div>
+    //                             </div>
+    //                             <div class="location-viewer">
+    //                                 <button class="btn-view-location" 
+    //                                         data-lost-lat="${match.lostItemLatitude}" 
+    //                                         data-lost-lng="${match.lostItemLongitude}"
+    //                                         data-found-lat="${match.foundItemLatitude}"
+    //                                         data-found-lng="${match.foundItemLongitude}">
+    //                                     <i class="fas fa-map-marked-alt"></i> View Locations on Map
+    //                                 </button>
+    //                             </div>
+    //                             <div class="match-footer">
+    //                                 ${footerHtml}
+    //                             </div>
+    //                         </div>
+    //                     `;
+    //                     $listContainer.append(cardHtml);
+    //                 });
+    //             } else {
+    //                 $listContainer.html('<p class="no-items-message">No matches found for items you have reported.</p>');
+    //             }
+    //         },
+    //         error: function() {
+    //             $listContainer.html('<p class="loading-message">Could not load matches.</p>');
+    //         }
+    //     });
+    // });
+
+    //  $('#lost-item-filter-tabs .filter-tab-btn[data-status="ALL"]').click();
+
+    // // Find the default "All" button in the "Found Items" tab and click it.
+    // // This will also trigger its click handler.
+    // $('#found-item-filter-tabs .filter-tab-btn[data-status="ALL"]').click();
 
 });

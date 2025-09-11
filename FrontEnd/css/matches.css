@@ -493,14 +493,14 @@ ul {
     background-color: #d1d5db;
 }
 
-.btn-success {
+/* .btn-success {
     background-color: var(--success-color);
     color: var(--white-color);
 }
 
 .btn-success:hover {
     background-color: #059669;
-}
+} */
 
 .text-link,
 .awaiting-text,
@@ -525,4 +525,31 @@ ul {
     padding: 3rem;
     font-size: 1.2rem;
     color: var(--text-light);
+}
+
+/* Add these styles to your matches.css file */
+
+.status-badge.status-accepted {
+    background-color: #dcfce7; /* Light Green */
+    color: #166534;       /* Dark Green */
+}
+
+/* A general success button style */
+.btn-success {
+    background-color: var(--success-color);
+    color: var(--white-color);
+    border: none;
+    padding: 0.7rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.btn-success:hover {
+    background-color: #059669; /* Darker green */
+    transform: translateY(-2px);
+}
+.status-badge.status-resolved {
+    background-color: #6b7280; /* A neutral grey color */
+    color: #fff;
 }

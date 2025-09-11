@@ -21,4 +21,6 @@ public interface FoundItemService {
     Object findItemTitlesByKeyword(String keyword, String username);
 
     List<SecondFoundItemDto> getFilteredFoundItems(String keyword, String currentUsername);
+
+    List<SecondFoundItemDto> getFilteredLostItemsForStatus(String keyword, String status, String category, String currentUsername);
 }

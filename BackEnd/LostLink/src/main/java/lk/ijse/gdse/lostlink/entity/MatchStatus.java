@@ -4,5 +4,6 @@ public enum MatchStatus {
     PENDING_ACTION,
     REQUEST_SENT,
     ACCEPTED,
-    DECLINED;
+    DECLINED,
+    RECOVERED
 }
