@@ -399,6 +399,7 @@ $(document).ready(function () {
                 alert('Profile updated successfully!');
                 
                 // getProfileData();
+                loadAveratarAndName();
                 closeProfileModal();
             },
             error: function(jqXHR, textStatus, errorThrown) {
@@ -457,6 +458,23 @@ $(document).ready(function () {
         });
     }
 
+    function loadAveratarAndName() {
+        $.ajax({
+            url: 'http://localhost:8080/user_profile/get_profile_details', // The GET endpoint we just created
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+            },
+            success: function(response) {
+                $('.profile-avatar').attr('src', response.data.profileImageUrl);
+                $('.profile-name').text(response.data.fullName);
+                $('#welcome-name').text(response.data.fullName);
+            }
+
+        })
+    }
+
+    loadAveratarAndName();
 
 
     function clearProfileForm() {
@@ -493,6 +511,94 @@ $(document).ready(function () {
         }
     });
 
+
+    $('#logoutBtn').on('click', function(event) {
+        event.preventDefault();
+        localStorage.removeItem('authToken');
+        alert("You have been logged out successfully.");
+        window.location.href = 'loginpage.html'; 
+    });
+
+
+    function getDashbaordStatus(){
+        $.ajax({
+            url: 'http://localhost:8080/dashboard/stats',
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+            },
+            success: function(response) {
+
+                const stats = response.data;
+                $('#activeReportsCount').text(stats.activeReportsCount);
+                $('#pendingMatchesCount').text(stats.pendingMatchesCount);
+                $('#successfulRecoveriesCount').text(stats.successfulRecoveriesCount);
+
+            },
+            error: function(err) {
+                console.error("Failed to load dashboard stats", err);
+            }
+        });
+    }
+
+    getDashbaordStatus();
+
+
+
+
+    function loadRecentActivity() {
+        $.ajax({
+            url: 'http://localhost:8080/notification/get_top_two',
+            method: 'GET',
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem('authToken') },
+            success: function(response) {
+                const activityListContainer = $('#activityList');
+                activityListContainer.empty(); // Clear old items
+                    response.data.forEach(notification => {
+
+                        // Icon එක සහ class එක, notification type එක අනුව තීරණය කරනවා
+                        let iconClass = 'new-message';
+                        let iconHtml = '<i class="fas fa-link"></i>';
+                        
+                        // Format the time (use a library for better accuracy)
+                        const timeAgo = formatTimeAgo(notification.createdAt);
+
+                        // --- Message Formatting ---
+                        // This part makes the item name bold. It finds text between single quotes.
+                        const formattedMessage = notification.message.replace(/'([^']*)'/g, "<b>'$1'</b>");
+
+                        // Create the final HTML for the list item
+                        const activityItemHtml = `
+                            <div class="activity-item">
+                                <div class="activity-icon ${iconClass}">
+                                    ${iconHtml}
+                                </div>
+                                <div class="activity-details">
+                                    <p class="activity-text">${formattedMessage}</p>
+                                </div>
+                                <span class="activity-time">${timeAgo}</span>
+                            </div>
+                        `;
+                        
+                        activityListContainer.append(activityItemHtml);
+                    });
+            },
+            error: function(err) {
+                console.error("Failed to load recent activity", err);
+                $('#activityList').html('<p class="no-activity">Could not load activity.</p>');
+            }
+        });
+    }
+
+    // A simple function to format time (you can use a library like moment.js for better results)
+    function formatTimeAgo(createdAt) {
+        // This is a very basic implementation. 
+        // For a real app, use a library like Moment.js or date-fns.
+        return new Date(createdAt).toLocaleDateString(); 
+    }
+
+    // Page load එකේදී activity ටික load කරනවා
+    loadRecentActivity();
 
 
 

@@ -37,6 +37,18 @@ public class NotificationController {
         );
     }
 
+    @GetMapping("/get_top_two")
+    public ResponseEntity<ApiResponse> getTopTowRecentNotifications() {
+        String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        return ResponseEntity.ok(new ApiResponse(
+                200,
+                "Notifications retrieved successfully",
+                notificationService.getTopTowRecentNotifications(currentUsername))
+        );
+    }
+
+
+
     @PatchMapping("/{notificationId}/mark-as-read")
     public ResponseEntity<ApiResponse> markNotificationAsRead(@PathVariable Integer notificationId) {
         String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();

@@ -435,6 +435,9 @@ ul {
     line-height: 1.4;
     cursor: pointer;
     transition: background-color 0.2s ease;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
 }
 
 .notification-list .list-group-item:last-child {
@@ -566,17 +569,6 @@ ul {
     list-style: none;
 }
 
-#notification-list .list-group-item {
-    padding: 1rem 1.25rem;
-    border-bottom: 1px solid #f3f4f6;
-    font-size: 0.95rem; /* Slightly larger font for readability */
-    line-height: 1.5;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    display: flex; /* Use flexbox for better alignment */
-    align-items: flex-start;
-    gap: 1rem;
-}
 
 #notification-list .list-group-item:last-child {
     border-bottom: none;
@@ -607,6 +599,18 @@ ul {
     font-size: 0.8rem;
     color: var(--text-light);
     margin-top: 4px;
+}
+
+#notification-list .list-group-item {
+    display: flex; /* Use flexbox for better alignment */
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #f3f4f6;
+    font-size: 0.95rem; /* Slightly larger font for readability */
+    line-height: 1.5;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
 }
 
 /* --- Panel Footer --- */
@@ -816,13 +820,23 @@ ul {
             font-size: 14px;
         }
 
-        .profile-info {
-            flex: 1;
+        /* .profile-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        } */
+
+        #profile_infomation {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+
         }
 
         .profile-name {
-            font-size: 24px;
-            font-weight: 700;
+            font-size: 18px;
+            font-weight: 650;
             color: #1c1e21;
             margin: 0 0 4px 0;
         }
@@ -1098,4 +1112,43 @@ ul {
 
 .toggle-password:hover {
     color: #1c1e21; /* Darker color on hover */
+}
+
+
+
+.no-activity {
+    text-align: center;
+    color: #718096;
+    padding: 2rem 0;
+}
+
+.activity-icon.new-message {
+    background-color: #D1FAE5; /* Light Green */
+    color: #059669; /* Dark Green */
+}
+
+
+.activity-details {
+    flex-grow: 1; /* This makes the details section take up all available space */
+}
+
+.activity-text {
+    margin: 0;
+    color: #4A5568;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.activity-text b {
+    color: #2D3748;
+    font-weight: 600;
+}
+
+/* Style for the timestamp on the right */
+.activity-time {
+    font-size: 0.8rem;
+    color: #A0AEC0;
+    margin-left: auto; /* This is the magic that pushes it to the right */
+    flex-shrink: 0; /* Prevents it from shrinking */
+    padding-left: 1rem; /* Add some space between text and time */
 }

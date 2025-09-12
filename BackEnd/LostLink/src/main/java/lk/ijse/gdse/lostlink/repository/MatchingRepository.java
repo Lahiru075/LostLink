@@ -60,6 +60,12 @@ public interface MatchingRepository extends JpaRepository<Match, Integer> {
     @Query("SELECT m FROM Match m WHERE m.lostItem.user.username = :username AND m.status = :status")
     Page<Match> findMatchesByLostItemOwnerUsernameAndStatus(@Param("username") String username, @Param("status") MatchStatus status, Pageable pageable);
 
+    @Query("SELECT COUNT(m) FROM Match m WHERE m.lostItem.user = :user AND m.status = :status")
+    long countMatchesByUserAndStatus(@Param("user") User user, @Param("status") MatchStatus status);
+
+    // <<< මෙන්න දෙවෙනි Custom Query එක >>>
+    @Query("SELECT COUNT(m) FROM Match m WHERE m.lostItem.user = :user AND m.status IN :statuses")
+    long countMatchesByUserAndStatusIn(@Param("user") User user, @Param("statuses") List<MatchStatus> statuses);
 
 
     //    @Query("SELECT m FROM Match m JOIN FETCH m.lostItem li JOIN FETCH m.foundItem fi WHERE fi.user.username = :username AND m.status = :status")

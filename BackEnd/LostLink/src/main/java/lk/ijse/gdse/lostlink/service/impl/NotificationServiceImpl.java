@@ -84,5 +84,16 @@ public class NotificationServiceImpl implements NotificationService {
 
     }
 
+    @Override
+    public List<NotificationDto> getTopTowRecentNotifications(String currentUsername) {
+        User user = userRepository.findByUsername(currentUsername)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        List<Notification> notifications = notificationRepository.findTop3ByUserOrderByCreatedAtDesc(user);
+
+        Type listType = new TypeToken<List<NotificationDto>>() {}.getType();
+        return modelMapper.map(notifications, listType);
+    }
+
 
 }

@@ -18,4 +18,6 @@ public interface NotificationService {
     void markNotificationAsRead(Integer notificationId, String currentUsername);
 
     Object getAllNotifications(String currentUsername);
+
+    List<NotificationDto> getTopTowRecentNotifications(String currentUsername);
 }

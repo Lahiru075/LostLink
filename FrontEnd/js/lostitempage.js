@@ -402,7 +402,7 @@ $(document).ready(function () {
                         } else {
                             actionButtonsHtml = `
                                 <button class="action-btn btn-view-details" data-item-id="${item.lostItemId}">
-                                    <i class="fas fa-eye"></i> View Details
+                                    <i class="fas fa-eye"></i> Recovered This Item
                                 </button>`;
                         }
 
@@ -577,6 +577,13 @@ $(document).ready(function () {
     // --- INITIAL LOAD ---
     // At the end of your document.ready, where you call loadLostItems()
     loadCategories(); // Call this function to populate dropdowns on page load
+
+    $('#logoutBtn').on('click', function(event) {
+        event.preventDefault();
+        localStorage.removeItem('authToken');
+        alert("You have been logged out successfully.");
+        window.location.href = 'loginpage.html'; 
+    });
 
 
 

@@ -24,11 +24,16 @@
                                 Items</span></a></li>
                     <li><a href="founditempage.html"><i class="fas fa-magnifying-glass-plus"></i><span>Found Items</span></a></li>
                     <li><a href="matches.html"><i class="fas fa-arrows-down-to-line"></i><span>Matches</span></a></li>
-                    <li id="profileLink"><a><i class="fas fa-user"></i><span>Profile</span></a></li>
+                    <li id="profileLink">
+                        <a><i class="fas fa-user"></i><span>Profile</span></a></li>
                 </ul>
             </nav>
             <div class="sidebar-footer">
-                <a href="#" class="logout-btn"><i class="fas fa-right-from-bracket"></i><span>Logout</span></a></div>
+                <a href="#" class="logout-btn" id="logoutBtn">
+                    <i class="fas fa-right-from-bracket"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
         </aside>
         <main class="main-content">
             <!-- <header class="main-header">
@@ -49,8 +54,7 @@
 
             <header class="main-header">
                 <div class="header-search">
-                    <i class="fas fa-search"></i>
-                    <input type="search" placeholder="Search by keyword, category...">
+                    
                 </div>
                 <div class="header-actions">
                     <div class="action-icon notification-bell" id="notification-bell-container">
@@ -73,48 +77,55 @@
                     </div>
                     <div class="profile-dropdown">
                         <div class="profile-info">
-                            <img src="https://i.pravatar.cc/150?u=lahiru" alt="User Avatar" class="profile-avatar">
-                            <span class="profile-name">Lahiru S.</span>
-                            <i class="fas fa-chevron-down"></i>
+                            <div id="profile_infomation">
+                                <img src="" alt="User Avatar" class="profile-avatar">
+                                <span class="profile-name"></span>
+                            </div>
+
                         </div>
-                        <div class="dropdown-menu">
+                        <!-- <div class="dropdown-menu">
                             <a href="#"><i class="fas fa-user-circle"></i> Profile</a>
                             <a href="#" id="logout-button"><i class="fas fa-sign-out-alt"></i> Logout</a>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </header>
 
             <div class="welcome-banner">
-                <h2>Welcome back, Lahiru! 👋</h2>
+                <h2>Welcome back, <span id="welcome-name"></span>! 👋</h2>
                 <p>Ready to find what's lost? You can report a new item or check your existing matches.</p>
             </div>
-            <section class="quick-actions"><button class="action-btn lost-btn"><i class="fas fa-plus-circle"></i> Report
-                    a Lost Item</button><button class="action-btn found-btn"><i class="fas fa-plus-circle"></i> Report a
-                    Found Item</button></section>
+            <section class="quick-actions">
+                <button class="action-btn lost-btn"><a href="lostitempage.html"><i class="fas fa-plus-circle"></i> Report a Lost Item</a></button>
+                <button class="action-btn found-btn"><a href="founditempage.html"><i class="fas fa-plus-circle"></i> Report a Found Item</a></button>
+            </section>
             <section class="stats-overview">
                 <div class="stat-card">
                     <div class="card-icon icon-reports"><i class="fas fa-file-alt"></i></div>
                     <div class="card-info">
-                        <p>Active Reports</p><span>5</span>
+                        <p>Active Reports</p><span id="activeReportsCount"></span>
                     </div>
                 </div>
                 <div class="stat-card">
                     <div class="card-icon icon-pending"><i class="fas fa-hourglass-half"></i></div>
                     <div class="card-info">
-                        <p>Pending Matches</p><span>2</span>
+                        <p>Pending Matches</p><span id="pendingMatchesCount"></span>
                     </div>
                 </div>
                 <div class="stat-card">
                     <div class="card-icon icon-success"><i class="fas fa-check-circle"></i></div>
                     <div class="card-info">
-                        <p>Successful Recoveries</p><span>3</span>
+                        <p>Successful Recoveries</p><span id="successfulRecoveriesCount"></span>
                     </div>
                 </div>
             </section>
             <section class="recent-activity">
                 <h3>Recent Activity</h3>
-                <div class="activity-list">
+                <div class="activity-list" id="activityList">
+        
+
+            </div>
+                <!-- <div class="activity-list">
                     <div class="activity-item">
                         <div class="activity-icon icon-match"><i class="fas fa-link"></i></div>
                         <div class="activity-details">
@@ -129,7 +140,7 @@
                                 ago</small>
                         </div><a href="#" class="btn-view">View Contact</a>
                     </div>
-                </div>
+                </div> -->
             </section>
         </main>
         <!-- ===== ALL NOTIFICATIONS MODAL ===== -->
