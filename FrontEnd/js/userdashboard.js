@@ -273,4 +273,228 @@ $(document).ready(function () {
     });
 
 
+
+
+
+
+    // =======================================================
+    // ===       IMPROVED PROFILE MODAL SCRIPTING          ===
+    // =======================================================
+
+    // --- 1. Selectors ---
+    const $profileModal = $('#profileModal');
+    const $profileLink = $('#profileLink'); // Sidebar link
+    const $closeProfileBtn = $('#closeProfileModalBtn');
+    const $cancelBtn = $('#cancelBtn'); // Footer cancel button
+    const $saveBtn = $('#saveBtn'); // Footer save button
+    const $profileImageInput = $('#profileImageInput');
+    const $profileImagePreview = $('#profileImagePreview');
+    const $securityToggle = $('#securityToggle');
+    const $passwordFields = $('#passwordFields');
+    const $profileForm = $('#profileForm');
+
+    // --- 2. Modal Control Functions ---
+    function openProfileModal() {
+        // You can load current user data here via an AJAX call if needed
+        $profileModal.addClass('active');
+    }
+
+
+    function closeProfileModal() {
+        clearProfileForm();
+        $profileModal.removeClass('active');
+    }
+
+    // --- 3. Event Listeners ---
+
+    // Open Modal
+    $profileLink.on('click', function(e) {
+        e.preventDefault();
+        getProfileData();
+        openProfileModal();
+    });
+
+    // Close Modal
+    $closeProfileBtn.on('click', closeProfileModal);
+    $cancelBtn.on('click', closeProfileModal);
+    $profileModal.on('click', function(event) {
+        if ($(event.target).is($profileModal)) {
+            closeProfileModal();
+        }
+    });
+
+    // --- 4. Profile Picture Preview Logic ---
+    $profileImageInput.on('change', function() {
+        const file = this.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                $profileImagePreview.attr('src', e.target.result);
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // --- 5. Security & Password Toggle Logic ---
+    $securityToggle.on('click', function() {
+        $(this).toggleClass('open');
+        $passwordFields.slideToggle();
+    });
+
+    // --- 6. Form Submission Logic (AJAX) ---
+    $saveBtn.on('click', function() {
+        // const formData = new FormData($profileForm[0]);
+
+        // // Optional: Log data before sending
+        // console.log("Profile data to be sent to backend:");
+        // for (let [key, value] of formData.entries()) {
+        //     // Don't log password fields for security
+        //     if (!key.toLowerCase().includes('password')) {
+        //         console.log(key, ':', value);
+        //     }
+        // }
+
+        const formData = new FormData();
+
+        formData.append('fullName', $('#fullName').val());
+        formData.append('username', $('#username').val());
+        formData.append('email', $('#email').val());
+        formData.append('phoneNumber', $('#phoneNumber').val());
+
+        const imageFile = $('#profileImageInput')[0].files[0];
+        if (imageFile) {
+            // User අලුතෙන් image එකක් තෝරා ඇත්නම් පමණක් එය append කරන්න
+            formData.append('profileImage', imageFile);
+            console.log("New profile image appended.");
+        }
+
+        // --- 4. Password Fields (වෙනස් කර ඇත්නම් පමණක්) එකතු කිරීම ---
+        const confirmPassword = $('#confirmPassword').val();
+        const currentPassword = $('#currentPassword').val();
+        const newPassword = $('#newPassword').val();
+
+        if (newPassword && newPassword.trim() !== '') {
+            console.log("Password change detected. Appending all password fields.");
+            formData.append('currentPassword', currentPassword);
+            formData.append('newPassword', newPassword);
+            formData.append('confirmPassword', confirmPassword);
+        } else {
+            console.log("No password change detected. Skipping password fields.");
+        }
+
+        // AJAX call to the backend
+        $.ajax({
+            url: 'http://localhost:8080/user_profile/update_profile', // <<--- ඔබේ backend endpoint එක මෙතනට දාන්න
+            method: 'PATCH', // Use PUT for updates
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+            },
+            data: formData,
+            processData: false,
+            contentType: false,
+
+            success: function(response) {
+                // console.log('Profile updated successfully:', response);
+
+                alert('Profile updated successfully!');
+                
+                // getProfileData();
+                closeProfileModal();
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.error('Error updating profile:', jqXHR.responseText);
+                
+                try {
+                     const errorResponse = JSON.parse(jqXHR.responseText);
+                     alert('Error: ' + (errorResponse.message || 'Could not update profile.'));
+                } catch(e) {
+                     alert('An unknown error occurred. Please try again.');
+                }
+            }
+        });
+    });
+
+
+    function getProfileData() {
+        console.log("Opening profile modal and fetching user data...");
+
+        $.ajax({
+            url: 'http://localhost:8080/user_profile/get_profile_details', // The GET endpoint we just created
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+            },
+            success: function(response) {
+                    
+                    // --- Populate the form fields ---
+                    const userData = response.data;
+                    $('#fullName').val(userData.fullName);
+                    $('#username').val(userData.username);
+                    $('#email').val(userData.email);
+                    $('#phoneNumber').val(userData.phoneNumber);
+
+                    // --- Populate the profile header info ---
+                    $('#profileNameDisplay').text(userData.fullName);
+                    $('#profileUsernameDisplay').text('@' + userData.username);
+
+                    // --- Update the profile picture ---
+                    // Use a default image if the user doesn't have one
+                    // const profilePicUrl = userData.profilePictureUrl || 'path/to/default-avatar.png';
+                    $('#profileImagePreview').attr('src', userData.profileImageUrl);
+
+                    // --- Now, show the modal ---
+                    $profileModal.addClass('active');
+
+            },
+            error: function(jqXHR) {
+                console.error("Failed to fetch profile data:", jqXHR.responseText);
+                alert("Could not load your profile. Please try logging in again.");
+            },
+            complete: function() {
+                // Hide the loading indicator
+                // e.g., $('#loadingSpinner').hide();
+            }
+        });
+    }
+
+
+
+    function clearProfileForm() {
+        $('#fullName').val('');
+        $('#username').val('');
+        $('#email').val('');
+        $('#phoneNumber').val('');
+        $('#currentPassword').val('');
+        $('#newPassword').val('');
+        $('#confirmPassword').val('');
+        $('#profileImagePreview').attr('src', '');
+        
+    }
+
+    // ==================================================
+    // === JS ADDITION (Show/Hide Password Logic) ===
+    // ==================================================
+
+    // This code will work for all three password fields
+    $('.toggle-password').on('click', function() {
+        // Find the input field within the same input-group
+        const inputField = $(this).closest('.input-group').find('input');
+        
+        // Check the current type of the input field
+        const currentType = inputField.attr('type');
+        
+        // Toggle the type and the icon
+        if (currentType === 'password') {
+            inputField.attr('type', 'text');
+            $(this).removeClass('fa-eye').addClass('fa-eye-slash');
+        } else {
+            inputField.attr('type', 'password');
+            $(this).removeClass('fa-eye-slash').addClass('fa-eye');
+        }
+    });
+
+
+
+
+
 });

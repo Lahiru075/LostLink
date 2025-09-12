@@ -1,8 +1,6 @@
 package lk.ijse.gdse.lostlink.service;
 
-import lk.ijse.gdse.lostlink.dto.AuthDto;
-import lk.ijse.gdse.lostlink.dto.AuthResponseDto;
-import lk.ijse.gdse.lostlink.dto.RegisterDto;
+import lk.ijse.gdse.lostlink.dto.*;
 import lk.ijse.gdse.lostlink.entity.User;
 
 public interface AuthService {
@@ -11,4 +9,8 @@ public interface AuthService {
     AuthResponseDto authenticate(AuthDto authDTO);
 
     User findUserByUsername(String username);
+
+    void updateUserProfile(String currentUsername, UserProfileDto userProfileDto);
+
+    UserDetailsDto getUserProfileDetails(String currentUsername);
 }

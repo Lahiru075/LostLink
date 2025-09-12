@@ -175,7 +175,7 @@ $(document).ready(function () {
         formData.append('lostDate', $('#lostDate').val());
         formData.append('latitude', $('#latitude').val());
         formData.append('longitude', $('#longitude').val());
-        formData.append('status', "ACTIVE");
+        formData.append('status', $('#itemCategory').val());
 
         const imageFile = $('#itemImage')[0].files[0];
         if (imageFile) {

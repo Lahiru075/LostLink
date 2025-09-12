@@ -1,8 +1,6 @@
 package lk.ijse.gdse.lostlink.service.impl;
 
-import lk.ijse.gdse.lostlink.dto.AuthDto;
-import lk.ijse.gdse.lostlink.dto.AuthResponseDto;
-import lk.ijse.gdse.lostlink.dto.RegisterDto;
+import lk.ijse.gdse.lostlink.dto.*;
 import lk.ijse.gdse.lostlink.entity.Role;
 import lk.ijse.gdse.lostlink.entity.User;
 import lk.ijse.gdse.lostlink.entity.UserStatus;
@@ -14,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +21,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final FileStorageService fileStorageService;
 
     @Override
     public Object register(RegisterDto registerDTO) {
@@ -62,5 +62,66 @@ public class AuthServiceImpl implements AuthService {
     public User findUserByUsername(String username) {
         User user=userRepository.findByUsername(username).orElse(null);
         return user;
+    }
+
+    @Override
+    public void updateUserProfile(String currentUsername, UserProfileDto dto) {
+        User user = userRepository.findByUsername(currentUsername)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // 2. If the new value is not null or empty
+        if (StringUtils.hasText(dto.getFullName())) {
+            user.setFullName(dto.getFullName());
+        }
+
+        if (StringUtils.hasText(dto.getUsername())) {
+            // Optional: Check if the new username is already taken
+            user.setUsername(dto.getUsername());
+        }
+        if (StringUtils.hasText(dto.getEmail())) {
+            user.setEmail(dto.getEmail());
+        }
+        if (StringUtils.hasText(dto.getPhoneNumber())) {
+            user.setPhoneNumber(dto.getPhoneNumber());
+        }
+
+        if (dto.getProfileImage() != null && !dto.getProfileImage().isEmpty()) {
+            // Save the file and get its path/URL
+            String filePath = fileStorageService.storeFile(dto.getProfileImage());
+            user.setProfileImage(filePath);
+        }
+
+        if (StringUtils.hasText(dto.getNewPassword())) {
+            // Check if current password is provided and correct
+            if (!StringUtils.hasText(dto.getCurrentPassword()) || !passwordEncoder.matches(dto.getCurrentPassword(), user.getPassword())) {
+                throw new RuntimeException("Current password is incorrect.");
+            }
+
+            // Check if new passwords match
+            if (!dto.getNewPassword().equals(dto.getConfirmPassword())) {
+                throw new RuntimeException("New passwords do not match.");
+            }
+
+            user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
+        }
+
+        userRepository.save(user);
+    }
+
+    @Override
+    public UserDetailsDto getUserProfileDetails(String currentUsername) {
+        User user = userRepository.findByUsername(currentUsername)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+
+        return UserDetailsDto.builder()
+                .userId(user.getUserId())
+                .fullName(user.getFullName())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .phoneNumber(user.getPhoneNumber())
+                .profileImageUrl(user.getProfileImage())
+                .build();
+
     }
 }
