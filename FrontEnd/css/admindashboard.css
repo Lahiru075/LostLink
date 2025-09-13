@@ -46,6 +46,10 @@ ul {
     color: var(--text-color-dark);
     display: flex;
     flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
 }
 
 .sidebar-header {
@@ -143,6 +147,7 @@ ul {
     flex-grow: 1;
     padding: 2rem 2.5rem;
     overflow-y: auto;
+    margin-left: 260px;
 }
 
 .main-header {

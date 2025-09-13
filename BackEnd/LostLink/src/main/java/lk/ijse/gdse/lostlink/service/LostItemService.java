@@ -1,5 +1,6 @@
 package lk.ijse.gdse.lostlink.service;
 
+import lk.ijse.gdse.lostlink.dto.LostItemAdminViewDto;
 import lk.ijse.gdse.lostlink.dto.LostItemDto;
 import lk.ijse.gdse.lostlink.dto.SecondLostItemDto;
 import lk.ijse.gdse.lostlink.entity.LostItem;
@@ -21,7 +22,15 @@ public interface LostItemService {
 
     void deleteLostItem(Integer itemId, String currentUsername);
 
+    void deleteLostItem(Integer itemId);
+
     List<String> findItemTitlesByKeyword(String keyword, String username);
 
     Page<SecondLostItemDto> getFilteredLostItems(String keyword, String categoryName, String status, String username, int page, int size);
+
+    Page<LostItemAdminViewDto> getAllLostItemsForAdmin(int page, int size, String category, String status, String search);
+
+    List<String> getLostItemTitleSuggestions(String query);
+
+    long getTotalItemCount();
 }

@@ -40,5 +40,18 @@ public interface LostItemRepository extends JpaRepository<LostItem, Integer> {
 
     Page<LostItem> findByUserAndTitleContainingIgnoreCaseAndStatusAndCategory_CategoryNameIgnoreCase(User user, String keyword, LostItemStatus status, String categoryName, Pageable pageable);
 
+    @Query("SELECT li FROM LostItem li WHERE " +
+            "(:category IS NULL OR li.category.categoryName = :category) AND " +
+            "(:status IS NULL OR li.status = :status) AND " +
+            "(:search IS NULL OR li.title LIKE %:search%)")
+    Page<LostItem> findAllWithAdminFilters(
+            @Param("category") String category,
+            @Param("status") LostItemStatus status, // Assuming status is a String in your entity
+            @Param("search") String search,
+            Pageable pageable
+    );
+
+    @Query("SELECT DISTINCT li.title FROM LostItem li WHERE li.title LIKE %:query%")
+    List<String> findTitleSuggestions(@Param("query") String query);
 }
 

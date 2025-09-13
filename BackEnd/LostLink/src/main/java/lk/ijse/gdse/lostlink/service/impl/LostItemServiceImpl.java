@@ -1,5 +1,6 @@
 package lk.ijse.gdse.lostlink.service.impl;
 
+import lk.ijse.gdse.lostlink.dto.LostItemAdminViewDto;
 import lk.ijse.gdse.lostlink.dto.LostItemDto;
 import lk.ijse.gdse.lostlink.dto.SecondLostItemDto;
 import lk.ijse.gdse.lostlink.entity.*;
@@ -151,10 +152,18 @@ public class LostItemServiceImpl implements LostItemService {
 
         matchingService.deleteAllMatchesAndRelatedNotificationsForLostItem(lostItem);
 
-        fileStorageService.deleteFile(lostItem.getImageUrl());
-
         lostItemRepository.delete(lostItem);
 
+    }
+
+    @Override
+    public void deleteLostItem(Integer itemId) {
+        LostItem lostItem = lostItemRepository.findById(itemId)
+                .orElseThrow(() -> new RuntimeException("Lost Item not found"));
+
+        matchingService.deleteAllMatchesAndRelatedNotificationsForLostItem(lostItem);
+
+        lostItemRepository.delete(lostItem);
     }
 
     @Override
@@ -269,6 +278,46 @@ public class LostItemServiceImpl implements LostItemService {
 
         // 7. Create a new Page object with the DTOs and return it
         return new PageImpl<>(dtoList, pageable, lostItemsPage.getTotalElements());
+    }
+
+    @Override
+    public Page<LostItemAdminViewDto> getAllLostItemsForAdmin(int page, int size, String category, String status, String search) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
+
+        LostItemStatus itemStatus = null;
+        if (status != null && !status.isEmpty()) {
+            try {
+                itemStatus = LostItemStatus.valueOf(status.toUpperCase());
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
+
+        Page<LostItem> itemPage = lostItemRepository.findAllWithAdminFilters(category, itemStatus, search, pageable);
+
+        return itemPage.map(item -> {
+            LostItemAdminViewDto dto = modelMapper.map(item, LostItemAdminViewDto.class);
+            dto.setCategoryName(item.getCategory().getCategoryName());
+            dto.setId(item.getLostItemId());
+            dto.setTitle(item.getTitle());
+            dto.setDescription(item.getDescription());
+            dto.setDateLost(item.getLostDate().toString());
+            dto.setStatus(item.getStatus().toString());
+            dto.setItemImageUrl(item.getImageUrl());
+            dto.setOwnerId(item.getUser().getUserId());
+            dto.setOwnerProfileImageUrl(item.getUser().getProfileImage());
+            dto.setOwnerFullName(item.getUser().getFullName());
+            return dto;
+        });
+    }
+
+    @Override
+    public List<String> getLostItemTitleSuggestions(String query) {
+        return lostItemRepository.findTitleSuggestions(query);
+    }
+
+    @Override
+    public long getTotalItemCount() {
+        return lostItemRepository.count();
     }
 
 

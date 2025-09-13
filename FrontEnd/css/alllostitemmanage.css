@@ -1,5 +1,8 @@
-/* --- Paste the FULL Admin Dashboard CSS here --- */
-/* For brevity, I'm only showing the new/changed styles */
+/* ========================================================== */
+/* ===           ADMIN GLOBAL & ITEM MANAGEMENT CSS       === */
+/* ========================================================== */
+
+/* --- 1. Global Styles & Variables --- */
 :root {
     --primary-color: #5D3EBC;
     --primary-light: #f0ebff;
@@ -7,23 +10,15 @@
     --light-bg: #f9fafb;
     --text-color-dark: #e5e7eb;
     --text-color-light: #4b5563;
-    --border-color: #374151;
+    --border-color-dark: #374151;
+    --border-color-light: #e5e7eb;
     --white-color: #fff;
     --danger-color: #ef4444;
     --warning-color: #f59e0b;
     --success-color: #10b981;
 }
 
-a {
-    text-decoration: none;
-    color: inherit;
-}
-
-li {
-  text-align: left;
-  list-style-type: none;
-}
-
+/* Basic Reset */
 * {
     margin: 0;
     padding: 0;
@@ -36,14 +31,29 @@ body {
     color: var(--text-color-light);
 }
 
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+li {
+    list-style-type: none;
+}
+
+/* --- 2. Main Layout --- */
 .dashboard-container {
     display: flex;
     width: 100%;
     min-height: 100vh;
 }
 
+.main-content {
+    flex: 1;
+    margin-left: 260px; /* Sidebar width */
+    padding: 1.5rem 2rem;
+}
 
-/* Sidebar Styles (Same as Admin Dashboard) */
+/* --- 3. Sidebar Styles --- */
 .sidebar {
     flex: 0 0 260px;
     background-color: var(--dark-bg);
@@ -54,12 +64,11 @@ body {
     top: 0;
     left: 0;
     height: 100vh;
-
 }
 
 .sidebar-header {
     padding: 2rem 1.5rem;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color-dark);
     display: flex;
     align-items: center;
     gap: 10px;
@@ -111,7 +120,7 @@ body {
 }
 
 .sidebar-nav ul li a:hover {
-    background-color: var(--border-color);
+    background-color: var(--border-color-dark);
     color: var(--white-color);
 }
 
@@ -129,7 +138,7 @@ body {
 
 .sidebar-footer {
     padding: 1.5rem;
-    border-top: 1px solid var(--border-color);
+    border-top: 1px solid var(--border-color-dark);
 }
 
 .sidebar-footer a {
@@ -137,10 +146,11 @@ body {
     align-items: center;
     padding: 0.8rem;
     border-radius: 8px;
+    transition: all 0.2s ease;
 }
 
 .sidebar-footer a:hover {
-    background-color: var(--border-color);
+    background-color: var(--border-color-dark);
 }
 
 .logout-btn {
@@ -148,77 +158,36 @@ body {
 }
 
 
-
-
-
-/* ========================================================== */
-/* ===         USER MANAGEMENT - MAIN CONTENT STYLES      === */
-/* ========================================================== */
-
-/* --- Main Layout --- */
-.main-content {
-    flex: 1;
-    padding: 1.5rem 2rem;
-    margin-left: 260px;
-}
-
-/* --- Main Header (Top Bar) --- */
+/* --- 4. Main Header (Top Bar) --- */
 .main-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2rem;
     padding-bottom: 1.5rem;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid var(--border-color-light);
 }
 
-/* ============================================= */
-/* ===         HEADER GREETING STYLES          === */
-/* ============================================= */
-.header-greeting {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-#greeting-title {
+.header-greeting h4 {
     margin: 0;
-    font-size: 1.25rem; /* A bit larger */
+    font-size: 1.25rem;
     font-weight: 600;
-    color: #111827; /* Dark text color from your theme */
-    line-height: 1.2;
+    color: #111827;
 }
 
-#greeting-date {
+.header-greeting p {
     margin: 4px 0 0 0;
     font-size: 0.9rem;
-    color: var(--text-color-light); /* Light text color from your theme */
-}
-
-.user-profile {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-}
-
-.user-profile > i {
-    font-size: 1.25rem;
     color: var(--text-color-light);
-    cursor: pointer;
 }
 
-.user-info img {
+.user-profile img {
     width: 40px;
     height: 40px;
     border-radius: 50%;
     object-fit: cover;
 }
 
-
-/* --- Page Header & Title --- */
-.page-title-header {
-    margin-bottom: 2rem;
-}
 
 .page-title-header h1 {
     margin: 0;
@@ -231,42 +200,19 @@ body {
     color: var(--text-color-light);
 }
 
-/* --- Control Panel (Search/Filter/Button) --- */
 .control-panel {
     display: flex;
-    margin-bottom: 1.5rem;
     justify-content: space-between;
+    align-items: center;
+    margin: 2rem 0 1.5rem 0;
 }
 
-.controls-left,
-.controls-right {
+.controls-left, .controls-right {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     gap: 1rem;
 }
 
-/* Style for the new total users stat */
-.table-info-stat {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    background-color: #F9FAFB;
-    padding: 0.6rem 1.2rem;
-    border-radius: 8px;
-    border: 1px solid #e5e7eb;
-    color: var(--text-color-light);
-    font-weight: 500;
-}
-
-.table-info-stat strong {
-    color: #111827; /* Darker color for the number */
-    font-size: 1rem;
-}
-
-.search-bar-local {
-    position: relative; /* This is crucial for positioning the panel */
-}
 
 .suggestions-panel {
     position: absolute;
@@ -294,6 +240,12 @@ body {
 .suggestion-item:hover {
     background-color: #f9fafb;
 }
+
+.search-bar-local {
+    position: relative;
+    width: 300px;
+}
+
 .search-bar-local i {
     position: absolute;
     left: 1rem;
@@ -302,52 +254,40 @@ body {
     color: #9ca3af;
 }
 
-.search-bar-local input {
-    width: 100%;
-    padding: 0.75rem 1rem 0.75rem 3rem;
+.search-bar-local input, .filters select {
+    padding: 0.75rem 1rem;
     border-radius: 8px;
     border: 1px solid #d1d5db;
     background: var(--white-color);
     font-size: 0.9rem;
 }
-.search-bar-local input:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 2px var(--primary-light);
+.search-bar-local input {
+    width: 100%;
+    padding-left: 3rem;
 }
 
-
-.filters select {
-    padding: 0.7rem 1rem;
-    border-radius: 8px;
-    border: 1px solid #d1d5db;
-    background-color: var(--white-color);
-    color: #111827;
-}
-
-.btn-primary {
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    padding: 0.7rem 1.2rem;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
+.table-info-stat {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    transition: background-color 0.2s;
+    gap: 0.75rem;
+    background-color: #F9FAFB;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color-light);
+    color: var(--text-color-light);
+    font-weight: 500;
+}
+.table-info-stat strong {
+    color: #111827;
+    font-size: 1rem;
 }
 
-.btn-primary:hover {
-    background-color: #4c33a3;
-}
 
-/* --- Table Card & Container --- */
+/* --- 6. Table Styles (For Items) --- */
 .content-card {
     background-color: var(--white-color);
     border-radius: 12px;
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--border-color-light);
     overflow: hidden;
 }
 
@@ -360,8 +300,7 @@ body {
     border-collapse: collapse;
 }
 
-.data-table th,
-.data-table td {
+.data-table th, .data-table td {
     padding: 1rem 1.5rem;
     text-align: left;
     white-space: nowrap;
@@ -380,116 +319,113 @@ body {
 }
 
 .data-table tbody tr {
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid var(--border-color-light);
 }
-
 .data-table tbody tr:last-child {
     border-bottom: none;
 }
-
 .data-table tbody tr:hover {
     background-color: #f9fafb;
-}
-
-/* --- Table Cell Content --- */
-.user-cell {
-    display: flex;
-    align-items: center;
-}
-
-.user-profile-pic {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    margin-right: 1rem;
-    object-fit: cover;
-}
-
-.user-cell-info {
-    display: flex;
-    flex-direction: column;
-}
-
-.user-name {
-    font-weight: 600;
-    color: #111827;
-}
-
-.user-email {
-    font-size: 0.85rem;
-    color: var(--text-color-light);
-}
-
-.role-badge,
-.status-badge {
-    display: inline-block;
-    padding: 0.25rem 0.75rem;
-    border-radius: 999px;
-    font-size: 0.75rem;
-    font-weight: 600;
-}
-
-.role-user {
-    background-color: #dbeafe;
-    color: #2563eb;
-}
-
-.role-admin {
-    background-color: var(--primary-light);
-    color: var(--primary-color);
-}
-
-.status-badge.status-active {
-    background-color: #d1fae5;
-    color: #059669;
-}
-
-.status-badge.status-suspended {
-    background-color: #fee2e2;
-    color: #dc2626;
 }
 
 .text-center {
     text-align: center;
 }
 
-.action-btn {
-    background: none;
-    border: 1px solid transparent;
-    border-radius: 6px;
-    padding: 0.4rem 0.8rem;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 0.8rem;
-    display: inline-flex;
+/* --- Item-Specific Table Cells --- */
+.item-cell {
+    display: flex;
     align-items: center;
-    gap: 0.4rem;
+}
+.item-thumbnail {
+    width: 60px;
+    height: 40px;
+    border-radius: 6px;
+    margin-right: 1rem;
+    object-fit: cover;
+    border: 1px solid #f0f2f5;
+}
+.item-cell-info {
+    display: flex;
+    flex-direction: column;
+}
+.item-title {
+    font-weight: 600;
+    color: #111827;
+}
+.item-description {
+    font-size: 0.85rem;
+    color: var(--text-color-light);
+    white-space: normal;
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.user-cell {
+    display: flex;
+    align-items: center;
+}
+.user-profile-pic {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-right: 0.75rem;
+    object-fit: cover;
+}
+.user-name {
+    font-weight: 500;
+}
+
+/* --- Status Badges (Item Specific) --- */
+.status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+.status-badge.status-recovered {
+    background-color: #d1fae5;
+    color: #059669;
+}
+.status-badge.status-matched {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+.status-badge.status-active {
+    background-color: #dbeafe;
+    color: #2563eb;
+}
+
+/* --- Item Action Buttons --- */
+.action-menu {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+}
+.action-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #F9FAFB;
+    border: 1px solid var(--border-color-light);
+    color: var(--text-color-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
     transition: all 0.2s;
 }
-
-.action-btn i {
-    font-size: 0.9rem;
+.action-btn:hover {
+    background-color: #F3F4F6;
+    color: #111827;
 }
+.action-btn.action-view:hover { color: var(--primary-color); }
+.action-btn.action-flag:hover { color: var(--warning-color); }
+.action-btn.action-delete:hover { color: var(--danger-color); }
 
-.action-btn.action-suspend {
-    color: var(--danger-color);
-    border-color: #fecaca;
-}
 
-.action-btn.action-suspend:hover {
-    background-color: #fee2e2;
-}
-
-.action-btn.action-activate {
-    color: var(--success-color);
-    border-color: #a7f3d0;
-}
-
-.action-btn.action-activate:hover {
-    background-color: #d1fae5;
-}
-
-/* --- Pagination --- */
+/* --- 7. Pagination --- */
 .pagination {
     padding: 1rem 1.5rem;
     display: flex;
@@ -497,7 +433,7 @@ body {
     align-items: center;
     font-size: 0.9rem;
     color: var(--text-color-light);
-    border-top: 1px solid #e5e7eb;
+    border-top: 1px solid var(--border-color-light);
 }
 
 .pagination-buttons {
@@ -513,11 +449,9 @@ body {
     border-radius: 6px;
     cursor: pointer;
 }
-
 .btn-pagination:hover:not(:disabled) {
     background-color: #f9fafb;
 }
-
 .btn-pagination:disabled {
     opacity: 0.5;
     cursor: not-allowed;

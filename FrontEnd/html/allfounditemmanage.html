@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Found Items - Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- එකම CSS file එක reuse කරනවා -->
+    <link rel="stylesheet" href="../css/allfounditemmanage.css"> 
+</head>
+
+<body>
+    <div class="dashboard-container">
+       <aside class="sidebar">
+            <div class="sidebar-header"><div class="logo-icon"><i class="fas fa-user-shield"></i></div><h1 class="logo-text">LostLink</h1><span class="admin-tag">Admin</span></div>
+            <nav class="sidebar-nav">
+                <p class="menu-title">OVERVIEW</p>
+                <ul><li><a href="admindashboard.html"><i class="fas fa-chart-pie"></i><span>Dashboard</span></a></li></ul>
+                <p class="menu-title">MANAGEMENT</p>
+                <ul>
+                    <li><a href="usermanage.html"><i class="fas fa-users"></i><span>User Management</span></a></li>
+                    <li><a href="alllostitemmanage.html"><i class="fas fa-box-open"></i><span>All Lost Items</span></a></li>
+                    <!-- All Found Items link එක active කරනවා -->
+                    <li><a href="#" class="active"><i class="fas fa-box"></i><span>All Found Items</span></a></li>
+                    <li><a href="#"><i class="fas fa-handshake"></i><span>All Matches</span></a></li>
+                    <li><a href="#"><i class="fas fa-envelope-open-text"></i><span>Contact Requests</span></a></li>
+                </ul>
+                 <p class="menu-title">CONTENT</p>
+                <ul><li><a href="#"><i class="fas fa-tags"></i><span>Categories</span></a></li></ul>
+            </nav>
+            <div class="sidebar-footer"><a href="#"><i class="fas fa-user-circle"></i><span>Admin Profile</span></a><a href="#" class="logout-btn"><i class="fas fa-right-from-bracket"></i><span>Logout</span></a></div>
+        </aside>
+        
+        <!-- ======================================================= -->
+        <!-- ===         ALL FOUND ITEMS MAIN CONTENT          === -->
+        <!-- ======================================================= -->
+        <main class="main-content">
+            <!-- Page Header -->
+            <header class="main-header">
+                <div class="header-greeting">
+                    <h4 id="greeting-title">Good Morning, Admin!</h4>
+                    <p id="greeting-date">Monday, September 15, 2025</p>
+                </div>
+                <div class="user-profile">
+                    <div class="user-info">
+                        <img src="https://i.pravatar.cc/150?u=admin" alt="Admin Profile">
+                    </div>
+                </div>
+            </header>
+            
+            <!-- All Found Items Content -->
+            <div class="page-content">
+                <div class="page-title-header">
+                    <h1>All Found Items</h1>
+                    <p>Manage all items reported as found on the platform.</p>
+                </div>
+
+                <!-- Control Panel -->
+                <div class="control-panel">
+                    <div class="controls-left">
+                        <div class="search-bar-local">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="itemSearch" placeholder="Search by title...">
+                            <div class="suggestions-panel" id="suggestionsPanel"></div>
+                        </div>
+                        <div class="filters">
+                            <select name="category" id="category-filter">
+                                <option value="all">All Categories</option>
+                                <!-- Categories will be loaded by JS -->
+                            </select>
+                            <select name="status" id="status-filter">
+                                <option value="all">All Statuses</option>
+                                <option value="ACTIVE">Active</option>
+                                <option value="RETURNED">Returned</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="controls-right">
+                        <div class="table-info-stat">
+                            <i class="fas fa-box"></i>
+                            <span>Total Found Items: <strong id="totalItemsCount">971</strong></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Found Items Table in a Card -->
+                <div class="content-card">
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ITEM</th>
+                                    <th>FINDER</th> <!-- "Owner" වෙනුවට "Finder" -->
+                                    <th>CATEGORY</th>
+                                    <th>DATE FOUND</th> <!-- "Date Lost" වෙනුවට "Date Found" -->
+                                    <th>STATUS</th>
+                                    <th class="text-center">ACTIONS</th>
+                                </tr>
+                            </thead>
+                            <tbody id="foundItemsTableBody">
+                                <!-- Sample Item Row 1 -->
+                                <tr>
+                                    <td>
+                                        <div class="item-cell">
+                                            <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=100" class="item-thumbnail" alt="Headphones">
+                                            <div class="item-cell-info">
+                                                <span class="item-title">Sony Headphones</span>
+                                                <span class="item-description">Found at Majestic City food court...</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="user-cell">
+                                            <img src="https://i.pravatar.cc/150?u=fathima" class="user-profile-pic" alt="User">
+                                            <span class="user-name">Fathima R.</span>
+                                        </div>
+                                    </td>
+                                    <td>Electronics</td>
+                                    <td>2024-08-18</td>
+                                    <td><span class="status-badge status-returned">Returned</span></td>
+                                    <td class="text-center">
+                                        <div class="action-menu">
+                                             <button class="action-btn action-view" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <!-- Sample Item Row 2 -->
+                                <tr>
+                                    <td>
+                                        <div class="item-cell">
+                                            <img src="https://images.unsplash.com/photo-1558462037-c8a4918f3a3a?w=100" class="item-thumbnail" alt="Keys">
+                                            <div class="item-cell-info">
+                                                <span class="item-title">Car Keys</span>
+                                                <span class="item-description">Toyota key with a blue tag...</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="user-cell">
+                                            <img src="https://i.pravatar.cc/150?u=nimal" class="user-profile-pic" alt="User">
+                                            <span class="user-name">Nimal P.</span>
+                                        </div>
+                                    </td>
+                                    <td>Keys</td>
+                                    <td>2024-09-10</td>
+                                    <td><span class="status-badge status-active">Available</span></td>
+                                    <td class="text-center">
+                                        <div class="action-menu">
+                                             <button class="action-btn action-view" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="action-btn action-flag" title="Flag Content">
+                                                <i class="fas fa-flag"></i>
+                                            </button>
+                                            <button class="action-btn action-delete" title="Delete Report">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                     <!-- Pagination -->
+                    <div class="pagination" id="paginationContainer">
+                        <span id="paginationInfo">Showing 1-10 of 971</span>
+                        <div class="pagination-buttons">
+                            <button class="btn-pagination" id="prevBtn" disabled>Previous</button>
+                            <button class="btn-pagination" id="nextBtn">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="../js/allfounditemmanage.js"></script> <!-- අලුත් JS file එකක් -->
+</body>
+</html>

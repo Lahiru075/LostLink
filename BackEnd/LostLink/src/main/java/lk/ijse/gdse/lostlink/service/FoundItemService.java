@@ -1,9 +1,6 @@
 package lk.ijse.gdse.lostlink.service;
 
-import lk.ijse.gdse.lostlink.dto.FoundItemDto;
-import lk.ijse.gdse.lostlink.dto.LostItemDto;
-import lk.ijse.gdse.lostlink.dto.SecondFoundItemDto;
-import lk.ijse.gdse.lostlink.dto.SecondLostItemDto;
+import lk.ijse.gdse.lostlink.dto.*;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -24,4 +21,12 @@ public interface FoundItemService {
  //   List<SecondFoundItemDto> getFilteredFoundItems(String keyword, String currentUsername);
 
     Page<SecondFoundItemDto> getFilteredFoundItemsForStatus(String keyword, String status, String category, String currentUsername, int page, int size);
+
+    Page<FoundItemAdminViewDto> getAllFoundItems(int page, int size, String category, String status, String search);
+
+    List<String> getFoundItemTitleSuggestions(String query);
+
+    long getTotalItemCount();
+
+    void deleteLostItem(Integer itemId);
 }

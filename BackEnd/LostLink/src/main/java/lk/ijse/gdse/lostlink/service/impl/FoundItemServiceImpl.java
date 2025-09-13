@@ -1,9 +1,6 @@
 package lk.ijse.gdse.lostlink.service.impl;
 
-import lk.ijse.gdse.lostlink.dto.FoundItemDto;
-import lk.ijse.gdse.lostlink.dto.LostItemDto;
-import lk.ijse.gdse.lostlink.dto.SecondFoundItemDto;
-import lk.ijse.gdse.lostlink.dto.SecondLostItemDto;
+import lk.ijse.gdse.lostlink.dto.*;
 import lk.ijse.gdse.lostlink.entity.*;
 import lk.ijse.gdse.lostlink.repository.CategoryRepository;
 import lk.ijse.gdse.lostlink.repository.FoundItemRepository;
@@ -250,5 +247,57 @@ public class FoundItemServiceImpl implements FoundItemService {
         // 7. Create a new Page object with the DTOs and return it
         return new PageImpl<>(dtoList, pageable, foundItemPage.getTotalElements());
 
+    }
+
+    @Override
+    public Page<FoundItemAdminViewDto> getAllFoundItems(int page, int size, String category, String status, String search) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
+
+        FoundItemStatus itemStatus = null;
+        if (status != null && !status.isEmpty()) {
+            try {
+                itemStatus = FoundItemStatus.valueOf(status.toUpperCase());
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
+
+        Page<FoundItem> itemPage = foundItemRepository.findAllWithAdminFilters(category, itemStatus, search, pageable);
+
+
+        return itemPage.map(item -> {
+            FoundItemAdminViewDto dto = modelMapper.map(item, FoundItemAdminViewDto.class);
+            dto.setCategoryName(item.getCategory().getCategoryName());
+            dto.setId(item.getFoundItemId());
+            dto.setTitle(item.getTitle());
+            dto.setDescription(item.getDescription());
+            dto.setDateFound(item.getFoundDate().toString());
+            dto.setStatus(item.getStatus().toString());
+            dto.setItemImageUrl(item.getImageUrl());
+            dto.setFinderId(item.getUser().getUserId());
+            dto.setFinderProfileImageUrl(item.getUser().getProfileImage());
+            dto.setFinderFullName(item.getUser().getFullName());
+            return dto;
+        });
+
+    }
+
+    @Override
+    public List<String> getFoundItemTitleSuggestions(String query) {
+        return foundItemRepository.findTitleSuggestions(query);
+    }
+
+    @Override
+    public long getTotalItemCount() {
+        return foundItemRepository.count();
+    }
+
+    @Override
+    public void deleteLostItem(Integer itemId) {
+        FoundItem foundItem = foundItemRepository.findById(itemId)
+                .orElseThrow(() -> new RuntimeException("Found Item not found"));
+
+        matchingService.deleteAllMatchesAndRelatedNotificationsForFoundItem(foundItem);
+
+        foundItemRepository.delete(foundItem);
     }
 }

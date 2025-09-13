@@ -34,4 +34,18 @@ public interface FoundItemRepository  extends JpaRepository<FoundItem, Integer> 
     Page<FoundItem> findByUserAndTitleContainingIgnoreCaseAndStatus(User user, String keyword, FoundItemStatus itemStatus, Pageable pageable);
 
     Page<FoundItem> findByUserAndTitleContainingIgnoreCaseAndStatusAndCategory_CategoryNameIgnoreCase(User user, String keyword, FoundItemStatus itemStatus, String category, Pageable pageable);
+
+    @Query("SELECT fi FROM FoundItem fi WHERE " +
+            "(:category IS NULL OR fi.category.categoryName = :category) AND " +
+            "(:status IS NULL OR fi.status = :status) AND " +
+            "(:search IS NULL OR fi.title LIKE %:search%)")
+    Page<FoundItem> findAllWithAdminFilters(
+            @Param("category") String category,
+            @Param("status") FoundItemStatus status,
+            @Param("search") String search,
+            Pageable pageable
+    );
+
+    @Query("SELECT DISTINCT fi.title FROM FoundItem fi WHERE fi.title LIKE %:query%")
+    List<String> findTitleSuggestions(@Param("query") String query);
 }

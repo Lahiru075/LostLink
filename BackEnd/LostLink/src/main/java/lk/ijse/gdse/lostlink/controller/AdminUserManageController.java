@@ -2,14 +2,12 @@ package lk.ijse.gdse.lostlink.controller;
 
 import lk.ijse.gdse.lostlink.dto.ApiResponse;
 import lk.ijse.gdse.lostlink.dto.UserAllDetailsDto;
-import lk.ijse.gdse.lostlink.dto.UserDetailsDto;
 import lk.ijse.gdse.lostlink.entity.UserStatus;
 import lk.ijse.gdse.lostlink.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,7 +16,7 @@ import java.util.List;
 @RequestMapping({"/user_manage"})
 @CrossOrigin({"*"})
 @RequiredArgsConstructor
-public class UserManageController {
+public class AdminUserManageController {
 
     private final AuthService authService;
 

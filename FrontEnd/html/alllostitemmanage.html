@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Lost Items - Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../css/alllostitemmanage.css"> <!-- එකම CSS file එක reuse කරනවා -->
+</head>
+
+<body>
+    <div class="dashboard-container">
+       <aside class="sidebar">
+            <div class="sidebar-header"><div class="logo-icon"><i class="fas fa-user-shield"></i></div><h1 class="logo-text">LostLink</h1><span class="admin-tag">Admin</span></div>
+            <nav class="sidebar-nav">
+                <p class="menu-title">OVERVIEW</p>
+                <ul><li><a href="admindashboard.html"><i class="fas fa-chart-pie"></i><span>Dashboard</span></a></li></ul>
+                <p class="menu-title">MANAGEMENT</p>
+                <ul>
+                    <li><a href="usermanage.html"><i class="fas fa-users"></i><span>User Management</span></a></li>
+                    <!-- All Lost Items link එක active කරනවා -->
+                    <li><a href="#" class="active"><i class="fas fa-box-open"></i><span>All Lost Items</span></a></li>
+                    <li><a href="allfounditemmanage.html"><i class="fas fa-box"></i><span>All Found Items</span></a></li>
+                    <li><a href="#"><i class="fas fa-handshake"></i><span>All Matches</span></a></li>
+                    <li><a href="#"><i class="fas fa-envelope-open-text"></i><span>Contact Requests</span></a></li>
+                </ul>
+                 <p class="menu-title">CONTENT</p>
+                <ul><li><a href="#"><i class="fas fa-tags"></i><span>Categories</span></a></li></ul>
+            </nav>
+            <div class="sidebar-footer"><a href="#"><i class="fas fa-user-circle"></i><span>Admin Profile</span></a><a href="#" class="logout-btn"><i class="fas fa-right-from-bracket"></i><span>Logout</span></a></div>
+        </aside>
+        
+        <!-- ======================================================= -->
+        <!-- ===         ALL LOST ITEMS MAIN CONTENT           === -->
+        <!-- ======================================================= -->
+        <main class="main-content">
+            <!-- Page Header -->
+            <header class="main-header">
+                <div class="header-greeting">
+                    <h4 id="greeting-title">Good Morning, Admin!</h4>
+                    <p id="greeting-date">Monday, September 15, 2025</p>
+                </div>
+                <div class="user-profile">
+                    <div class="user-info">
+                        <img src="https://i.pravatar.cc/150?u=admin" alt="Admin Profile">
+                    </div>
+                </div>
+            </header>
+            
+            <!-- All Lost Items Content -->
+            <div class="page-content">
+                <div class="page-title-header">
+                    <h1>All Lost Items</h1>
+                    <p>Manage all items reported as lost on the platform.</p>
+                </div>
+
+                <!-- Control Panel (Search & Filters) -->
+                <div class="control-panel">
+                    <div class="controls-left">
+                        <div class="search-bar-local">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="itemSearch" placeholder="Search by Title...">
+                            <div class="suggestions-panel" id="suggestionsPanel"></div>
+                        </div>
+                        <div class="filters">
+                            <select name="category" id="category-filter">
+                                <option value="all">All Categories</option>
+                            </select>
+                            <select name="status" id="status-filter">
+                                <option value="all">All Statuses</option>
+                                <option value="active">Active</option>
+                                <option value="recovered">Recovered</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="controls-right">
+                        <div class="table-info-stat">
+                            <i class="fas fa-box-open"></i>
+                            <span>Total Lost Items: <strong id="totalItemsCount"></strong></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lost Items Table in a Card -->
+                <div class="content-card">
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ITEM</th>
+                                    <th>OWNER</th>
+                                    <th>CATEGORY</th>
+                                    <th>DATE LOST</th>
+                                    <th>STATUS</th>
+                                    <th class="text-center">ACTIONS</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lostItemsTableBody">
+                                <!-- Sample Item Row 1 -->
+                                <tr>
+                                    <td>
+                                        <div class="item-cell">
+                                            <img src="https://images.unsplash.com/photo-1594223274512-ad4803739b7c?w=100" class="item-thumbnail" alt="Wallet">
+                                            <div class="item-cell-info">
+                                                <span class="item-title">Black Leather Wallet</span>
+                                                <span class="item-description">Lost near Liberty Plaza...</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="user-cell">
+                                            <img src="https://i.pravatar.cc/150?u=lahiru" class="user-profile-pic" alt="User">
+                                            <span class="user-name">Lahiru S.</span>
+                                        </div>
+                                    </td>
+                                    <td>Wallets</td>
+                                    <td>2024-08-20</td>
+                                    <td><span class="status-badge status-recovered">Recovered</span></td>
+                                    <td class="text-center">
+                                        <div class="action-menu">
+                                             <button class="action-btn action-view" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <!-- Sample Item Row 2 -->
+                                <tr>
+                                    <td>
+                                        <div class="item-cell">
+                                            <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=100" class="item-thumbnail" alt="Phone">
+                                            <div class="item-cell-info">
+                                                <span class="item-title">iPhone 14 Pro</span>
+                                                <span class="item-description">In a black case, lost at Galle Face...</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="user-cell">
+                                            <img src="https://i.pravatar.cc/150?u=kamal" class="user-profile-pic" alt="User">
+                                            <span class="user-name">Kamal P.</span>
+                                        </div>
+                                    </td>
+                                    <td>Electronics</td>
+                                    <td>2024-09-05</td>
+                                    <td><span class="status-badge status-matched">Matched</span></td>
+                                    <td class="text-center">
+                                        <div class="action-menu">
+                                             <button class="action-btn action-view" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="action-btn action-flag" title="Flag Content">
+                                                <i class="fas fa-flag"></i>
+                                            </button>
+                                            <button class="action-btn action-delete" title="Delete Report">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                     <!-- Pagination -->
+                    <div class="pagination" id="paginationContainer">
+                        <span id="paginationInfo">Showing 1-10 of 1289</span>
+                        <div class="pagination-buttons">
+                            <button class="btn-pagination" id="prevBtn" disabled>Previous</button>
+                            <button class="btn-pagination" id="nextBtn">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="../js/alllostitemmanage.js"></script> <!-- අලුත් JS file එකක් -->
+</body>
+</html>

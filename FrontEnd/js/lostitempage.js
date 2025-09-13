@@ -170,12 +170,12 @@ $(document).ready(function () {
 
         const formData = new FormData();
         formData.append('title', $('#itemTitle').val());
-        formData.append('categoryName', "Electronics");
+        formData.append('categoryName', $('#itemCategory').val());
         formData.append('description', $('#itemDescription').val());
         formData.append('lostDate', $('#lostDate').val());
         formData.append('latitude', $('#latitude').val());
         formData.append('longitude', $('#longitude').val());
-        formData.append('status', $('#itemCategory').val());
+        formData.append('status', "ACTIVE");
 
         const imageFile = $('#itemImage')[0].files[0];
         if (imageFile) {
