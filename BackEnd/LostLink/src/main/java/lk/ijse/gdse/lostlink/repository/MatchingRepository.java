@@ -67,6 +67,21 @@ public interface MatchingRepository extends JpaRepository<Match, Integer> {
     @Query("SELECT COUNT(m) FROM Match m WHERE m.lostItem.user = :user AND m.status IN :statuses")
     long countMatchesByUserAndStatusIn(@Param("user") User user, @Param("statuses") List<MatchStatus> statuses);
 
+    @Query("SELECT m FROM Match m WHERE " +
+            "(:status IS NULL OR m.status = :status) AND " +
+            "(:search IS NULL " +
+            "OR m.lostItem.title LIKE %:search% " +
+            "OR m.foundItem.title LIKE %:search% " +
+            "OR m.lostItem.user.fullName LIKE %:search% " +
+            "OR m.foundItem.user.fullName LIKE %:search%)")
+    Page<Match> findAllWithAdminFilters(
+            @Param("status") MatchStatus status,
+            @Param("search") String search,
+            Pageable pageable
+    );
+
+
+
 
     //    @Query("SELECT m FROM Match m JOIN FETCH m.lostItem li JOIN FETCH m.foundItem fi WHERE fi.user.username = :username AND m.status = :status")
 //    List<Match> findMatchesByFoundItemOwnerUsernameAndStatus(@Param("username") String username, @Param("status") MatchStatus status);

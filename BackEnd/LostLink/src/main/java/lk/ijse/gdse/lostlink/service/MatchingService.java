@@ -1,6 +1,7 @@
 package lk.ijse.gdse.lostlink.service;
 
 import lk.ijse.gdse.lostlink.dto.MatchDto;
+import lk.ijse.gdse.lostlink.dto.MatchesItemAdminViewDto;
 import lk.ijse.gdse.lostlink.entity.FoundItem;
 import lk.ijse.gdse.lostlink.entity.LostItem;
 import lk.ijse.gdse.lostlink.entity.Match;
@@ -29,4 +30,10 @@ public interface MatchingService {
     Object getContactDetails(Integer matchId, String username);
 
     void markAsRecovered(Integer matchId, String username);
+
+    Page<MatchesItemAdminViewDto> getAllMatches(int page, int size, String status, String search);
+
+    List<String> getMatchTitleSuggestions(String query);
+
+    long getTotalMatchesCount();
 }

@@ -1,6 +1,8 @@
 package lk.ijse.gdse.lostlink.service.impl;
 
+import lk.ijse.gdse.lostlink.dto.LostItemAdminViewDto;
 import lk.ijse.gdse.lostlink.dto.MatchDto;
+import lk.ijse.gdse.lostlink.dto.MatchesItemAdminViewDto;
 import lk.ijse.gdse.lostlink.entity.*;
 import lk.ijse.gdse.lostlink.repository.FoundItemRepository;
 import lk.ijse.gdse.lostlink.repository.LostItemRepository;
@@ -20,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -542,4 +545,59 @@ public class MatchingServiceImpl implements MatchingService {
         foundItemRepository.save(foundItem);
 
     }
+
+    @Override
+    public Page<MatchesItemAdminViewDto> getAllMatches(int page, int size, String status, String search) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
+
+        MatchStatus matchStatus = null;
+        if (status != null && !status.isEmpty()) {
+            try {
+                matchStatus = MatchStatus.valueOf(status.toUpperCase());
+            } catch (IllegalArgumentException e) {
+
+            }
+        }
+
+        Page<Match> matchPage = matchingRepository.findAllWithAdminFilters(matchStatus, search, pageable);
+
+        return matchPage.map(match -> {
+            MatchesItemAdminViewDto dto = modelMapper.map(match, MatchesItemAdminViewDto.class);
+            dto.setId(match.getMatchId());
+            dto.setLostItemImageUrl(match.getLostItem().getImageUrl());
+            dto.setLostItemTitle(match.getLostItem().getTitle());
+            dto.setFoundItemImageUrl(match.getFoundItem().getImageUrl());
+            dto.setFoundItemTitle(match.getFoundItem().getTitle());
+            dto.setLoserFullName(match.getLostItem().getUser().getFullName());
+            dto.setLoserImageUrl(match.getLostItem().getUser().getProfileImage());
+            dto.setFinderFullName(match.getFoundItem().getUser().getFullName());
+            dto.setFinderImageUrl(match.getFoundItem().getUser().getProfileImage());
+            dto.setMatchStatus(match.getStatus().toString());
+            dto.setMatchScore(match.getMatchScore());
+            dto.setMatchDate(match.getCreatedAt().toString());
+
+            return dto;
+        });
+    }
+
+    @Override
+    public List<String> getMatchTitleSuggestions(String query) {
+        List<String> lostItemTitles = lostItemRepository.findTitleSuggestions(query);
+        List<String> foundItemTitles = foundItemRepository.findTitleSuggestions(query);
+
+        // 2. Combine the two lists and remove duplicates
+        // Using a Set is the easiest way to ensure all items are unique.
+        Set<String> combinedTitles = new HashSet<>();
+        combinedTitles.addAll(lostItemTitles);
+        combinedTitles.addAll(foundItemTitles);
+
+        // 3. Convert the Set back to a List and return it
+        return combinedTitles.stream().collect(Collectors.toList());
+    }
+
+    @Override
+    public long getTotalMatchesCount() {
+        return matchingRepository.count();
+    }
+
 }
