@@ -1,6 +1,7 @@
 package lk.ijse.gdse.lostlink.service.impl;
 
 import lk.ijse.gdse.lostlink.dto.*;
+import lk.ijse.gdse.lostlink.entity.LostItemStatus;
 import lk.ijse.gdse.lostlink.entity.Role;
 import lk.ijse.gdse.lostlink.entity.User;
 import lk.ijse.gdse.lostlink.entity.UserStatus;
@@ -9,10 +10,16 @@ import lk.ijse.gdse.lostlink.service.AuthService;
 import lk.ijse.gdse.lostlink.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -123,5 +130,53 @@ public class AuthServiceImpl implements AuthService {
                 .profileImageUrl(user.getProfileImage())
                 .build();
 
+    }
+
+    @Override
+    public Page<UserAllDetailsDto> getAllUsers(int page, int size, String status, String search) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
+
+        UserStatus userStatus = null;
+        if (status != null && !status.isEmpty()) {
+            try {
+                userStatus= UserStatus.valueOf(status.toUpperCase());
+            } catch (IllegalArgumentException ignored) {
+
+            }
+        }
+
+        Page<User> usersPage = userRepository.findAllWithFilters(userStatus, search, pageable);
+
+        return usersPage.map(user -> UserAllDetailsDto.builder()
+                .userId(user.getUserId())
+                .fullName(user.getFullName())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .phoneNumber(user.getPhoneNumber())
+                .role(user.getRole().name())
+                .status(user.getStatus().name())
+                .profileImageUrl(user.getProfileImage())
+                .joinedDate(user.getCreatedAt().toString())
+                .build());
+    }
+
+    @Override
+    public List<String> getUserNameSuggestions(String query) {
+        return userRepository.findFullNameSuggestions(query);
+    }
+
+    @Override
+    public void updateUserStatus(Long userId, UserStatus userStatus) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setStatus(userStatus);
+        userRepository.save(user);
+    }
+
+    @Override
+    public Long getAllUserCounts() {
+        return userRepository.count();
     }
 }

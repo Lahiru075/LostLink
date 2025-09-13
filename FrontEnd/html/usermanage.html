@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../css/usermanage.css">
+</head>
+
+<body>
+    <div class="dashboard-container">
+       <aside class="sidebar">
+            <div class="sidebar-header"><div class="logo-icon"><i class="fas fa-user-shield"></i></div><h1 class="logo-text">LostLink</h1><span class="admin-tag">Admin</span></div>
+            <nav class="sidebar-nav">
+                <p class="menu-title">OVERVIEW</p>
+                <ul><li><a href="admindashboard.html"><i class="fas fa-chart-pie"></i><span>Dashboard</span></a></li></ul>
+                <p class="menu-title">MANAGEMENT</p>
+                <ul>
+                    <li><a href="#" class="active"><i class="fas fa-users"></i><span>User Management</span></a></li>
+                    <li><a href="#"><i class="fas fa-box-open"></i><span>All Lost Items</span></a></li>
+                    <li><a href="#"><i class="fas fa-box"></i><span>All Found Items</span></a></li>
+                    <li><a href="#"><i class="fas fa-handshake"></i><span>All Matches</span></a></li>
+                    <li><a href="#"><i class="fas fa-envelope-open-text"></i><span>Contact Requests</span></a></li>
+                </ul>
+                 <p class="menu-title">CONTENT</p>
+                <ul><li><a href="#"><i class="fas fa-tags"></i><span>Categories</span></a></li></ul>
+            </nav>
+            <div class="sidebar-footer"><a href="#"><i class="fas fa-user-circle"></i><span>Admin Profile</span></a><a href="#" class="logout-btn"><i class="fas fa-right-from-bracket"></i><span>Logout</span></a></div>
+        </aside>
+        <!-- ======================================================= -->
+        <!-- ===      IMPROVED USER MANAGEMENT MAIN CONTENT      === -->
+        <!-- ======================================================= -->
+        <main class="main-content">
+            <!-- Page Header (ඔබේ dashboard එකේ style එකට අනුව) -->
+            <header class="main-header">
+                <div class="header-greeting">
+                    <h4 id="greeting-title">Good Morning, Admin!</h4>
+                    <p id="greeting-date">Monday, September 15, 2025</p>
+                </div>
+                <div class="user-profile">
+                    <div class="user-info">
+                        <img src="https://i.pravatar.cc/150?u=admin" alt="Admin Profile">
+                    </div>
+                </div>
+            </header>
+            
+            <!-- User Management Content -->
+            <div class="page-content">
+                <div class="page-title-header">
+                    <h1>User Management</h1>
+                    <p>Manage all registered users on the platform.</p>
+                </div>
+
+                <!-- Control Panel (Search, Filters, and Add Button) -->
+                <div class="control-panel">
+                    <div class="controls-left">
+                        <div class="search-bar-local">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="userSearch" placeholder="Search by Full Name...">
+                            <div class="suggestions-panel" id="suggestionsPanel"></div>
+                        </div>
+                        <div class="filters">
+                            <select name="status" id="status-filter">
+                                <option value="all">All Statuses</option>
+                                <option value="ACTIVE">Active</option>
+                                <option value="SUSPENDED">Suspended</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="controls-right">
+                        <div class="table-info-stat">
+                            <i class="fas fa-users"></i>
+                            <span>Total Users: <strong id="totalUsersCount">0</strong></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Users Table in a Card -->
+                <div class="content-card">
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>USER</th>
+                                    <th>ROLE</th>
+                                    <th>STATUS</th>
+                                    <th>DATE JOINED</th>
+                                    <th class="text-center">ACTIONS</th>
+                                </tr>
+                            </thead>
+                            <!-- <<< මෙන්න වෙනස: tbody එකට ID එකක් දෙනවා >>> -->
+                            <tbody id="userTableBody">
+                                <!-- Data will be loaded here by JavaScript -->
+                                <!-- You can keep sample rows for testing, but they will be replaced -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- <<< Pagination සඳහා අලුත් HTML කොටස >>> -->
+                    <div class="pagination" id="paginationContainer">
+                        <span id="paginationInfo"></span>
+                        <div class="pagination-buttons">
+                            <button class="btn-pagination" id="prevBtn" disabled>Previous</button>
+                            <button class="btn-pagination" id="nextBtn" disabled>Next</button>
+                        </div>
+                    </div>
+                </div>
+                    
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="../js/usermanage.js"></script>
+
+</body>
+
+</html>
