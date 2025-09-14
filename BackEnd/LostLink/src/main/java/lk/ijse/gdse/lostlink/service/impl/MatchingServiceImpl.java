@@ -613,7 +613,6 @@ public class MatchingServiceImpl implements MatchingService {
             }
         }
 
-        System.out.println("Search: " + search);
 
         Page<Match> matchPage = matchingRepository.findAllContactRequests(matchStatus, search, pageable);
 
