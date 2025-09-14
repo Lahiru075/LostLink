@@ -80,14 +80,24 @@ public interface MatchingRepository extends JpaRepository<Match, Integer> {
             Pageable pageable
     );
 
+    @Query("SELECT m FROM Match m WHERE " +
+            // 1. Contact Request වලට අදාළ status වලට පමණක් filter කරනවා
+            "m.status IN (lk.ijse.gdse.lostlink.entity.MatchStatus.REQUEST_SENT, " +
+            "lk.ijse.gdse.lostlink.entity.MatchStatus.ACCEPTED, " +
+            "lk.ijse.gdse.lostlink.entity.MatchStatus.DECLINED) AND " +
+            // 2. Frontend එකෙන් එවන status එකෙන් filter කරනවා (optional)
+            "(:status IS NULL OR m.status = :status) AND " +
+            // 3. Loser ගේ හෝ Finder ගේ username එකෙන් search කරනවා
+            "(:search IS NULL OR m.lostItem.user.fullName LIKE %:search% OR m.foundItem.user.fullName LIKE %:search%)")
+    Page<Match> findAllContactRequests(
+            @Param("status") MatchStatus status,
+            @Param("search") String search,
+            Pageable pageable
+    );
 
-
-
-    //    @Query("SELECT m FROM Match m JOIN FETCH m.lostItem li JOIN FETCH m.foundItem fi WHERE fi.user.username = :username AND m.status = :status")
-//    List<Match> findMatchesByFoundItemOwnerUsernameAndStatus(@Param("username") String username, @Param("status") MatchStatus status);
-
-//    @Query("SELECT m FROM Match m JOIN FETCH m.lostItem li JOIN FETCH m.foundItem fi WHERE fi.user.username = :username AND m.status IN :statuses")
-//    List<Match> findMatchesByFoundItemOwnerUsernameAndStatusIn(@Param("username") String username, @Param("statuses") List<MatchStatus> statuses);
-
-
+    @Query("SELECT COUNT(m) FROM Match m WHERE m.status IN " +
+            "(lk.ijse.gdse.lostlink.entity.MatchStatus.REQUEST_SENT, " +
+            "lk.ijse.gdse.lostlink.entity.MatchStatus.ACCEPTED, " +
+            "lk.ijse.gdse.lostlink.entity.MatchStatus.DECLINED)")
+    long countAllContactRequests();
 }

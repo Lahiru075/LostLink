@@ -4,11 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All Matches - Admin</title>
+    <title>Contact Requests - Admin</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- අපි කලින් හදපු CSS file එකම reuse කරනවා -->
-    <link rel="stylesheet" href="../css/allmatchesmanage.css"> 
+    <link rel="stylesheet" href="../css/allcontactrequest.css"> 
 </head>
 
 <body>
@@ -23,9 +23,9 @@
                     <li><a href="usermanage.html"><i class="fas fa-users"></i><span>User Management</span></a></li>
                     <li><a href="alllostitemmanage.html"><i class="fas fa-box-open"></i><span>All Lost Items</span></a></li>
                     <li><a href="allfounditemmanage.html"><i class="fas fa-box"></i><span>All Found Items</span></a></li>
-                    <!-- All Matches link එක active කරනවා -->
-                    <li><a href="#" class="active"><i class="fas fa-handshake"></i><span>All Matches</span></a></li>
-                    <li><a href="allcontactrequest.html"><i class="fas fa-envelope-open-text"></i><span>Contact Requests</span></a></li>
+                    <li><a href="allmatchesmanage.html"><i class="fas fa-handshake"></i><span>All Matches</span></a></li>
+                    <!-- Contact Requests link එක active කරනවා -->
+                    <li><a href="#" class="active"><i class="fas fa-envelope-open-text"></i><span>Contact Requests</span></a></li>
                 </ul>
                  <p class="menu-title">CONTENT</p>
                 <ul><li><a href="#"><i class="fas fa-tags"></i><span>Categories</span></a></li></ul>
@@ -34,7 +34,7 @@
         </aside>
         
         <!-- ======================================================= -->
-        <!-- ===          ALL MATCHES MAIN CONTENT             === -->
+        <!-- ===       CONTACT REQUESTS MAIN CONTENT           === -->
         <!-- ======================================================= -->
         <main class="main-content">
             <!-- Page Header -->
@@ -50,11 +50,11 @@
                 </div>
             </header>
             
-            <!-- All Matches Content -->
+            <!-- Contact Requests Content -->
             <div class="page-content">
                 <div class="page-title-header">
-                    <h1>All Matches</h1>
-                    <p>Review and manage all item matches across the platform.</p>
+                    <h1>Contact Requests</h1>
+                    <p>Monitor and manage contact requests between users.</p>
                 </div>
 
                 <!-- Control Panel -->
@@ -62,60 +62,48 @@
                     <div class="controls-left">
                         <div class="search-bar-local">
                             <i class="fas fa-search"></i>
-                            <input type="text" id="matchSearch" placeholder="Search by item titles...">
+                            <input type="text" id="requestSearch" placeholder="Search by user names...">
                             <div class="suggestions-panel" id="suggestionsPanel"></div>
                         </div>
                         <div class="filters">
                             <select name="status" id="status-filter">
                                 <option value="all">All Statuses</option>
-                                <option value="PENDING_ACTION">Pending Action</option>
                                 <option value="REQUEST_SENT">Request Sent</option>
                                 <option value="ACCEPTED">Accepted</option>
                                 <option value="DECLINED">Declined</option>
-                                <option value="RECOVERED">Recovered</option>
                             </select>
                         </div>
                     </div>
                     <div class="controls-right">
                         <div class="table-info-stat">
-                            <i class="fas fa-handshake"></i>
-                            <span>Total Matches: <strong id="totalMatchesCount">...</strong></span>
+                            <i class="fas fa-hourglass-half"></i>
+                            <span>Pending Requests: <strong id="totalPendingCount">...</strong></span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Matches Table in a Card -->
+                <!-- Requests Table in a Card -->
                 <div class="content-card">
                     <div class="table-container">
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>LOST ITEM</th>
-                                    <th>FOUND ITEM</th>
-                                    <th>LOSER</th>
-                                    <th>FINDER</th>
-                                    <th>DATE MATCHED</th>
-                                    <th>SCORE</th> <!-- <<< මෙන්න අලුත් Column එක -->
+                                    <th>REQUEST DETAILS</th>
+                                    <th>REQUESTER (LOSER)</th>
+                                    <th>RESPONDER (FINDER)</th>
+                                    <th>DATE REQUESTED</th>
                                     <th>STATUS</th>
+                                    <th class="text-center">ACTIONS</th>
                                 </tr>
                             </thead>
-                            <tbody id="matchesTableBody">
-                                <!-- Sample Match Row -->
+                            <tbody id="requestsTableBody">
+                                <!-- Sample Request Row (Pending) -->
                                 <tr>
                                     <td>
-                                        <div class="item-cell">
+                                        <div class="request-details-cell">
                                             <img src="https://images.unsplash.com/photo-1594223274512-ad4803739b7c?w=100" class="item-thumbnail">
-                                            <div class="item-cell-info">
-                                                <span class="item-title">Black Leather Wallet</span>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="item-cell">
+                                            <i class="fas fa-exchange-alt"></i>
                                             <img src="https://images.unsplash.com/photo-1594223274512-ad4803739b7c?w=100" class="item-thumbnail">
-                                            <div class="item-cell-info">
-                                                <span class="item-title">Leather Wallet</span>
-                                            </div>
                                         </div>
                                     </td>
                                     <td>
@@ -130,16 +118,43 @@
                                             <span class="user-name">Kamal P.</span>
                                         </div>
                                     </td>
-                                    <td>2024-08-19</td>
-                                    <td>80</td>
-                                    <td><span class="status-badge status-recovered">Recovered</span></td>
+                                    <td>2024-09-12</td>
+                                    <td><span class="status-badge status-pending">Pending</span></td>
                                     <td class="text-center">
                                         <div class="action-menu">
-                                            <button class="action-btn action-view" title="View Match Details"><i class="fas fa-eye"></i></button>
+                                            <button class="action-btn action-view" title="View Request Details"><i class="fas fa-eye"></i></button>
                                         </div>
                                     </td>
                                 </tr>
-                                <!-- More rows will be loaded by JS -->
+                                <!-- Sample Request Row (Accepted) -->
+                                <tr>
+                                    <td>
+                                        <div class="request-details-cell">
+                                            <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=100" class="item-thumbnail">
+                                            <i class="fas fa-exchange-alt"></i>
+                                            <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=100" class="item-thumbnail">
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="user-cell">
+                                            <img src="https://i.pravatar.cc/150?u=sunil" class="user-profile-pic">
+                                            <span class="user-name">Sunil G.</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="user-cell">
+                                            <img src="https://i.pravatar.cc/150?u=fathima" class="user-profile-pic">
+                                            <span class="user-name">Fathima R.</span>
+                                        </div>
+                                    </td>
+                                    <td>2024-09-10</td>
+                                    <td><span class="status-badge status-accepted">Accepted</span></td>
+                                    <td class="text-center">
+                                        <div class="action-menu">
+                                            <button class="action-btn action-view" title="View Request Details"><i class="fas fa-eye"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -152,6 +167,6 @@
         </main>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="../js/allmatchesmanage.js"></script> <!-- අලුත් JS file එකක් -->
+    <script src="../js/allcontactrequest.js"></script> <!-- අලුත් JS file එකක් -->
 </body>
 </html>

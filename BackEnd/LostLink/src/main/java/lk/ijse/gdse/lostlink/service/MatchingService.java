@@ -36,4 +36,10 @@ public interface MatchingService {
     List<String> getMatchTitleSuggestions(String query);
 
     long getTotalMatchesCount();
+
+    Page<MatchesItemAdminViewDto> getAllContactRequests(int page, int size, String status, String search);
+
+    Object getLoserAndFoundNamesSuggestions(String query);
+
+    long getTotalRequestContactCount();
 }

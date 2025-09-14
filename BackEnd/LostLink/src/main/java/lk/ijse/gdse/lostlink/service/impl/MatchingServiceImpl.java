@@ -600,4 +600,49 @@ public class MatchingServiceImpl implements MatchingService {
         return matchingRepository.count();
     }
 
+    @Override
+    public Page<MatchesItemAdminViewDto> getAllContactRequests(int page, int size, String status, String search) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
+
+        MatchStatus matchStatus = null;
+        if (status != null && !status.isEmpty()) {
+            try {
+                matchStatus = MatchStatus.valueOf(status.toUpperCase());
+            } catch (IllegalArgumentException e) {
+
+            }
+        }
+
+        System.out.println("Search: " + search);
+
+        Page<Match> matchPage = matchingRepository.findAllContactRequests(matchStatus, search, pageable);
+
+        return matchPage.map(match -> {
+            MatchesItemAdminViewDto dto = modelMapper.map(match, MatchesItemAdminViewDto.class);
+            dto.setId(match.getMatchId());
+            dto.setLostItemImageUrl(match.getLostItem().getImageUrl());
+            dto.setFoundItemImageUrl(match.getFoundItem().getImageUrl());
+            dto.setLoserFullName(match.getLostItem().getUser().getFullName());
+            dto.setLoserImageUrl(match.getLostItem().getUser().getProfileImage());
+            dto.setFinderFullName(match.getFoundItem().getUser().getFullName());
+            dto.setFinderImageUrl(match.getFoundItem().getUser().getProfileImage());
+            dto.setMatchStatus(match.getStatus().toString());
+            dto.setMatchDate(match.getCreatedAt().toString());
+
+            return dto;
+        });
+    }
+
+    @Override
+    public List<String> getLoserAndFoundNamesSuggestions(String query) {
+
+        return userRepository.findUserFullNameSuggestions(query);
+
+    }
+
+    @Override
+    public long getTotalRequestContactCount() {
+        return matchingRepository.countAllContactRequests();
+    }
+
 }

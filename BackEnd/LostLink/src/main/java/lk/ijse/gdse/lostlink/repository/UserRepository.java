@@ -23,4 +23,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u.fullName FROM User u WHERE u.fullName LIKE %:query%")
     List<String> findFullNameSuggestions(String query);
+
+
+    @Query("SELECT DISTINCT loser.user.fullName FROM Match m JOIN m.lostItem loser WHERE loser.user.fullName LIKE %:query% " +
+            "UNION " +
+            "SELECT DISTINCT finder.user.fullName FROM Match m JOIN m.foundItem finder WHERE finder.user.fullName LIKE %:query%")
+    List<String> findUserFullNameSuggestions(@Param("query") String query);
 }
