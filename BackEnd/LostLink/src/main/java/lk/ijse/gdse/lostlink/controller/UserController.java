@@ -5,6 +5,7 @@ import lk.ijse.gdse.lostlink.dto.RegisterDto;
 import lk.ijse.gdse.lostlink.service.AuthService;
 import lk.ijse.gdse.lostlink.dto.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,13 +29,19 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse> loginUser(@RequestBody AuthDto authDTO) {
-        return ResponseEntity.ok(
-                new ApiResponse(
-                        200,
-                        "OK",
-                        authService.authenticate(authDTO)
-                )
-        );
+
+        try {
+            return ResponseEntity.ok(
+                    new ApiResponse(
+                            200,
+                            "OK",
+                            authService.authenticate(authDTO)
+                    )
+            );
+        }catch (RuntimeException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponse(404, e.getMessage(), null));
+        }
     }
 }
 

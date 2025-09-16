@@ -217,4 +217,11 @@ $(document).ready(function() {
 
     loadTotalRequestCount();
 
+    $('#logoutBtn').on('click', function(event) {
+        event.preventDefault();
+        localStorage.removeItem('authToken');
+        alert("You have been logged out successfully.");
+        window.location.href = 'loginpage.html'; 
+    });
+
 });

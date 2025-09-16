@@ -29,4 +29,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "UNION " +
             "SELECT DISTINCT finder.user.fullName FROM Match m JOIN m.foundItem finder WHERE finder.user.fullName LIKE %:query%")
     List<String> findUserFullNameSuggestions(@Param("query") String query);
+
+    Optional<User> findTopByOrderByCreatedAtDesc();
 }

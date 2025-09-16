@@ -49,4 +49,12 @@ public class AdminMatchesItemManageController {
                 new ApiResponse(200, "Total matches count fetched successfully", totalMatches)
         );
     }
+
+    @GetMapping("/total_recovered_item_count")
+    public ResponseEntity<ApiResponse> getTotalRecoveredItemCount(){
+        long totalMatches = matchingService.getTotalRecoveredMatchesCount();
+        return ResponseEntity.ok(
+                new ApiResponse(200, "Total recovered matches count fetched successfully", totalMatches)
+        );
+    }
 }

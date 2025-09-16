@@ -644,4 +644,9 @@ public class MatchingServiceImpl implements MatchingService {
         return matchingRepository.countAllContactRequests();
     }
 
+    @Override
+    public long getTotalRecoveredMatchesCount() {
+        return matchingRepository.countRecoveredMatchesCount();
+    }
+
 }

@@ -73,7 +73,6 @@ $(document).ready(function () {
 
             // This function runs if the request FAILS (e.g., wrong credentials)
             error: function(jqXHR) {
-                console.error('Login failed:', jqXHR.responseText);
                 const errorMessage = jqXHR.responseJSON ? jqXHR.responseJSON.message : "Invalid username or password. Please try again.";
                 alert(`Login Failed: ${errorMessage}`);
             },

@@ -380,6 +380,13 @@ $(document).ready(function() {
     loadCategories(0);
 
 
+    $('#logoutBtn').on('click', function(event) {
+        event.preventDefault();
+        localStorage.removeItem('authToken');
+        alert("You have been logged out successfully.");
+        window.location.href = 'loginpage.html'; 
+    });
+
 
     
 });

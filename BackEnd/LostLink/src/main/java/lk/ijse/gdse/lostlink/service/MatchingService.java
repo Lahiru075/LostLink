@@ -12,13 +12,21 @@ import java.util.List;
 
 public interface MatchingService {
     void findMatches(LostItem newLostItem);
+
     void findMatches(FoundItem newFoundItem);
+
     Page<MatchDto> getLostMatches(String currentUsername, String status, int page, int size);
+
     Page<MatchDto> getFoundMatches(String currentUsername, String status, int page, int size);
+
     void deleteAllMatchesAndRelatedNotificationsForLostItem(LostItem lostItem);
+
     List<Match> findAllByLostItem(LostItem existingLostItem);
+
     void deleteAll(List<Match> matchesToDelete);
+
     List<Match> findAllByFoundItem(FoundItem foundItem);
+
     void deleteAllMatchesAndRelatedNotificationsForFoundItem(FoundItem foundItem);
 
     void sendRequest(String username, Integer matchId);
@@ -42,4 +50,8 @@ public interface MatchingService {
     Object getLoserAndFoundNamesSuggestions(String query);
 
     long getTotalRequestContactCount();
+
+    long getTotalRecoveredMatchesCount();
+
+
 }

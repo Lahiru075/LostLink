@@ -100,4 +100,12 @@ public interface MatchingRepository extends JpaRepository<Match, Integer> {
             "lk.ijse.gdse.lostlink.entity.MatchStatus.ACCEPTED, " +
             "lk.ijse.gdse.lostlink.entity.MatchStatus.DECLINED)")
     long countAllContactRequests();
+
+    @Query("SELECT COUNT(m) FROM Match m WHERE m.status = lk.ijse.gdse.lostlink.entity.MatchStatus.RECOVERED")
+    long countRecoveredMatchesCount();
+
+
+    List<Match> findTop3ByStatusOrderByCreatedAtDesc(MatchStatus matchStatus);
+
+    List<Match> findTop2ByStatusOrderByCreatedAtDesc(MatchStatus matchStatus);
 }

@@ -60,6 +60,13 @@ public class AuthServiceImpl implements AuthService {
                 user.getPassword())){
             throw new BadCredentialsException("Invalid credentials");
         }
+
+        System.out.println(user.getStatus());
+
+        if(user.getStatus().equals(UserStatus.SUSPENDED)){
+            throw new RuntimeException("You are not qualified");
+        }
+
         // generate token
         String token=jwtUtil.generateToken(authDTO.getUsername(),user.getRole());
         return new AuthResponseDto(token,user.getRole().name());

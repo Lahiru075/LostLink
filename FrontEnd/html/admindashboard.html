@@ -36,8 +36,11 @@
                     <li><a href="categorymanage.html"><i class="fas fa-tags"></i><span>Categories</span></a></li>
                 </ul>
             </nav>
-            <div class="sidebar-footer"><a href="#"><i class="fas fa-user-circle"></i><span>Admin Profile</span></a><a
-                    href="#" class="logout-btn"><i class="fas fa-right-from-bracket"></i><span>Logout</span></a></div>
+            <div class="sidebar-footer">
+                <a href="#" id="Admin_Profile"><i class="fas fa-user-circle"></i><span>Admin Profile</span></a>
+                <a href="#" class="logout-btn" id="logoutBtn"><i class="fas fa-right-from-bracket"></i><span>Logout</span></a>
+                <!-- ... logout button ... -->
+            </div>
         </aside>
 
         <main class="main-content">
@@ -47,10 +50,11 @@
                     <p>Welcome, Admin! Here's the platform's status.</p>
                 </div>
                 <div class="header-actions">
-                    <div class="header-search"><i class="fas fa-search"></i><input type="search"
-                            placeholder="Search users, items (ID)..."></div>
-                    <div class="profile-info"><img src="https://i.pravatar.cc/150?u=admin" alt="Admin Avatar"
-                            class="profile-avatar"></div>
+                    
+                    <div class="profile-info">
+                        <img src="https://i.pravatar.cc/150?u=admin" alt="Admin Avatar"class="profile-avatar">
+                        <span class="profile-name">Lahiru Lakshan</span>
+                    </div>
                 </div>
             </header>
 
@@ -84,26 +88,18 @@
             <section class="data-grid">
                 <div class="data-card">
                     <div class="data-card-header">
-                        <h3>Reports Requiring Attention</h3><a href="#" class="view-all">View All</a>
-                    </div>
-                    <ul class="item-list">
-                        <li>
-                            <div class="item-info"><strong>User reported 'iPhone 14' post</strong><small>Reason:
-                                    Potentially inappropriate content</small></div><span
-                                class="item-tag tag-flagged">Flagged</span>
-                        </li>
-                        <li>
-                            <div class="item-info"><strong>Found Item #345 has 8 matches</strong><small>User 'Finder01'
-                                    reported this item</small></div><span class="item-tag tag-multiple">Multiple
-                                Claims</span>
-                        </li>
-                    </ul>
+                            <h3>Reports Requiring Attention</h3>
+                        </div>
+                    <section class="info-card">
+                        <div class="card-body" id="attentionReportsContainer">
+                        </div>
+                </section>
                 </div>
                 <div class="data-card">
                     <div class="data-card-header">
                         <h3>Recent Activity</h3>
                     </div>
-                    <ul class="item-list">
+                    <ul class="item-list" id="recentActivityList">
                         <li>
                             <div class="item-info"><strong>New user registered: Nimal P.</strong><small>2 hours
                                     ago</small></div>
@@ -120,7 +116,6 @@
             <section class="table-card">
                 <div class="data-card-header">
                     <h3>Recent Successful Recoveries</h3>
-                    <a href="#" class="view-all">View All</a>
                 </div>
                 <table>
                     <thead>
@@ -132,7 +127,7 @@
                             <th>Status</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="recentRecoveriesTableBody">
                         <tr>
                             <td>'Black Leather Wallet'</td>
                             <td>Lahiru S.</td>
@@ -151,6 +146,119 @@
                 </table>
             </section>
         </main>
+    </div>
+
+    <div class="modal-overlay" id="profileModal">
+        <div class="modal-content profile-modal">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h2 class="modal-title">Edit Profile</h2>
+                <button class="close-modal-btn" id="closeProfileModalBtn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <form id="profileForm">
+                    <!-- Profile Section -->
+                    <div class="profile-section">
+                        <div class="profile-picture-section">
+                            <div class="profile-picture-wrapper">
+                                <img src="" alt="Profile Picture" id="profileImagePreview">
+                                <label for="profileImageInput" class="profile-picture-overlay">
+                                    <i class="fas fa-camera"></i>
+                                </label>
+                                <input type="file" id="profileImageInput" accept="image/*" style="display: none;">
+                            </div>
+                            <div class="profile-info">
+                                <h1 class="profile-name" id="profileNameDisplay"></h1>
+                            </div>
+                            <div class="profile-info">
+                                <p class="profile-username" id="profileUsernameDisplay"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Basic Information Section -->
+                    <div class="form-section">
+                        <div class="form-section-header">
+                            <h3 class="form-section-title">Basic Information</h3>
+                        </div>
+                        <div class="form-section-body">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="fullName">Full Name</label>
+                                    <input type="text" id="fullName" name="fullName" class="form-control" placeholder="Enter your full name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="username">Username</label>
+                                    <input type="text" id="username" name="username" class="form-control" placeholder="Enter your username">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="email">Email Address</label>
+                                    <input type="email" id="email" name="email" class="form-control" placeholder="Enter your email">
+                                </div>
+                                <div class="form-group">
+                                    <label for="phoneNumber">Phone Number</label>
+                                    <input type="tel" id="phoneNumber" name="phoneNumber" class="form-control" placeholder="Enter your phone number">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security Section -->
+                    <div class="form-section">
+                        <div class="security-toggle" id="securityToggle">
+                            <div class="security-toggle-left">
+                                <div class="security-toggle-icon">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                <div class="security-toggle-text">
+                                    <h4>Security & Password</h4>
+                                    <p>Change your account password</p>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-down security-toggle-arrow"></i>
+                        </div>
+                        <div class="password-fields" id="passwordFields" style="display: none;">
+                            <div class="form-row single">
+                                <div class="form-group">
+                                    <label for="currentPassword">Current Password</label>
+                                    <div class="input-group">
+                                        <input type="password" id="currentPassword" name="currentPassword" class="form-control" placeholder="Enter your current password">
+                                        <i class="fas fa-eye toggle-password"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="newPassword">New Password</label>
+                                    <div class="input-group">
+                                        <input type="password" id="newPassword" name="newPassword" class="form-control" placeholder="Enter new password">
+                                        <i class="fas fa-eye toggle-password"></i>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="confirmPassword">Confirm Password</label>
+                                    <div class="input-group">
+                                        <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" placeholder="Confirm new password">
+                                        <i class="fas fa-eye toggle-password"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-cancel" id="cancelBtn">Cancel</button>
+                <button type="button" class="btn btn-save" id="saveBtn">Save Changes</button>
+            </div>
+        </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

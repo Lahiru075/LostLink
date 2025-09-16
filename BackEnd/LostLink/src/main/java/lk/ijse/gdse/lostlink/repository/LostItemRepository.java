@@ -12,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface LostItemRepository extends JpaRepository<LostItem, Integer> {
@@ -53,5 +54,7 @@ public interface LostItemRepository extends JpaRepository<LostItem, Integer> {
 
     @Query("SELECT DISTINCT li.title FROM LostItem li WHERE li.title LIKE %:query%")
     List<String> findTitleSuggestions(@Param("query") String query);
+
+    Optional<LostItem> findTopByOrderByCreatedAtDesc();
 }
 
