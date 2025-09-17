@@ -13,26 +13,49 @@ The application is built with a clear separation between the **User Side** (for 
 
 ## 2. Key Features & Screenshots
 
-### User-Side Functionality
+Here is a showcase of the application's key features.
 
-| Feature | Description | Screenshot |
-| :--- | :--- | :--- |
-| **Professional Homepage** | A clean, modern landing page that explains the platform's value and guides new users to sign up. |*[Your Screenshot of the User Dashboard Here]* |
-| **Secure Authentication** | Separate, beautifully designed pages for user Sign Up and Sign In. | **[Your Screenshot of the User Dashboard Here]** |
-| **User Dashboard** | A central hub for users to get an overview of their activity, including stats on reported items and recent notifications. | *[Your Screenshot of the User Dashboard Here]* |
-| **Item Reporting** | An intuitive modal form to report lost or found items, featuring an interactive location picker (powered by LocationIQ) and image upload functionality. | *[Your Screenshot of the "Report Item" Modal Here]* |
-| **Item Management** | A card-based view for users to manage their own reported items, complete with live search, filtering (by category/status), and pagination. | *[Your Screenshot of the "My Lost Items" Page Here]* |
-| **Smart Matches Page** | A unified interface with tabs for "Lost Item Matches" and "Found Item Matches," showing potential matches with a similarity score. | *[Your Screenshot of the "Matches" Page Here]* |
-| **Secure Contact Flow** | A multi-step process to send, receive, accept, and decline contact requests, ensuring user privacy is maintained until consent is given. | *[Your Screenshot of an Accepted Match Card Here]* |
+### **1. Professional Landing Page**
+A clean, modern, and detailed homepage designed to build user trust and clearly explain the value of the LostLink network. It guides new users smoothly into the sign-up process.
 
-### Admin-Side Functionality
-
-| Feature | Description | Screenshot |
-| :--- | :--- | :--- |
-| **Admin Dashboard** | A data-centric dashboard providing a high-level overview of the platform's statistics, such as total users and items. | *[Your Screenshot of the Admin Dashboard Here]* |
-| **User & Content Management**| Tables to view and manage all users and all item reports across the platform, with options to suspend users or delete inappropriate posts. | *[Your Screenshot of the Admin "User Management" or "Item Management" Table Here]* |
+![Homepage Screenshot]([YOUR_HOMEPAGE_SCREENSHOT_URL])
 
 ---
+
+### **2. Secure Authentication**
+Beautifully designed, separate pages for user **Sign Up** and **Sign In**, ensuring a secure and user-friendly authentication experience. The UI is consistent with the overall brand identity.
+
+![Login Page Screenshot]([YOUR_LOGIN_PAGE_SCREENSHOT_URL])
+
+---
+
+### **3. Intuitive User Dashboard**
+Once logged in, users are greeted with a personalized dashboard. It provides an at-a-glance overview of their activity, quick access to reporting functions, and a summary of their statistics.
+
+![User Dashboard Screenshot]([YOUR_USER_DASHBOARD_SCREENSHOT_URL])
+
+---
+
+### **4. Smart Item Reporting**
+A comprehensive modal form allows users to report lost or found items with all necessary details, including title, category, description, date, and an image upload (powered by ImgBB). It also features an intelligent location picker with autocomplete suggestions (powered by LocationIQ).
+
+![Report Item Modal Screenshot]([YOUR_REPORT_ITEM_MODAL_SCREENSHOT_URL])
+
+---
+
+### **5. Dynamic Item & Match Management**
+Users can manage their reported items and view potential matches on dedicated pages. These pages feature live search, dynamic filtering by category/status, and pagination for easy navigation through a large number of reports.
+
+![My Lost Items Page Screenshot]([YOUR_MY_ITEMS_PAGE_SCREENSHOT_URL])
+
+![Matches Page Screenshot]([YOUR_MATCHES_PAGE_SCREENSHOT_URL])
+
+---
+
+### **6. Powerful Admin Dashboard**
+A separate, secure dashboard for administrators to monitor and manage the entire platform. It includes statistical widgets and tables to manage all users, items, and categories.
+
+![Admin Dashboard Screenshot]([YOUR_ADMIN_DASHBOARD_SCREENSHOT_URL])
 
 ## 3. Setup and Installation Instructions
 
