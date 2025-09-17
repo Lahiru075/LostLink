@@ -34,15 +34,34 @@ $(document).ready(function () {
 
         // --- B. Frontend Validation ---
         if (!fullName || !email || !phoneNumber || !username || !password || !confirmPassword) {
-            alert("Error: Please fill in all required fields.");
+
+
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Error: Please fill in all required fields..!",
+            });
+
             return;
         }
         if (password !== confirmPassword) {
-            alert("Error: Passwords do not match. Please try again.");
+
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Error: Passwords do not match. Please try again..!",
+            });
+
             return;
         }
         if (password.length < 8) {
-            alert("Error: Password must be at least 8 characters long.");
+
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Error: Password must be at least 8 characters long..!",
+            });
+
             return;
         }
 
@@ -70,9 +89,18 @@ $(document).ready(function () {
 
             success: function(response) {
                 console.log('Registration successful:', response);
-                alert('Account created successfully! You will now be redirected to the login page.');
+
+                Swal.fire({
+                    title: "Success!",
+                    icon: "success",
+                    text: 'Account created successfully! You will now be redirected to the login page!',
+                    draggable: true
+                }).then(() => {
+                    window.location.href = '../html/loginpage.html'; 
+                });
                 
-                window.location.href = '../html/loginpage.html'; 
+                clearFormFields();
+
             },
 
             // This function runs if the request FAILS
@@ -80,7 +108,12 @@ $(document).ready(function () {
                 console.error('Registration failed:', jqXHR.responseText);
                 // Try to get a meaningful error message from the backend response
                 const errorMessage = jqXHR.responseJSON ? jqXHR.responseJSON.message : "An unknown error occurred. Please try again.";
-                alert(`Registration Failed: ${errorMessage}`);
+                // alert(`Registration Failed: ${errorMessage}`);
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: `Registration Failed: ${errorMessage}..!`,
+                });
             },
 
             // This function runs ALWAYS, after success or error
@@ -90,6 +123,15 @@ $(document).ready(function () {
             }
         });
     });
+
+    function clearFormFields() {
+        $('#fullName').val(''); 
+        $('#email').val(''); 
+        $('#phoneNumber').val(''); 
+        $('#username').val(''); 
+        $('#password').val(''); 
+        $('#confirmPassword').val(''); 
+    }
 
 }); // End of document ready
 

@@ -105,7 +105,11 @@ public interface MatchingRepository extends JpaRepository<Match, Integer> {
     long countRecoveredMatchesCount();
 
 
-    List<Match> findTop3ByStatusOrderByCreatedAtDesc(MatchStatus matchStatus);
+//    List<Match> findTop2ByStatusOrderByCreatedAtDesc(MatchStatus matchStatus);
 
     List<Match> findTop2ByStatusOrderByCreatedAtDesc(MatchStatus matchStatus);
+
+    List<Match>  findAllByFoundItemAndMatchIdNot(FoundItem foundItem, Integer matchId);
+
+    List<Match> findAllByLostItemAndMatchIdNot(LostItem lostItem, Integer matchId);
 }

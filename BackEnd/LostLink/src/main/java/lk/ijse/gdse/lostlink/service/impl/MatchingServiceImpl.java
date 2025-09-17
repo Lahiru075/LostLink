@@ -538,6 +538,18 @@ public class MatchingServiceImpl implements MatchingService {
         LostItem lostItem = match.getLostItem();
         FoundItem foundItem = match.getFoundItem();
 
+        List<Match> otherMatchesForFoundItem = matchingRepository.findAllByFoundItemAndMatchIdNot(foundItem, matchId);
+
+        List<Match> otherMatchesForLostItem = matchingRepository.findAllByLostItemAndMatchIdNot(lostItem, matchId);
+
+        Set<Match> matchesToDelete = new HashSet<>();
+        matchesToDelete.addAll(otherMatchesForFoundItem);
+        matchesToDelete.addAll(otherMatchesForLostItem);
+
+        if (!matchesToDelete.isEmpty()) {
+            matchingRepository.deleteAll(matchesToDelete);
+        }
+
         lostItem.setStatus(LostItemStatus.RECOVERED);
         foundItem.setStatus(FoundItemStatus.RETURNED);
 

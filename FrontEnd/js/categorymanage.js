@@ -320,7 +320,12 @@ $(document).ready(function() {
         
         // Basic validation
         if (!categoryData.categoryName) {
-            alert('Category Name cannot be empty.');
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: 'Category Name cannot be empty...!',
+            })
+            
             return;
         }
 
@@ -338,13 +343,26 @@ $(document).ready(function() {
                 'Authorization': 'Bearer ' + localStorage.getItem('authToken')
             },
             success: function (response) {
-                alert(response.message);
+
+                Swal.fire({
+                    title: "Success!",
+                    icon: "success",
+                    text: response.message,
+                    draggable: true
+                })
+
                 closeModal();
                 loadCategories(0); // Reload the table to show changes
             },
             error: function (jqXHR) {
                 const errorMsg = jqXHR.responseJSON ? jqXHR.responseJSON.message : "An error occurred.";
-                alert(`Error: ${errorMsg}`);
+
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: `Error: ${errorMsg}..!`,
+                })
+
             },
             complete: function() {
                 // Re-enable button
@@ -357,23 +375,54 @@ $(document).ready(function() {
     tableBody.on('click', '.action-delete', function() {
         const categoryId = $(this).data('id');
         
-        if (!confirm('Are you sure you want to delete this category? This might affect existing items.')) {
-            return;
-        }
+        // if (!confirm('Are you sure you want to delete this category? This might affect existing items.')) {
+        //     return;
+        // }
 
-        $.ajax({
-            url: `http://localhost:8080/categories/delete/${categoryId}`,
-            method: 'DELETE',
-            headers: { 'Authorization': 'Bearer ' + localStorage.getItem('authToken') },
-            success: function(response) {
-                alert(response.message);
-                loadCategories(0); // Reload table
-            },
-            error: function(jqXHR) {
-                const errorMsg = jqXHR.responseJSON ? jqXHR.responseJSON.message : "Could not delete the category.";
-                alert(`Error: ${errorMsg}`);
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            
+            if (!result.isConfirmed) {
+                return;
             }
+
+            $.ajax({
+                url: `http://localhost:8080/categories/delete/${categoryId}`,
+                method: 'DELETE',
+                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('authToken') },
+                success: function(response) {
+                    
+
+                    Swal.fire({
+                        title: "Deleted!",
+                        text: response.message || 'Item deleted successfully..!',
+                        icon: "success"
+                    });
+
+                    loadCategories(0); // Reload table
+                },
+                error: function(jqXHR) {
+                    const errorMsg = jqXHR.responseJSON ? jqXHR.responseJSON.message : "Could not delete the category.";
+                    alert(`Error: ${errorMsg}`);
+
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: `Error: ${errorMsg}`,
+                    })
+
+                }
+            });
+
         });
+
     });
 
     // --- Initial Load ---
@@ -383,8 +432,14 @@ $(document).ready(function() {
     $('#logoutBtn').on('click', function(event) {
         event.preventDefault();
         localStorage.removeItem('authToken');
-        alert("You have been logged out successfully.");
-        window.location.href = 'loginpage.html'; 
+        Swal.fire({
+            title: "Success!",
+            icon: "success",
+            text: 'You have been logged out successfully..!',
+            draggable: true
+        }).then(() => {
+            window.location.href = 'loginpage.html';
+        });
     });
 
 

@@ -45,7 +45,13 @@ $(document).ready(function() {
             },
             error: function(jqXHR) {
                 console.error("Failed to fetch profile data:", jqXHR.responseText);
-                alert("Could not load your profile. Please try logging in again.");
+
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Could not load your profile. Please try logging in again..!",
+                })
+
             }
         });
     }
@@ -126,7 +132,14 @@ $(document).ready(function() {
             processData: false,
             contentType: false,
             success: function(response) {
-                alert('Profile updated successfully!');
+
+                Swal.fire({
+                    title: "Success!",
+                    icon: "success",
+                    text: response.message || 'Profile updated successfully!',
+                    draggable: true
+                })
+
                 closeProfileModal();
                 // You might want to update the avatar in the main header as well
                 // loadAvatarAndName(); 
@@ -135,9 +148,21 @@ $(document).ready(function() {
                 console.error('Error updating profile:', jqXHR.responseText);
                 try {
                     const errorResponse = JSON.parse(jqXHR.responseText);
-                    alert('Error: ' + (errorResponse.message || 'Could not update profile.'));
+
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: 'Error: ' + (errorResponse.message || 'Could not update profile.'),
+                    })
+
                 } catch(e) {
-                    alert('An unknown error occurred.');
+
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: 'An unknown error occurred. Please try again..!',
+                    })
+
                 }
             }
         });
@@ -408,8 +433,14 @@ $(document).ready(function() {
     $('#logoutBtn').on('click', function(event) {
         event.preventDefault();
         localStorage.removeItem('authToken');
-        alert("You have been logged out successfully.");
-        window.location.href = 'loginpage.html'; 
+        Swal.fire({
+            title: "Success!",
+            icon: "success",
+            text: 'You have been logged out successfully..!',
+            draggable: true
+        }).then(() => {
+            window.location.href = 'loginpage.html';
+        });
     });
 
 });

@@ -7,6 +7,8 @@ import lk.ijse.gdse.lostlink.repository.MatchingRepository;
 import lk.ijse.gdse.lostlink.repository.UserRepository;
 import lk.ijse.gdse.lostlink.service.AdminService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -25,7 +27,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public List<AttentionReportDto> getAttentionReports() {
-        List<Match> attentionMatches = matchingRepository.findTop3ByStatusOrderByCreatedAtDesc(MatchStatus.PENDING_ACTION);
+        List<Match> attentionMatches = matchingRepository.findTop2ByStatusOrderByCreatedAtDesc(MatchStatus.PENDING_ACTION);
 
         // 2. Stream API එකෙන්, Match list එක DTO list එකකට convert කරනවා.
         return attentionMatches.stream()
@@ -67,6 +69,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public List<MatchesItemAdminViewDto> getRecentRecoveries() {
+
         List<Match> recentRecoveries = matchingRepository.findTop2ByStatusOrderByCreatedAtDesc(MatchStatus.RECOVERED);
 
         return recentRecoveries.stream().map(match -> {

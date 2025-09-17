@@ -209,7 +209,14 @@ $(document).ready(function() {
                 
             },
             error: function(err) {
-                console.error("Failed to load total user count", err);
+                console.error("Failed to load total user count", err)
+
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Failed to load total user count", err,
+                })
+
                 totalCountEl.text('N/A'); // Error එකක් ආවොත් 'N/A' පෙන්වමු
             }
         });
@@ -220,8 +227,14 @@ $(document).ready(function() {
     $('#logoutBtn').on('click', function(event) {
         event.preventDefault();
         localStorage.removeItem('authToken');
-        alert("You have been logged out successfully.");
-        window.location.href = 'loginpage.html'; 
+        Swal.fire({
+            title: "Success!",
+            icon: "success",
+            text: 'You have been logged out successfully..!',
+            draggable: true
+        }).then(() => {
+            window.location.href = 'loginpage.html';
+        }); 
     });
 
 });

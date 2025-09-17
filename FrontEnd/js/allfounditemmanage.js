@@ -268,49 +268,90 @@ $(document).ready(function () {
         const itemRow = clickedButton.closest('tr'); // Get the table row to remove it later
 
         // 1. Confirmation Dialog
-        if (!confirm('Are you sure you want to permanently delete this item report? This action cannot be undone.')) {
-            return; // Stop if the admin cancels
-        }
+        // if (!confirm('Are you sure you want to permanently delete this item report? This action cannot be undone.')) {
+        //     return; // Stop if the admin cancels
+        // }
 
-        // 2. AJAX Call using DELETE method
-        $.ajax({
-            url: `http://localhost:8080/found_item_manage/delete/${itemId}`,
-            method: 'DELETE',
-            headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('authToken')
-            },
-            success: function(response) {
-                // This function runs on a successful response (200 OK)
-                alert(response.message);
-
-                // 3. Dynamically update the UI
-                
-                // Fade out the row and then remove it from the DOM
-                itemRow.fadeOut(400, function() {
-                    $(this).remove();
-                });
-
-                loadFoundItems(0);
-
-            },
-            error: function(jqXHR) {
-                // This function runs if the server returns an error
-                console.error('Failed to delete item:', jqXHR.responseText);
-                try {
-                    const errorResponse = JSON.parse(jqXHR.responseText);
-                    alert(`Error: ${errorResponse.message}`);
-                } catch(e) {
-                    alert('An error occurred while trying to delete the item.');
-                }
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            
+            if (!result.isConfirmed) {
+                return;
             }
+
+            // 2. AJAX Call using DELETE method
+            $.ajax({
+                url: `http://localhost:8080/found_item_manage/delete/${itemId}`,
+                method: 'DELETE',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+                },
+                success: function(response) {
+                    // This function runs on a successful response (200 OK)
+
+                    Swal.fire({
+                        title: "Deleted!",
+                        text: response.message || 'Item deleted successfully..!',
+                        icon: "success"
+                    });
+
+                    // 3. Dynamically update the UI
+                    
+                    // Fade out the row and then remove it from the DOM
+                    itemRow.fadeOut(400, function() {
+                        $(this).remove();
+                    });
+
+                    loadFoundItems(0);
+
+                },
+                error: function(jqXHR) {
+                    // This function runs if the server returns an error
+                    console.error('Failed to delete item:', jqXHR.responseText);
+                    try {
+                        const errorResponse = JSON.parse(jqXHR.responseText);
+
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: `Error: ${errorResponse.message}..!`,
+                        })
+
+                    } catch(e) {
+
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: 'An error occurred while trying to delete the item..!',
+                        })
+                    }
+                }
+            });
+
         });
+
+
+        
     });
 
     $('#logoutBtn').on('click', function(event) {
         event.preventDefault();
         localStorage.removeItem('authToken');
-        alert("You have been logged out successfully.");
-        window.location.href = 'loginpage.html'; 
+        Swal.fire({
+            title: "Success!",
+            icon: "success",
+            text: 'You have been logged out successfully..!',
+            draggable: true
+        }).then(() => {
+            window.location.href = 'loginpage.html';
+        });
     });
 
 

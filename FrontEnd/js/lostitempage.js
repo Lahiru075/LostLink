@@ -203,7 +203,14 @@ $(document).ready(function () {
             contentType: false,
             success: function (response) {
                 const successMessage = isEditMode ? 'Item updated successfully!' : 'Item reported successfully!';
-                alert(response.message || successMessage);
+                // alert(response.message || successMessage);
+
+                Swal.fire({
+                    text: response.message || successMessage,
+                    title: "Success!",
+                    icon: "success",
+                    draggable: true
+                })
                 
                 closeModal();
                 clearFormFields();
@@ -212,7 +219,13 @@ $(document).ready(function () {
             error: function (jqXHR) {
                 console.error('Error:', jqXHR.responseText);
                 const errorMessage = jqXHR.responseJSON ? jqXHR.responseJSON.message : "An unknown error occurred.";
-                alert(`Error: ${errorMessage}`);
+
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: `Error: ${errorMessage}`,
+                });
+
             },
             complete: function() {
 
@@ -245,11 +258,7 @@ $(document).ready(function () {
                     // $('#locationSearch').val(item.locationText || ''); // locationText might not exist, handle it
                     $('#latitude').val(item.latitude);
                     $('#longitude').val(item.longitude);
-                
-
-                    console.log(item.categoryName);
-                    
-                    
+                                    
                     const imageUrl = item.imageUrl;
                     $('#imagePreview .image-preview-image').attr('src', imageUrl).show();
                     $('#imagePreview .image-preview-text').hide();
@@ -293,8 +302,22 @@ $(document).ready(function () {
         const itemId = $(this).data('item-id');
         const $cardToDelete = $(this).closest('.item-card'); 
 
-        if (confirm(`Are you sure you want to permanently delete this item report? This action cannot be undone.`)) {
-            
+        // if (confirm(`Are you sure you want to permanently delete this item report? This action cannot be undone.`)) {
+
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+
+            if (!result.isConfirmed) {
+                return;
+            }
+
             $.ajax({
 
                 url: `http://localhost:8080/lost_item/delete/${itemId}`,
@@ -304,8 +327,20 @@ $(document).ready(function () {
                 },
                 
                 success: function(response) {
-                    console.log('Success:', response);
-                    alert(response.message || 'Item deleted successfully!');
+
+                    // Swal.fire({
+                    //     title: "Success!",
+                    //     icon: "success",
+                    //     text: response.message || 'Item deleted successfully!',
+                    //     draggable: true
+                    // })
+
+                    Swal.fire({
+                        title: "Deleted!",
+                        text: response.message || 'Item deleted successfully..!',
+                        icon: "success"
+                    });
+
                     
                     $cardToDelete.fadeOut(400, function() {
                         $(this).remove();
@@ -315,10 +350,52 @@ $(document).ready(function () {
                 error: function(jqXHR) {
                     console.error('Error:', jqXHR.responseText);
                     const errorMessage = jqXHR.responseJSON ? jqXHR.responseJSON.message : "Could not delete the item.";
-                    alert(`Error: ${errorMessage}`);
+
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: `Error: ${errorMessage}..!`,
+                    })
                 }
             });
-        }
+
+        });
+            
+            // $.ajax({
+
+            //     url: `http://localhost:8080/lost_item/delete/${itemId}`,
+            //     method: 'DELETE',
+            //     headers: {
+            //         'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+            //     },
+                
+            //     success: function(response) {
+
+            //         Swal.fire({
+            //             title: "Success!",
+            //             icon: "success",
+            //             text: response.message || 'Item deleted successfully!',
+            //             draggable: true
+            //         })
+                    
+            //         $cardToDelete.fadeOut(400, function() {
+            //             $(this).remove();
+            //         });
+            //     },
+                
+            //     error: function(jqXHR) {
+            //         console.error('Error:', jqXHR.responseText);
+            //         const errorMessage = jqXHR.responseJSON ? jqXHR.responseJSON.message : "Could not delete the item.";
+            //         alert(`Error: ${errorMessage}`);
+
+            //          Swal.fire({
+            //             icon: "error",
+            //             title: "Oops...",
+            //             text: `Error: ${errorMessage}..!`,
+            //         })
+            //     }
+            // });
+        // }
     });
 
 
@@ -581,8 +658,16 @@ $(document).ready(function () {
     $('#logoutBtn').on('click', function(event) {
         event.preventDefault();
         localStorage.removeItem('authToken');
-        alert("You have been logged out successfully.");
-        window.location.href = 'loginpage.html'; 
+
+        Swal.fire({
+            title: "Success!",
+            icon: "success",
+            text: 'You have been logged out successfully..!',
+            draggable: true
+        }).then(() => {
+            window.location.href = 'loginpage.html';
+        });
+         
     });
 
 

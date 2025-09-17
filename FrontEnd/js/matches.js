@@ -401,7 +401,14 @@ $(document).ready(function () {
             
             success: function(response) {
                 console.log('Success:', response);
-                alert(response.message || 'Contact request sent successfully!');
+
+                Swal.fire({
+                    text: response.message || 'Contact request sent successfully!',
+                    title: "Success!",
+                    icon: "success",
+                    draggable: true
+                })
+
                 
                 // 4. Update the UI Dynamically without a page reload
                 const $footer = $thisButton.closest('.match-footer');
@@ -420,7 +427,12 @@ $(document).ready(function () {
             error: function(jqXHR) {
                 console.error('Error:', jqXHR.responseText);
                 const errorMessage = jqXHR.responseJSON ? jqXHR.responseJSON.message : "Could not send the request.";
-                alert(`Error: ${errorMessage}`);
+
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: `Error: ${errorMessage}`,
+                });
                 
                 // Re-enable the button on error
                 $thisButton.prop('disabled', false).text('Send Contact Request');
@@ -453,8 +465,15 @@ $(document).ready(function () {
             
             // This function runs if the request is SUCCESSFUL
             success: function(response) {
-                console.log('Success:', response);
-                alert('Request accepted successfully! The item owner has been notified.');
+                
+
+                Swal.fire({
+                    text: 'Request accepted successfully! The item owner has been notified..!',
+                    title: "Success!",
+                    icon: "success",
+                    draggable: true
+                })
+
 
                 // --- UI UPDATE FOR THE FINDER ---
                 const $footer = $thisButton.closest('.match-footer');
@@ -500,22 +519,35 @@ $(document).ready(function () {
                 if (response && response.data) {
                     const details = response.data;
                     
-                    // Display the details in a user-friendly alert or a custom modal
-                    alert(
-                        `Contact Details for Your Match:\n\n` +
-                        `Finder's Name: ${details.fullName}\n` +
-                        `Phone Number: ${details.mobile}\n\n` +
-                        `Please be respectful when making contact.`
-                    );
+                    Swal.fire({
+                        title: "Success!",
+                        icon: "success",
+                        html: `Contact Details for Your Match:<br><br>
+                                Finder's Name: ${details.fullName}<br>
+                                Phone Number: ${details.mobile}<br><br>
+                                Please be respectful when making contact.`,
+                        draggable: true
+                    });
+                    
 
                 } else {
-                    alert('Could not retrieve contact details.');
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: 'Could not retrieve contact details.',
+                    });
                 }
             },
             
             error: function(jqXHR) {
                 const errorMessage = jqXHR.responseJSON ? jqXHR.responseJSON.message : "Failed to get contact details.";
-                alert(`Error: ${errorMessage}`);
+
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: `Error: ${errorMessage}`,
+                });
+
             },
             
             complete: function() {
@@ -557,8 +589,13 @@ $(document).ready(function () {
             
             // This function runs if the request is SUCCESSFUL
             success: function(response) {
-                console.log('Success:', response);
-                alert(response.message || 'Request has been successfully declined.');
+
+                Swal.fire({
+                    text: response.message || 'Request has been successfully declined.',
+                    title: "Success!",
+                    icon: "success",
+                    draggable: true
+                })
                 
                 // 4. Update the UI Dynamically
                 const $footer = $thisButton.closest('.match-footer');
@@ -572,9 +609,14 @@ $(document).ready(function () {
             
             // This function runs if the request FAILS
             error: function(jqXHR) {
-                console.error('Error:', jqXHR.responseText);
                 const errorMessage = jqXHR.responseJSON ? jqXHR.responseJSON.message : "Could not decline the request.";
-                alert(`Error: ${errorMessage}`);
+
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: `Error: ${errorMessage}`,
+                });
+
                 
                 // Re-enable buttons on error
                 $actionButtons.find('button').prop('disabled', false);
@@ -614,8 +656,13 @@ $(document).ready(function () {
             
             // This function runs if the request is SUCCESSFUL
             success: function(response) {
-                console.log('Success:', response);
-                alert(response.message || 'Transaction successfully marked as recovered!');
+                
+                Swal.fire({
+                    text: response.message || 'Transaction successfully marked as recovered!',
+                    title: "Success!",
+                    icon: "success",
+                    draggable: true
+                })
                
                 loadLostItemMatches();
                 loadFoundItemMatches();
@@ -623,9 +670,14 @@ $(document).ready(function () {
             
             // This function runs if the request FAILS
             error: function(jqXHR) {
-                console.error('Error:', jqXHR.responseText);
+
                 const errorMessage = jqXHR.responseJSON ? jqXHR.responseJSON.message : "Could not complete this action.";
-                alert(`Error: ${errorMessage}`);
+
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: `Error: ${errorMessage}`,
+                });
                 
                 // Re-enable the button on error
                 $thisButton.prop('disabled', false).text('Mark as Recovered');
@@ -814,7 +866,6 @@ $(document).ready(function () {
                             footerHtml = `
                                 <span class="status-badge status-action">Action Needed</span>
                                 <div class="action-buttons">
-                                    <button class="text-link btn-decline-match" data-match-id="${match.matchId}">Not a Match</button>
                                     <button class="btn-primary btn-send-request" data-match-id="${match.matchId}">Send Contact Request</button>
                                 </div>
                             `;
@@ -862,7 +913,7 @@ $(document).ready(function () {
                         const cardHtml = `
                             <div class="match-card ${match.status === 'REQUEST_SENT' ? 'state-request-received' : ''}">
                                 <div class="card-header">
-                                    <h3>Potential owner for the '${match.foundItemTitle}' you found</h3>
+                                    <h3>Potential owner for the  '<strong>${match.foundItemTitle}</strong>' you found</h3>
                                 </div>
                                 <div class="comparison-view">
                                     <div class="item-half">

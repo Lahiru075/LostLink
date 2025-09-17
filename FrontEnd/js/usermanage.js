@@ -194,8 +194,6 @@ $(document).ready(function() {
 
         }
 
-        console.log(query);
-        
 
         $.ajax({
             url: 'http://localhost:8080/user_manage/suggestions', // Base URL only
@@ -296,51 +294,81 @@ $(document).ready(function() {
         const isSuspendButton = clickedButton.hasClass('action-suspend');
         
         const action = isSuspendButton ? 'suspend' : 'activate';
+
+
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, suspend it!"
+        }).then((result) => {
+
+            if (!result.isConfirmed) {
+                return;
+            }
+
+            // --- jQuery AJAX Call ---
+            $.ajax({
+                url: 'http://localhost:8080/user_manage/' + userId + '/' + action,
+                method: 'PATCH', // Using PATCH method
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+                },
+                success: function(response) {
+
+                    Swal.fire({
+                        title: "Deleted!",
+                        text: response.message || 'Item suspended successfully..!',
+                        icon: "success"
+                    });
+
+                    // --- Dynamically update the UI ---
+                    const statusBadge = clickedButton.closest('tr').find('.status-badge');
+                    
+                    if (isSuspendButton) {
+                        // Update UI to "Suspended" state
+                        statusBadge.removeClass('status-active').addClass('status-suspended').text('SUSPENDED');
+                        clickedButton.removeClass('action-suspend').addClass('action-activate')
+                                    .html('<i class="fas fa-user-check"></i> Activate')
+                                    .attr('title', 'Activate User');
+                    } else {
+                        // Update UI to "Active" state
+                        statusBadge.removeClass('status-suspended').addClass('status-active').text('ACTIVE');
+                        clickedButton.removeClass('action-activate').addClass('action-suspend')
+                                    .html('<i class="fas fa-user-slash"></i> Suspend')
+                                    .attr('title', 'Suspend User');
+                    }
+                },
+                error: function(jqXHR) {
+                    // This function runs if the server returns an error (e.g., 404, 500)
+                    console.error(`Failed to ${action} user:`, jqXHR.responseText);
+                    try {
+                        const errorResponse = JSON.parse(jqXHR.responseText);
+
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: `Error: ${errorResponse.message}`,
+                        })
+
+                    } catch(e) {
+                        alert(`An unknown error occurred while trying to ${action} the user.`);
+                    }
+                }
+            });
+            
+        });
+
         
         // Confirmation Dialog
-        if (!confirm(`Are you sure you want to ${action} this user?`)) {
-            return; // Stop if the admin cancels
-        }
+        // if (!confirm(`Are you sure you want to ${action} this user?`)) {
+        //     return; // Stop if the admin cancels
+        // }
 
-        // --- jQuery AJAX Call ---
-        $.ajax({
-            url: 'http://localhost:8080/user_manage/' + userId + '/' + action,
-            method: 'PATCH', // Using PATCH method
-            headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('authToken')
-            },
-            success: function(response) {
-                // This function runs on a successful response (e.g., 200 OK)
-                alert(response.message); // Show success message from backend
-
-                // --- Dynamically update the UI ---
-                const statusBadge = clickedButton.closest('tr').find('.status-badge');
-                
-                if (isSuspendButton) {
-                    // Update UI to "Suspended" state
-                    statusBadge.removeClass('status-active').addClass('status-suspended').text('SUSPENDED');
-                    clickedButton.removeClass('action-suspend').addClass('action-activate')
-                                .html('<i class="fas fa-user-check"></i> Activate')
-                                .attr('title', 'Activate User');
-                } else {
-                    // Update UI to "Active" state
-                    statusBadge.removeClass('status-suspended').addClass('status-active').text('ACTIVE');
-                    clickedButton.removeClass('action-activate').addClass('action-suspend')
-                                .html('<i class="fas fa-user-slash"></i> Suspend')
-                                .attr('title', 'Suspend User');
-                }
-            },
-            error: function(jqXHR) {
-                // This function runs if the server returns an error (e.g., 404, 500)
-                console.error(`Failed to ${action} user:`, jqXHR.responseText);
-                try {
-                    const errorResponse = JSON.parse(jqXHR.responseText);
-                    alert(`Error: ${errorResponse.message}`);
-                } catch(e) {
-                    alert(`An unknown error occurred while trying to ${action} the user.`);
-                }
-            }
-        });
+        
     });
 
     // =======================================================
@@ -368,8 +396,16 @@ $(document).ready(function() {
     $('#logoutBtn').on('click', function(event) {
         event.preventDefault();
         localStorage.removeItem('authToken');
-        alert("You have been logged out successfully.");
-        window.location.href = 'loginpage.html'; 
+        
+        Swal.fire({
+            title: "Success!",
+            icon: "success",
+            text: 'You have been logged out successfully..!',
+            draggable: true
+        }).then(() => {
+            window.location.href = 'loginpage.html';
+        });
+
     });
 
 

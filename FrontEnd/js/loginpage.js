@@ -51,30 +51,46 @@ $(document).ready(function () {
             data: JSON.stringify(loginData),
 
             success: function(response) {
-                console.log('Login successful:', response);
 
                 if(response && response.data.accessToken) {
                     localStorage.setItem('authToken', response.data.accessToken);
 
-                    console.log('Token saved in localStorage:', localStorage.getItem('authToken'));
-
-                    alert('Login successful! Redirecting to your dashboard...');
-                
-                    if (response.data.role === 'ADMIN') {
-                        window.location.href = '../html/admindashboard.html'; 
-                    }else {
-                        window.location.href = '../html/userdashboard.html';
-                    }
+                    Swal.fire({
+                        text: "Login successful! Redirecting to your dashboard...!",
+                        title: "Success!",
+                        icon: "success",
+                        draggable: true
+                    }).then(() => {
+                        if (response.data.role === 'ADMIN') {
+                            window.location.href = '../html/admindashboard.html'; 
+                        }else {
+                            window.location.href = '../html/userdashboard.html';
+                        }
+                    });                    
 
                 } else {
-                    alert('Login successful, but no token received from the server.');
+
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: 'Login successful, but no token received from the server..!',
+                    });
+
                 }
+
+                cleareFormFields();
             },
 
             // This function runs if the request FAILS (e.g., wrong credentials)
             error: function(jqXHR) {
                 const errorMessage = jqXHR.responseJSON ? jqXHR.responseJSON.message : "Invalid username or password. Please try again.";
-                alert(`Login Failed: ${errorMessage}`);
+                
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: `Login Failed: ${errorMessage}..!`,
+                });
+
             },
 
             // This function runs ALWAYS, after success or error
@@ -84,5 +100,10 @@ $(document).ready(function () {
             }
         });
     });
+
+    function cleareFormFields() {
+        $('#username').val(''); 
+        $('#password').val(''); 
+    }
 
 }); 
