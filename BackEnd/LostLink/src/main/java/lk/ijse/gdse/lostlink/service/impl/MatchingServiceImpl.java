@@ -4,6 +4,10 @@ import lk.ijse.gdse.lostlink.dto.LostItemAdminViewDto;
 import lk.ijse.gdse.lostlink.dto.MatchDto;
 import lk.ijse.gdse.lostlink.dto.MatchesItemAdminViewDto;
 import lk.ijse.gdse.lostlink.entity.*;
+import lk.ijse.gdse.lostlink.exception.InvalidRequestStateException;
+import lk.ijse.gdse.lostlink.exception.PreconditionFailedException;
+import lk.ijse.gdse.lostlink.exception.ResourceNotFoundException;
+import lk.ijse.gdse.lostlink.exception.UnauthorizedOperationException;
 import lk.ijse.gdse.lostlink.repository.FoundItemRepository;
 import lk.ijse.gdse.lostlink.repository.LostItemRepository;
 import lk.ijse.gdse.lostlink.repository.MatchingRepository;
@@ -210,7 +214,7 @@ public class MatchingServiceImpl implements MatchingService {
     public Page<MatchDto> getLostMatches(String currentUsername, String status, int page, int size) {
 
         User user = userRepository.findByUsername(currentUsername)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         // 1. Create the Pageable object. Sorting will be applied to all queries.
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
@@ -426,10 +430,10 @@ public class MatchingServiceImpl implements MatchingService {
     @Transactional
     public void sendRequest(String username, Integer matchId) {
         Match match = matchingRepository.findById(matchId)
-                .orElseThrow(() -> new RuntimeException("Match not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Match not found"));
 
         if (!match.getLostItem().getUser().getUsername().equals(username)) {
-            throw new RuntimeException("You are not authorized to send a request for this match");
+            throw new UnauthorizedOperationException("You are not authorized to send a request for this match");
         }
 
         match.setStatus(MatchStatus.REQUEST_SENT);
@@ -445,14 +449,14 @@ public class MatchingServiceImpl implements MatchingService {
     @Transactional
     public void acceptRequest(String username, Integer matchId) {
         Match match = matchingRepository.findById(matchId)
-                .orElseThrow(() -> new RuntimeException("Match not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Match not found"));
 
         if (!match.getFoundItem().getUser().getUsername().equals(username)) {
-            throw new RuntimeException("You are not authorized to accept this request");
+            throw new UnauthorizedOperationException("You are not authorized to accept this request");
         }
 
         if (match.getStatus() != MatchStatus.REQUEST_SENT) {
-            throw new RuntimeException("This request has already been accepted or rejected");
+            throw new InvalidRequestStateException("This request has already been accepted or rejected");
         }
 
         match.setStatus(MatchStatus.ACCEPTED);
@@ -475,14 +479,14 @@ public class MatchingServiceImpl implements MatchingService {
     @Transactional
     public void declineRequest(String username, Integer matchId) {
         Match match = matchingRepository.findById(matchId)
-                .orElseThrow(() -> new RuntimeException("Match not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Match not found"));
 
         if (!match.getFoundItem().getUser().getUsername().equals(username)) {
-            throw new RuntimeException("You are not authorized to decline this request");
+            throw new UnauthorizedOperationException("You are not authorized to decline this request");
         }
 
         if (match.getStatus() != MatchStatus.REQUEST_SENT) {
-            throw new RuntimeException("This request has already been accepted or rejected");
+            throw new InvalidRequestStateException ("This request has already been accepted or rejected");
         }
 
         match.setStatus(MatchStatus.DECLINED);
@@ -497,14 +501,14 @@ public class MatchingServiceImpl implements MatchingService {
     @Override
     public Map<String, String> getContactDetails(Integer matchId, String currentUsername) {
         Match match = matchingRepository.findById(matchId)
-                .orElseThrow(() -> new RuntimeException("Match not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Match not found"));
 
         if (!match.getStatus().equals(MatchStatus.ACCEPTED)) {
-            throw new RuntimeException("This match has not been accepted yet");
+            throw new PreconditionFailedException("This match has not been accepted yet");
         }
 
         if (!match.getLostItem().getUser().getUsername().equals(currentUsername)) {
-            throw new RuntimeException("You are not authorized to view this contact information");
+            throw new UnauthorizedOperationException("You are not authorized to view this contact information");
         }
 
         User foundUser = match.getFoundItem().getUser();
@@ -520,16 +524,16 @@ public class MatchingServiceImpl implements MatchingService {
     @Transactional
     public void markAsRecovered(Integer matchId, String username) {
         Match match = matchingRepository.findById(matchId)
-                .orElseThrow(() -> new RuntimeException("Match not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Match not found"));
 
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         boolean isLostItemOwner = match.getLostItem().getUser().equals(user);
         boolean isFoundItemOwner = match.getFoundItem().getUser().equals(user);
 
         if (!isLostItemOwner && !isFoundItemOwner) {
-            throw new RuntimeException("You are not authorized to mark this item as recovered");
+            throw new UnauthorizedOperationException("You are not authorized to mark this item as recovered");
         }
 
         match.setStatus(MatchStatus.RECOVERED);

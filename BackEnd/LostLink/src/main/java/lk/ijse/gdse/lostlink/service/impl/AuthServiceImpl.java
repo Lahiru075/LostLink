@@ -5,6 +5,9 @@ import lk.ijse.gdse.lostlink.entity.LostItemStatus;
 import lk.ijse.gdse.lostlink.entity.Role;
 import lk.ijse.gdse.lostlink.entity.User;
 import lk.ijse.gdse.lostlink.entity.UserStatus;
+import lk.ijse.gdse.lostlink.exception.AccountSuspendedException;
+import lk.ijse.gdse.lostlink.exception.ResourceAlreadyExistsException;
+import lk.ijse.gdse.lostlink.exception.ResourceNotFoundException;
 import lk.ijse.gdse.lostlink.repository.UserRepository;
 import lk.ijse.gdse.lostlink.service.AuthService;
 import lk.ijse.gdse.lostlink.util.JwtUtil;
@@ -34,7 +37,7 @@ public class AuthServiceImpl implements AuthService {
     public Object register(RegisterDto registerDTO) {
         if (userRepository.findByUsername(registerDTO.getUsername())
                 .isPresent()){
-            throw new RuntimeException("Username already exists");
+            throw new ResourceAlreadyExistsException("Username already exists");
         }
         User user = User.builder()
                 .fullName(registerDTO.getFullName())
@@ -53,7 +56,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AuthResponseDto authenticate(AuthDto authDTO) {
         User user=userRepository.findByUsername(authDTO.getUsername())
-                .orElseThrow(()->new RuntimeException("User not found"));
+                .orElseThrow(()->new ResourceNotFoundException("User not found"));
         // check password
         if (!passwordEncoder.matches(
                 authDTO.getPassword(),
@@ -61,10 +64,8 @@ public class AuthServiceImpl implements AuthService {
             throw new BadCredentialsException("Invalid credentials");
         }
 
-        System.out.println(user.getStatus());
-
         if(user.getStatus().equals(UserStatus.SUSPENDED)){
-            throw new RuntimeException("You are not qualified");
+            throw new AccountSuspendedException("Your account has been suspended. Please contact support.");
         }
 
         // generate token
@@ -81,7 +82,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void updateUserProfile(String currentUsername, UserProfileDto dto) {
         User user = userRepository.findByUsername(currentUsername)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         // 2. If the new value is not null or empty
         if (StringUtils.hasText(dto.getFullName())) {
@@ -125,7 +126,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public UserDetailsDto getUserProfileDetails(String currentUsername) {
         User user = userRepository.findByUsername(currentUsername)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
 
         return UserDetailsDto.builder()
@@ -176,7 +177,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void updateUserStatus(Long userId, UserStatus userStatus) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         user.setStatus(userStatus);
         userRepository.save(user);

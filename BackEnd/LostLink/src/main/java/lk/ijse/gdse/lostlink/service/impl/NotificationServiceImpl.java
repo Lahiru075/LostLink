@@ -4,6 +4,7 @@ import lk.ijse.gdse.lostlink.dto.NotificationDto;
 import lk.ijse.gdse.lostlink.entity.LostItem;
 import lk.ijse.gdse.lostlink.entity.Notification;
 import lk.ijse.gdse.lostlink.entity.User;
+import lk.ijse.gdse.lostlink.exception.ResourceNotFoundException;
 import lk.ijse.gdse.lostlink.repository.NotificationRepository;
 import lk.ijse.gdse.lostlink.repository.UserRepository;
 import lk.ijse.gdse.lostlink.service.NotificationService;
@@ -49,7 +50,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public List<NotificationDto> getRecentNotifications(String currentUsername) {
         User user = userRepository.findByUsername(currentUsername)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         List<Notification> notifications = notificationRepository.findTop5ByUserOrderByCreatedAtDesc(user);
 
@@ -60,7 +61,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void markNotificationAsRead(Integer notificationId, String currentUsername) {
         Notification notification = notificationRepository.findById(notificationId)
-                .orElseThrow(() -> new RuntimeException("Notification not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Notification not found"));
 
         if (!notification.getUser().getUsername().equals(currentUsername)){
             throw new SecurityException("Unauthorized: You do not have permission to read this notification.");
@@ -74,7 +75,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public List<NotificationDto> getAllNotifications(String currentUsername) {
         User user = userRepository.findByUsername(currentUsername)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         List<Notification> notifications = notificationRepository.findAllByUserOrderByCreatedAtDesc(user);
 
@@ -87,7 +88,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public List<NotificationDto> getTopTowRecentNotifications(String currentUsername) {
         User user = userRepository.findByUsername(currentUsername)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         List<Notification> notifications = notificationRepository.findTop3ByUserOrderByCreatedAtDesc(user);
 

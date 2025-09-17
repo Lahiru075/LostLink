@@ -3,6 +3,7 @@ package lk.ijse.gdse.lostlink.service.impl;
 import lk.ijse.gdse.lostlink.dto.DashboardStatusDto;
 import lk.ijse.gdse.lostlink.entity.MatchStatus;
 import lk.ijse.gdse.lostlink.entity.User;
+import lk.ijse.gdse.lostlink.exception.ResourceNotFoundException;
 import lk.ijse.gdse.lostlink.repository.MatchingRepository;
 import lk.ijse.gdse.lostlink.repository.UserRepository;
 import lk.ijse.gdse.lostlink.service.DashboardService;
@@ -21,7 +22,7 @@ public class DashboardServiceImpl implements DashboardService {
     @Override
     public DashboardStatusDto getDashboardStats(String currentUsername) {
         User user = userRepository.findByUsername(currentUsername)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         List<MatchStatus> activeStatuses = List.of(
                 MatchStatus.PENDING_ACTION,

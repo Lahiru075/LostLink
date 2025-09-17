@@ -30,7 +30,6 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<ApiResponse> loginUser(@RequestBody AuthDto authDTO) {
 
-        try {
             return ResponseEntity.ok(
                     new ApiResponse(
                             200,
@@ -38,10 +37,7 @@ public class UserController {
                             authService.authenticate(authDTO)
                     )
             );
-        }catch (RuntimeException e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ApiResponse(404, e.getMessage(), null));
-        }
+
     }
 }
 

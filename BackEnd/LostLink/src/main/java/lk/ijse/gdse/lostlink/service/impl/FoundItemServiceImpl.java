@@ -2,6 +2,8 @@ package lk.ijse.gdse.lostlink.service.impl;
 
 import lk.ijse.gdse.lostlink.dto.*;
 import lk.ijse.gdse.lostlink.entity.*;
+import lk.ijse.gdse.lostlink.exception.ResourceNotFoundException;
+import lk.ijse.gdse.lostlink.exception.UnauthorizedOperationException;
 import lk.ijse.gdse.lostlink.repository.CategoryRepository;
 import lk.ijse.gdse.lostlink.repository.FoundItemRepository;
 import lk.ijse.gdse.lostlink.repository.LostItemRepository;
@@ -44,10 +46,10 @@ public class FoundItemServiceImpl implements FoundItemService {
     @Override
     public void saveFoundItem(FoundItemDto foundItemDto, String username) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         Category category = categoryRepository.findByCategoryName(foundItemDto.getCategoryName())
-                .orElseThrow(() -> new RuntimeException("Category not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
 
 
         String fileName = fileStorageService.storeFile(foundItemDto.getImage());
@@ -73,16 +75,16 @@ public class FoundItemServiceImpl implements FoundItemService {
     @Transactional
     public SecondFoundItemDto updateLostItem(Integer itemId, FoundItemDto foundItemDto, String currentUsername) {
         FoundItem foundItem = foundItemRepository.findById(itemId)
-                .orElseThrow(() -> new RuntimeException("Found Item not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Found Item not found"));
 
         Category category = categoryRepository.findByCategoryName(foundItemDto.getCategoryName())
-                .orElseThrow(() -> new RuntimeException("Category not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
 
         User user = userRepository.findByUsername(currentUsername)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         if (!foundItem.getUser().getUsername().equals(currentUsername)) {
-            throw new RuntimeException("You are not authorized to update this found item");
+            throw new UnauthorizedOperationException("You are not authorized to update this found item");
         }
 
 
@@ -121,7 +123,7 @@ public class FoundItemServiceImpl implements FoundItemService {
     public List<SecondFoundItemDto> getFoundItemsByUsername(String currentUsername) {
 
         User user = userRepository.findByUsername(currentUsername)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         List<FoundItem> foundItems = foundItemRepository.findByUser(user);
 
@@ -137,7 +139,7 @@ public class FoundItemServiceImpl implements FoundItemService {
     public SecondFoundItemDto getFoundItem(Integer itemId) {
 
         FoundItem foundItem = foundItemRepository.findById(itemId)
-                .orElseThrow(() -> new RuntimeException("Found Item not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Found Item not found"));
 
         return modelMapper.map(foundItem, SecondFoundItemDto.class);
     }
@@ -147,10 +149,10 @@ public class FoundItemServiceImpl implements FoundItemService {
     public void deleteFoundItem(Integer itemId, String currentUsername) {
 
         FoundItem foundItem = foundItemRepository.findById(itemId)
-                .orElseThrow(() -> new RuntimeException("Found Item not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Found Item not found"));
 
         if (!foundItem.getUser().getUsername().equals(currentUsername)) {
-            throw new RuntimeException("You are not authorized to delete this found item");
+            throw new UnauthorizedOperationException("You are not authorized to delete this found item");
         }
 
         matchingService.deleteAllMatchesAndRelatedNotificationsForFoundItem(foundItem);
@@ -188,7 +190,7 @@ public class FoundItemServiceImpl implements FoundItemService {
     public Page<SecondFoundItemDto> getFilteredFoundItemsForStatus(String keyword, String categoryName, String status, String currentUsername, int page, int size) {
 
         User user = userRepository.findByUsername(currentUsername)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         // 3. Create a Pageable object with sorting
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
@@ -294,7 +296,7 @@ public class FoundItemServiceImpl implements FoundItemService {
     @Override
     public void deleteLostItem(Integer itemId) {
         FoundItem foundItem = foundItemRepository.findById(itemId)
-                .orElseThrow(() -> new RuntimeException("Found Item not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Found Item not found"));
 
         matchingService.deleteAllMatchesAndRelatedNotificationsForFoundItem(foundItem);
 

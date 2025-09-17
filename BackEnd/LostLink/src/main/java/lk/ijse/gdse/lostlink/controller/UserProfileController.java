@@ -20,11 +20,6 @@ public class UserProfileController {
     public ResponseEntity<ApiResponse> updateProfile(@ModelAttribute UserProfileDto userProfileDto) {
         String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        System.out.println("Current Password "+userProfileDto.getConfirmPassword());
-        System.out.println("New Password "+userProfileDto.getNewPassword());
-        System.out.println("Confirm Password "+userProfileDto.getConfirmPassword());
-
-
         authService.updateUserProfile(currentUsername, userProfileDto);
 
         return ResponseEntity.ok(

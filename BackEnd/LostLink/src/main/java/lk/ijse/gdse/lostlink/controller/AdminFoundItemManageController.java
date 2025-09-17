@@ -63,12 +63,8 @@ public class AdminFoundItemManageController {
     @DeleteMapping("/delete/{itemId}")
     public ResponseEntity<ApiResponse> deleteLostItem(@PathVariable Integer itemId) {
 
-        try {
-            foundItemService.deleteLostItem(itemId);
-            return ResponseEntity.ok(new ApiResponse(200, "Lost item report deleted successfully.", null));
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new ApiResponse(404, e.getMessage(), null));
-        }
+        foundItemService.deleteLostItem(itemId);
+        return ResponseEntity.ok(new ApiResponse(200, "Lost item report deleted successfully.", null));
+
     }
 }

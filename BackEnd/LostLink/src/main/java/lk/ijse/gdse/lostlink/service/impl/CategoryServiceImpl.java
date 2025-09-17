@@ -4,6 +4,7 @@ import lk.ijse.gdse.lostlink.dto.CategoriesDto;
 import lk.ijse.gdse.lostlink.dto.MatchesItemAdminViewDto;
 import lk.ijse.gdse.lostlink.entity.Category;
 import lk.ijse.gdse.lostlink.entity.Match;
+import lk.ijse.gdse.lostlink.exception.ResourceNotFoundException;
 import lk.ijse.gdse.lostlink.repository.CategoryRepository;
 import lk.ijse.gdse.lostlink.service.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -69,7 +70,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public void updateCategory(Integer categoryId, CategoriesDto categoryDto) {
         Category existingCategory = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new RuntimeException("Category not found with ID: " + categoryId));
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found with ID: " + categoryId));
 
         existingCategory.setCategoryName(categoryDto.getCategoryName());
         existingCategory.setDescription(categoryDto.getDescription());
@@ -80,7 +81,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public void deleteCategory(Integer categoryId) {
         if (!categoryRepository.existsById(categoryId)) {
-            throw new RuntimeException("Category not found with ID: " + categoryId);
+            throw new ResourceNotFoundException("Category not found with ID: " + categoryId);
         }
         categoryRepository.deleteById(categoryId);
     }
