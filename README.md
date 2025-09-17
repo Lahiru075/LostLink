@@ -26,37 +26,43 @@ A clean, modern, and detailed homepage designed to build user trust and clearly 
 ### **2. Secure Authentication**
 Beautifully designed, separate pages for user **Sign Up** and **Sign In**, ensuring a secure and user-friendly authentication experience. The UI is consistent with the overall brand identity.
 
-![Login Page Screenshot]([YOUR_LOGIN_PAGE_SCREENSHOT_URL])
+<img width="1361" height="847" alt="image" src="https://github.com/user-attachments/assets/9e3d7724-5792-4782-8648-5b5237d02605" />
+
 
 ---
 
 ### **3. Intuitive User Dashboard**
 Once logged in, users are greeted with a personalized dashboard. It provides an at-a-glance overview of their activity, quick access to reporting functions, and a summary of their statistics.
 
-![User Dashboard Screenshot]([YOUR_USER_DASHBOARD_SCREENSHOT_URL])
+<img width="1899" height="908" alt="image" src="https://github.com/user-attachments/assets/8a546d12-715e-4376-b7f9-016362880c81" />
+
 
 ---
 
 ### **4. Smart Item Reporting**
 A comprehensive modal form allows users to report lost or found items with all necessary details, including title, category, description, date, and an image upload (powered by ImgBB). It also features an intelligent location picker with autocomplete suggestions (powered by LocationIQ).
 
-![Report Item Modal Screenshot]([YOUR_REPORT_ITEM_MODAL_SCREENSHOT_URL])
+<img width="650" height="850" alt="image" src="https://github.com/user-attachments/assets/6c70f17d-55a1-47cb-a2df-860359535bdc" />
+
 
 ---
 
 ### **5. Dynamic Item & Match Management**
 Users can manage their reported items and view potential matches on dedicated pages. These pages feature live search, dynamic filtering by category/status, and pagination for easy navigation through a large number of reports.
 
-![My Lost Items Page Screenshot]([YOUR_MY_ITEMS_PAGE_SCREENSHOT_URL])
+<img width="1909" height="910" alt="image" src="https://github.com/user-attachments/assets/e6be4ec0-bb85-4763-b570-9644a090a5c1" />
 
-![Matches Page Screenshot]([YOUR_MATCHES_PAGE_SCREENSHOT_URL])
+
+<img width="1899" height="887" alt="image" src="https://github.com/user-attachments/assets/11857860-75f2-4a06-a630-2e9bc0977a88" />
+
 
 ---
 
 ### **6. Powerful Admin Dashboard**
 A separate, secure dashboard for administrators to monitor and manage the entire platform. It includes statistical widgets and tables to manage all users, items, and categories.
 
-![Admin Dashboard Screenshot]([YOUR_ADMIN_DASHBOARD_SCREENSHOT_URL])
+<img width="1919" height="898" alt="image" src="https://github.com/user-attachments/assets/ba5c91b6-c373-4b52-81ec-65b62b77f4d9" />
+
 
 ## 3. Setup and Installation Instructions
 
