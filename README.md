@@ -72,8 +72,7 @@ To run this project locally, you will need Java (JDK 17+), Maven, Node.js (for f
 
 1.  **Clone the Repository:**
     ```bash
-    git clone https://github.com/your-username/lostlink.git
-    cd lostlink/BackEnd
+    git clone https://github.com/Lahiru075/LostLink.git
     ```
 
 2.  **Configure the Database:**
@@ -102,7 +101,7 @@ To run this project locally, you will need Java (JDK 17+), Maven, Node.js (for f
     *   The frontend is built with plain HTML, CSS, and JavaScript (with jQuery). No complex build step is required.
 
 2.  **Open the HTML Files:**
-    *   Open the `index.html` (Homepage), `login.html`, `signup.html`, or other user-facing HTML files directly in your web browser.
+    *   Open the `homepage.html` (Homepage), `loginpage.html`, `signup.html`, or other user-facing HTML files directly in your web browser.
     *   For the best experience and to avoid CORS issues during development, it is recommended to use a lightweight server. If you have VS Code, you can use the **"Live Server"** extension.
 
 3.  **Update API Keys (if necessary):**
