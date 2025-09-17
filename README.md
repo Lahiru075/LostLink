@@ -19,7 +19,8 @@ The application is built with a clear separation between the **User Side** (for 
 | :--- | :--- | :--- |
 | **Professional Homepage** | A clean, modern landing page that explains the platform's value and guides new users to sign up. | *<img width="586" height="908" alt="image" src="https://github.com/user-attachments/assets/f0b2fee2-ab5f-4acb-9974-215ba0aed86d" />
 * |
-| **Secure Authentication** | Separate, beautifully designed pages for user Sign Up and Sign In. | *[Your Screenshot of the Login or Signup Page Here]* |
+| **Secure Authentication** | Separate, beautifully designed pages for user Sign Up and Sign In. | *[<img width="1385" height="860" alt="image" src="https://github.com/user-attachments/assets/b88bd2ae-d610-48f0-b9fb-a779fc8f55cc" />
+]* |
 | **User Dashboard** | A central hub for users to get an overview of their activity, including stats on reported items and recent notifications. | *[Your Screenshot of the User Dashboard Here]* |
 | **Item Reporting** | An intuitive modal form to report lost or found items, featuring an interactive location picker (powered by LocationIQ) and image upload functionality. | *[Your Screenshot of the "Report Item" Modal Here]* |
 | **Item Management** | A card-based view for users to manage their own reported items, complete with live search, filtering (by category/status), and pagination. | *[Your Screenshot of the "My Lost Items" Page Here]* |
