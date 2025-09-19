@@ -77,7 +77,7 @@ To run this project locally, you will need Java (JDK 17+), Maven, Node.js (for f
 
 2.  **Configure the Database:**
     *   Open your MySQL client (e.g., MySQL Workbench).
-    *   Create a new database named `lostlink_db`.
+    *   Create a new database named `linklostdb`.
     *   Open the `src/main/resources/application.properties` file.
     *   Update the `spring.datasource.url`, `spring.datasource.username`, and `spring.datasource.password` properties to match your local MySQL configuration.
 
