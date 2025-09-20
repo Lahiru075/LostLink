@@ -117,4 +117,4 @@ To run this project locally, you will need Java (JDK 17+), Maven, Node.js (for f
 
 You can find a complete demonstration of the project's features and workflow in the video linked below.
 
-**[Watch the LostLink Project Demo on YouTube](<Your YouTube Link Here>)**
+**[Watch the LostLink Project Demo on YouTube](https://youtu.be/uPIpq3DCYzM)**
