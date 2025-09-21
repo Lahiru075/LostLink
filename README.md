@@ -19,7 +19,7 @@ Here is a showcase of the application's key features.
 ### **1. Professional Landing Page**
 A clean, modern, and detailed homepage designed to build user trust and clearly explain the value of the LostLink network. It guides new users smoothly into the sign-up process.
 
-![Homepage Screenshot]([YOUR_HOMEPAGE_SCREENSHOT_URL])
+![Homepage Screenshot](<img width="422" height="862" alt="image" src="https://github.com/user-attachments/assets/f22b0b06-c7ea-4581-9e24-482d7ecc9572" />)
 
 ---
 
