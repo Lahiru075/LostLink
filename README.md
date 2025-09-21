@@ -1,7 +1,5 @@
 # LostLink - The Smart Lost & Found Network
 
-![LostLink Hero Image](https://i.imgur.com/your-hero-image-url.png) <!-- Optional: Add a nice hero image/banner here -->
-
 ## 1. Project Description
 
 **LostLink** is a modern, full-stack web application designed to create a community-powered network for lost and found items. The core purpose of this project is to leverage technology to efficiently connect individuals who have lost personal belongings with those who have found them.
@@ -75,13 +73,13 @@ To run this project locally, you will need Java (JDK 17+), Maven, Node.js (for f
 
 1.  **Clone the Repository:**
     ```bash
-    git clone https://github.com/your-username/lostlink.git
-    cd lostlink/BackEnd
+    git clone https://github.com/Lahiru075/LostLink.git
+    cd BackEnd/lostlink
     ```
 
 2.  **Configure the Database:**
     *   Open your MySQL client (e.g., MySQL Workbench).
-    *   Create a new database named `lostlink_db`.
+    *   Create a new database named `linklostdb`.
     *   Open the `src/main/resources/application.properties` file.
     *   Update the `spring.datasource.url`, `spring.datasource.username`, and `spring.datasource.password` properties to match your local MySQL configuration.
 
@@ -105,7 +103,7 @@ To run this project locally, you will need Java (JDK 17+), Maven, Node.js (for f
     *   The frontend is built with plain HTML, CSS, and JavaScript (with jQuery). No complex build step is required.
 
 2.  **Open the HTML Files:**
-    *   Open the `index.html` (Homepage), `login.html`, `signup.html`, or other user-facing HTML files directly in your web browser.
+    *   Open the `homepage.html` (Homepage), `loginpage.html`, `signup.html`, or other user-facing HTML files directly in your web browser.
     *   For the best experience and to avoid CORS issues during development, it is recommended to use a lightweight server. If you have VS Code, you can use the **"Live Server"** extension.
 
 3.  **Update API Keys (if necessary):**
@@ -121,4 +119,4 @@ To run this project locally, you will need Java (JDK 17+), Maven, Node.js (for f
 
 You can find a complete demonstration of the project's features and workflow in the video linked below.
 
-**[Watch the LostLink Project Demo on YouTube](<Your YouTube Link Here>)**
+**[Watch the LostLink Project Demo on YouTube](https://youtu.be/uPIpq3DCYzM)**
