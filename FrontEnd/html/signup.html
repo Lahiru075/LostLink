@@ -5,9 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LostLink - Create Account</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="../css/signup.css">
-
 </head>
 <body>
     <div class="login-container">
@@ -25,7 +24,7 @@
                 </div>
                 <div class="floating-elements">
                     <div class="floating-card card1">📊 98.5% Success Rate</div>
-                    <div class="floating-card card2">🚀 AI Match Found!</div>
+                    <div class="floating-card card2">🚀 Algorithm Match Found!</div>
                     <div class="floating-card card3"><div class="online-dot"></div> 24 Online</div>
                 </div>
             </div>
@@ -36,46 +35,52 @@
                 <h1 class="form-title">Create Account</h1>
                 <p class="form-subtitle">Get started by creating your new account for free</p>
 
-                <form id="signupForm">
-                    <!-- අලුතින් එකතු කළ input field එක -->
-                    <div class="input-group">
-                        <label for="fullName">Full Name</label>
-                        <input type="text" id="fullName" placeholder="Enter your full name" required>
-                    </div>
-
-                    <div class="input-group">
-                        <label for="email">Email Address</label>
-                        <input type="email" id="email" placeholder="Enter your email address" required>
-                    </div>
-
-                    <div class="input-group">
-                        <label for="phoneNumber">Phone Number</label>
-                        <input type="text" id="phoneNumber" placeholder="Enter your phone number" required>
-                    </div>
-
-                    <div class="input-group">
-                        <label for="username">Username</label>
-                        <input type="text" id="username" placeholder="Enter your Username" required>
-                    </div>
-
-                    <div class="input-group">
-                        <label for="password">Password</label>
-                        <div class="password-container">
-                            <input type="password" id="password" placeholder="Create a strong password" required>
-                            <button type="button" class="show-password" onclick="togglePassword('password')">Show</button>
+                <!-- Scrollable area for form fields -->
+                <div class="form-scrollable-area">
+                    <form id="signupForm">
+                        <div class="input-group">
+                            <label for="fullName">Full Name</label>
+                            <input type="text" id="fullName" placeholder="Enter your full name" required>
                         </div>
-                    </div>
 
-                    <div class="input-group">
-                        <label for="confirmPassword">Confirm Password</label>
-                        <div class="password-container">
-                            <input type="password" id="confirmPassword" placeholder="Confirm your password" required>
-                            <button type="button" class="show-password" onclick="togglePassword('confirmPassword')">Show</button>
+                        <div class="input-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" placeholder="Enter your email address" required>
                         </div>
-                    </div>
-                    
-                    <button type="button" class="login-btn">Create Account</button>
-                </form>
+
+                        <div class="input-group">
+                            <label for="phoneNumber">Phone Number</label>
+                            <input type="text" id="phoneNumber" placeholder="Enter your phone number" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="username">Username</label>
+                            <input type="text" id="username" placeholder="Enter your Username" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="password">Password</label>
+                            <div class="password-container">
+                                <input type="password" id="password" placeholder="Create a strong password" required>
+                                <button type="button" class="show-password" onclick="togglePassword('password')">Show</button>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="confirmPassword">Confirm Password</label>
+                            <div class="password-container">
+                                <input type="password" id="confirmPassword" placeholder="Confirm your password" required>
+                                <button type="button" class="show-password" onclick="togglePassword('confirmPassword')">Show</button>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+                <!-- End of scrollable area -->
+
+
+                <button type="button" class="login-btn" >Create Account</button>
+                
 
                 <div class="divider"><span>OR</span></div>
                 

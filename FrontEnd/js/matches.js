@@ -8,6 +8,113 @@ function openTab(event, tabName) {
 
 $(document).ready(function () {
 
+    function validateAndLoadDashboard() {
+        let token = localStorage.getItem('authToken');
+
+        if (!token) {
+
+            window.location.href = '../html/loginpage.html';
+            return false; 
+
+        }
+
+        const tokenParts = token.split('.');
+
+        if (tokenParts.length !== 3) {
+            window.location.href = '../html/loginpage.html';
+            return false; 
+        }
+
+        try {
+            const tokenPayload = JSON.parse(atob(tokenParts[1]));
+
+            const currentTimestamp = Math.floor(Date.now() / 1000);
+            // console.log("Current timestamp:", currentTimestamp);
+            // console.log("Token expiration timestamp:", tokenPayload.exp);
+
+        if (tokenPayload.exp && currentTimestamp >= tokenPayload.exp) {
+            alert('Session expired. Please login again.');
+            localStorage.removeItem('authToken');
+            window.location.href = '../html/loginpage.html';
+            return false; 
+        }
+
+
+        } catch (error) {
+
+            console.error('Invalid token:', error);
+            window.location.href = '../html/loginpage.html';
+            return false; 
+
+        }
+
+        return true;
+
+    }
+
+    if (validateAndLoadDashboard()) {
+
+        setInterval(validateAndLoadDashboard, 10000);
+
+    }
+
+
+
+    function validateAndLoadDashboard() {
+        let token = localStorage.getItem('authToken');
+
+        if (!token) {
+
+            window.location.href = '../html/loginpage.html';
+            return false; 
+
+        }
+
+        const tokenParts = token.split('.');
+
+        if (tokenParts.length !== 3) {
+            window.location.href = '../html/loginpage.html';
+            return false; 
+        }
+
+        try {
+            const tokenPayload = JSON.parse(atob(tokenParts[1]));
+
+            const currentTimestamp = Math.floor(Date.now() / 1000);
+            // console.log("Current timestamp:", currentTimestamp);
+            // console.log("Token expiration timestamp:", tokenPayload.exp);
+
+        if (tokenPayload.exp && currentTimestamp >= tokenPayload.exp) {
+            alert('Session expired. Please login again.');
+            localStorage.removeItem('authToken');
+            window.location.href = '../html/loginpage.html';
+            return false; 
+        }
+
+
+        } catch (error) {
+
+            console.error('Invalid token:', error);
+            window.location.href = '../Login.html';
+            return false; 
+
+        }
+
+        return true;
+
+    }
+
+    if (validateAndLoadDashboard()) {
+
+        setInterval(validateAndLoadDashboard, 10000);
+
+    }
+
+
+
+
+
+
 
 
     const authToken = localStorage.getItem('authToken');
@@ -382,62 +489,78 @@ $(document).ready(function () {
         const matchId = $thisButton.data('match-id');
 
         // 1. User Confirmation
-        if (!confirm('Are you sure you want to send a contact request to the finder?')) {
-            return; // Stop if the user clicks "Cancel"
-        }
+        // if (!confirm('Are you sure you want to send a contact request to the finder?')) {
+        //     return; // Stop if the user clicks "Cancel"
+        // }
 
-        $thisButton.prop('disabled', true).text('Sending...');
 
-        console.log(matchId);
-        
-
-        // 3. The AJAX Call
-        $.ajax({
-            url: `http://localhost:8080/matching/${matchId}/send_request`,
-            method: 'PATCH', // Or 'PATCH' if you prefer
-            headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('authToken')
-            },
+        Swal.fire({
+            title: "Are you sure?",
+            text: "Are you sure you want to send a contact request to the finder?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, send it!"
+        }).then((result) => {
             
-            success: function(response) {
-                console.log('Success:', response);
-
-                Swal.fire({
-                    text: response.message || 'Contact request sent successfully!',
-                    title: "Success!",
-                    icon: "success",
-                    draggable: true
-                })
-
-                
-                // 4. Update the UI Dynamically without a page reload
-                const $footer = $thisButton.closest('.match-footer');
-                
-                // Change the status badge
-                $footer.find('.status-badge')
-                    .removeClass('status-action')
-                    .addClass('status-sent')
-                    .text('Request Sent');
-                
-                // Replace the buttons with the "Awaiting response" text
-                $footer.find('.action-buttons').html('<p class="awaiting-text">Awaiting response from the finder...</p>');
-            },
-            
-            // This function runs if the request FAILS
-            error: function(jqXHR) {
-                console.error('Error:', jqXHR.responseText);
-                const errorMessage = jqXHR.responseJSON ? jqXHR.responseJSON.message : "Could not send the request.";
-
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text: `Error: ${errorMessage}`,
-                });
-                
-                // Re-enable the button on error
-                $thisButton.prop('disabled', false).text('Send Contact Request');
+            if (!result.isConfirmed) {
+                return;
             }
+
+            $thisButton.prop('disabled', true).text('Sending...');
+
+            // 3. The AJAX Call
+            $.ajax({
+                url: `http://localhost:8080/matching/${matchId}/send_request`,
+                method: 'PATCH', // Or 'PATCH' if you prefer
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+                },
+                
+                success: function(response) {
+
+                    Swal.fire({
+                        text: response.message || 'Contact request sent successfully!',
+                        title: "Success!",
+                        icon: "success",
+                        draggable: true
+                    })
+
+                    
+                    // 4. Update the UI Dynamically without a page reload
+                    const $footer = $thisButton.closest('.match-footer');
+                    
+                    // Change the status badge
+                    $footer.find('.status-badge')
+                        .removeClass('status-action')
+                        .addClass('status-sent')
+                        .text('Request Sent');
+                    
+                    // Replace the buttons with the "Awaiting response" text
+                    $footer.find('.action-buttons').html('<p class="awaiting-text">Awaiting response from the finder...</p>');
+                },
+                
+                // This function runs if the request FAILS
+                error: function(jqXHR) {
+                    console.error('Error:', jqXHR.responseText);
+                    const errorMessage = jqXHR.responseJSON ? jqXHR.responseJSON.message : "Could not send the request.";
+
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: `Error: ${errorMessage}`,
+                    });
+                    
+                    // Re-enable the button on error
+                    $thisButton.prop('disabled', false).text('Send Contact Request');
+                }
+            });
+
+
+
         });
+        
     });
 
 
@@ -520,7 +643,7 @@ $(document).ready(function () {
                     const details = response.data;
                     
                     Swal.fire({
-                        title: "Success!",
+                        title: "Finder Details!",
                         icon: "success",
                         html: `Contact Details for Your Match:<br><br>
                                 Finder's Name: ${details.fullName}<br>
@@ -569,60 +692,79 @@ $(document).ready(function () {
         const matchId = $thisButton.data('match-id');
         const $actionButtons = $thisButton.closest('.action-buttons');
 
-        // 1. User Confirmation
-        if (!confirm('Are you sure you want to decline this contact request?')) {
-            return; // Stop if the user clicks "Cancel"
-        }
+        // // 1. User Confirmation
+        // if (!confirm('Are you sure you want to decline this contact request?')) {
+        //     return; // Stop if the user clicks "Cancel"
+        // }
 
-        // 2. User Feedback: Disable buttons and show loading state
-        $actionButtons.find('button').prop('disabled', true);
-        $thisButton.text('Declining...');
 
-        // 3. The AJAX Call
-        $.ajax({
-            // === ඔබගේ Backend Decline Request API endpoint එක මෙතනට යොදන්න ===
-            url: `http://localhost:8080/matching/${matchId}/decline_request`,
-            method: 'PATCH',
-            headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('authToken')
-            },
+        Swal.fire({
+            title: "Are you sure?",
+            text: "Are you sure you want to decline this contact request?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, decline it!"
+        }).then((result) => {
             
-            // This function runs if the request is SUCCESSFUL
-            success: function(response) {
-
-                Swal.fire({
-                    text: response.message || 'Request has been successfully declined.',
-                    title: "Success!",
-                    icon: "success",
-                    draggable: true
-                })
-                
-                // 4. Update the UI Dynamically
-                const $footer = $thisButton.closest('.match-footer');
-                const $card = $footer.closest('.match-card');
-
-                // Remove highlight and buttons, and show a "Resolved" or "Declined" status
-                $card.removeClass('state-request-received');
-                $footer.find('.request-info').remove(); // Remove the "Someone has claimed..." text
-                $actionButtons.html('<span class="status-badge status-declined">DECLINED</span>');
-            },
-            
-            // This function runs if the request FAILS
-            error: function(jqXHR) {
-                const errorMessage = jqXHR.responseJSON ? jqXHR.responseJSON.message : "Could not decline the request.";
-
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text: `Error: ${errorMessage}`,
-                });
-
-                
-                // Re-enable buttons on error
-                $actionButtons.find('button').prop('disabled', false);
-                $thisButton.text('Decline');
+            if (!result.isConfirmed) {
+                return;
             }
+
+            // 2. User Feedback: Disable buttons and show loading state
+            $actionButtons.find('button').prop('disabled', true);
+            $thisButton.text('Declining...');
+
+            // 3. The AJAX Call
+            $.ajax({
+                // === ඔබගේ Backend Decline Request API endpoint එක මෙතනට යොදන්න ===
+                url: `http://localhost:8080/matching/${matchId}/decline_request`,
+                method: 'PATCH',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+                },
+                
+                // This function runs if the request is SUCCESSFUL
+                success: function(response) {
+
+                    Swal.fire({
+                        text: response.message || 'Request has been successfully declined.',
+                        title: "Success!",
+                        icon: "success",
+                        draggable: true
+                    })
+                    
+                    // 4. Update the UI Dynamically
+                    const $footer = $thisButton.closest('.match-footer');
+                    const $card = $footer.closest('.match-card');
+
+                    // Remove highlight and buttons, and show a "Resolved" or "Declined" status
+                    $card.removeClass('state-request-received');
+                    $footer.find('.request-info').remove(); // Remove the "Someone has claimed..." text
+                    $actionButtons.html('<span class="status-badge status-declined">DECLINED</span>');
+                },
+                
+                // This function runs if the request FAILS
+                error: function(jqXHR) {
+                    const errorMessage = jqXHR.responseJSON ? jqXHR.responseJSON.message : "Could not decline the request.";
+
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: `Error: ${errorMessage}`,
+                    });
+
+                    
+                    // Re-enable buttons on error
+                    $actionButtons.find('button').prop('disabled', false);
+                    $thisButton.text('Decline');
+                }
+            });
+
         });
+
+        
     });
 
 
@@ -638,50 +780,66 @@ $(document).ready(function () {
         const matchId = $thisButton.data('match-id');
         
         // 1. User Confirmation
-        if (!confirm('Have you successfully recovered/returned the item? This will close the transaction.')) {
-            return; // Stop if the user clicks "Cancel"
-        }
+        // if (!confirm('Have you successfully recovered/returned the item? This will close the transaction.')) {
+        //     return; // Stop if the user clicks "Cancel"
+        // }
 
-        // 2. User Feedback: Disable the button and show a loading state
-        $thisButton.prop('disabled', true).text('Marking...');
-        
-        // 3. The AJAX Call
-        $.ajax({
-            // === ඔබගේ Backend Mark as Recovered API endpoint එක මෙතනට යොදන්න ===
-            url: `http://localhost:8080/matching/${matchId}/mark-as-recovered`,
-            method: 'POST',
-            headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('authToken')
-            },
+
+        Swal.fire({
+            title: "Are you sure?",
+            text: "Have you successfully recovered/returned the item? This will close the transaction.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Ok..!"
+        }).then((result) => {
             
-            // This function runs if the request is SUCCESSFUL
-            success: function(response) {
-                
-                Swal.fire({
-                    text: response.message || 'Transaction successfully marked as recovered!',
-                    title: "Success!",
-                    icon: "success",
-                    draggable: true
-                })
-               
-                loadLostItemMatches();
-                loadFoundItemMatches();
-            },
-            
-            // This function runs if the request FAILS
-            error: function(jqXHR) {
-
-                const errorMessage = jqXHR.responseJSON ? jqXHR.responseJSON.message : "Could not complete this action.";
-
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text: `Error: ${errorMessage}`,
-                });
-                
-                // Re-enable the button on error
-                $thisButton.prop('disabled', false).text('Mark as Recovered');
+            if (!result.isConfirmed) {
+                return;
             }
+
+            // 2. User Feedback: Disable the button and show a loading state
+            $thisButton.prop('disabled', true).text('Marking...');
+            
+            // 3. The AJAX Call
+            $.ajax({
+                // === ඔබගේ Backend Mark as Recovered API endpoint එක මෙතනට යොදන්න ===
+                url: `http://localhost:8080/matching/${matchId}/mark-as-recovered`,
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+                },
+                
+                // This function runs if the request is SUCCESSFUL
+                success: function(response) {
+                    
+                    Swal.fire({
+                        text: response.message || 'Transaction successfully marked as recovered!',
+                        title: "Success!",
+                        icon: "success",
+                        draggable: true
+                    })
+                
+                    loadLostItemMatches();
+                    loadFoundItemMatches();
+                },
+                
+                // This function runs if the request FAILS
+                error: function(jqXHR) {
+
+                    const errorMessage = jqXHR.responseJSON ? jqXHR.responseJSON.message : "Could not complete this action.";
+
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: `Error: ${errorMessage}`,
+                    });
+                    
+                    // Re-enable the button on error
+                    $thisButton.prop('disabled', false).text('Mark as Recovered');
+                }
+            });
         });
     });
 
@@ -1089,8 +1247,14 @@ $(document).ready(function () {
     $('#logoutBtn').on('click', function(event) {
         event.preventDefault();
         localStorage.removeItem('authToken');
-        alert("You have been logged out successfully.");
-        window.location.href = 'loginpage.html'; 
+        Swal.fire({
+            title: "Success!",
+            icon: "success",
+            text: 'You have been logged out successfully..!',
+            draggable: true
+        }).then(() => {
+            window.location.href = 'loginpage.html';
+        });
     });
 
 

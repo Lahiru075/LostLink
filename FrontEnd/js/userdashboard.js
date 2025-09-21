@@ -1,10 +1,63 @@
 $(document).ready(function () {
-    const authToken = localStorage.getItem('authToken');
-    if (!authToken) {
-        alert("You are not logged in. Redirecting to login page.");
-        window.location.href = 'login.html';
-        return;
+
+
+    function validateAndLoadDashboard() {
+        let token = localStorage.getItem('authToken');
+
+        if (!token) {
+
+            window.location.href = '../html/loginpage.html';
+            return false; 
+
+        }
+
+        const tokenParts = token.split('.');
+
+        if (tokenParts.length !== 3) {
+            window.location.href = '../html/loginpage.html';
+            return false; 
+        }
+
+        try {
+            const tokenPayload = JSON.parse(atob(tokenParts[1]));
+
+            const currentTimestamp = Math.floor(Date.now() / 1000);
+            // console.log("Current timestamp:", currentTimestamp);
+            // console.log("Token expiration timestamp:", tokenPayload.exp);
+
+        if (tokenPayload.exp && currentTimestamp >= tokenPayload.exp) {
+            alert('Session expired. Please login again.');
+            localStorage.removeItem('authToken');
+            window.location.href = '../html/loginpage.html';
+            return false; 
+        }
+
+
+        } catch (error) {
+
+            console.error('Invalid token:', error);
+            window.location.href = '../html/loginpage.html';
+            return false; 
+
+        }
+
+        return true;
+
     }
+
+    if (validateAndLoadDashboard()) {
+
+        setInterval(validateAndLoadDashboard, 10000);
+
+    }
+
+
+    const authToken = localStorage.getItem('authToken');
+    // if (!authToken) {
+    //     alert("You are not logged in. Redirecting to login page.");
+    //     window.location.href = 'login.html';
+    //     return;
+    // }
 
     function fetchUnreadNotificationCount(){
 

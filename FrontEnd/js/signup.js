@@ -17,7 +17,9 @@ $(document).ready(function () {
     }
 
     const $signupForm = $('#signupForm');
-    const $submitButton = $signupForm.find('button.login-btn');
+    // const $submitButton = $signupForm.find('button.login-btn');
+
+    const $submitButton = $('.login-btn');
 
     // We listen to the button click event
     $submitButton.on('click', function (event) {

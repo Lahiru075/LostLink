@@ -49,25 +49,27 @@ public class MatchingServiceImpl implements MatchingService {
         );
 
         for (FoundItem foundItem : potentialFoundItems) {
-            int score = calculateMatchScore(newLostItem, foundItem);
+            if (!Objects.equals(newLostItem.getUser().getUserId(), foundItem.getUser().getUserId())) {
+                int score = calculateMatchScore(newLostItem, foundItem);
 
-            if (score >= MATCH_THRESHOLD) {
-                Match newMatch = new Match();
-                newMatch.setLostItem(newLostItem);
-                newMatch.setFoundItem(foundItem);
-                newMatch.setMatchScore(score);
-                newMatch.setStatus(MatchStatus.PENDING_ACTION);
+                if (score >= MATCH_THRESHOLD) {
+                    Match newMatch = new Match();
+                    newMatch.setLostItem(newLostItem);
+                    newMatch.setFoundItem(foundItem);
+                    newMatch.setMatchScore(score);
+                    newMatch.setStatus(MatchStatus.PENDING_ACTION);
 
-                matchingRepository.save(newMatch);
+                    matchingRepository.save(newMatch);
 
-                // create notification for lost item owner
-                String message = "We found a potential match for your '" + newMatch.getLostItem().getTitle() + "'!";
-                notificationService.createNotification(
-                        newLostItem.getUser(),
-                        message, "MATCH",
-                        newMatch.getMatchId(),
-                        true
-                );
+                    // create notification for lost item owner
+                    String message = "We found a potential match for your '" + newMatch.getLostItem().getTitle() + "'!";
+                    notificationService.createNotification(
+                            newLostItem.getUser(),
+                            message, "MATCH",
+                            newMatch.getMatchId(),
+                            true
+                    );
+                }
             }
         }
     }
@@ -80,25 +82,27 @@ public class MatchingServiceImpl implements MatchingService {
         );
 
         for (LostItem lostItem : potentialLostItems) {
-            int score = calculateMatchScore(lostItem, newFoundItem);
+            if (!Objects.equals(newFoundItem.getUser().getUserId(), lostItem.getUser().getUserId())) {
+                int score = calculateMatchScore(lostItem, newFoundItem);
 
-            if (score >= MATCH_THRESHOLD) {
-                Match newMatch = new Match();
-                newMatch.setLostItem(lostItem);
-                newMatch.setFoundItem(newFoundItem);
-                newMatch.setMatchScore(score);
-                newMatch.setStatus(MatchStatus.PENDING_ACTION);
+                if (score >= MATCH_THRESHOLD) {
+                    Match newMatch = new Match();
+                    newMatch.setLostItem(lostItem);
+                    newMatch.setFoundItem(newFoundItem);
+                    newMatch.setMatchScore(score);
+                    newMatch.setStatus(MatchStatus.PENDING_ACTION);
 
-                matchingRepository.save(newMatch);
+                    matchingRepository.save(newMatch);
 
-                String message = "Good news! Someone may have found your '" + lostItem.getTitle() + "'!";
-                notificationService.createNotification(
-                        lostItem.getUser(),
-                        message,
-                        "MATCH",
-                        newMatch.getMatchId(),
-                        true
-                );
+                    String message = "Good news! Someone may have found your '" + lostItem.getTitle() + "'!";
+                    notificationService.createNotification(
+                            lostItem.getUser(),
+                            message,
+                            "MATCH",
+                            newMatch.getMatchId(),
+                            true
+                    );
+                }
             }
         }
     }
@@ -216,12 +220,10 @@ public class MatchingServiceImpl implements MatchingService {
         User user = userRepository.findByUsername(currentUsername)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        // 1. Create the Pageable object. Sorting will be applied to all queries.
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
 
         Page<Match> matchesPage; // The result will be a Page object
 
-        // --- YOUR EXISTING IF/ELSE LOGIC, NOW UPDATED FOR PAGINATION ---
 
         // 2. Handle the "All" case
         if (status == null || status.trim().isEmpty() || "ALL".equalsIgnoreCase(status)) {
